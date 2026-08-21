@@ -6,8 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="googlebot" content="noindex, nofollow">
-<!-- Microsoft Teams JS SDK for Entra SSO -->
-<script src="https://res.cdn.office.net/teams-js/2.22.0/js/MicrosoftTeams.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -233,29 +231,30 @@
     <div class="gate-logo">Complete HR Companion</div>
     <div class="gate-sub">Complete Childcare — internal use only</div>
 
-    <!-- Spinner shown while Teams SSO resolves -->
-    <div id="gateSpinner" style="text-align:center;padding:20px 0;">
-      <div style="display:inline-block;width:32px;height:32px;border:3px solid rgba(255,255,255,0.2);border-top-color:#F5EFE2;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
-      <p style="color:#9FC0BA;font-size:13px;margin:12px 0 0;">Signing you in with your Complete Childcare account...</p>
-      <p style="margin-top:16px;"><a onclick="showManualGate()" style="color:#7FB8B0;font-size:12px;cursor:pointer;text-decoration:underline;">Taking too long? Sign in with email instead</a></p>
+    <!-- Step 1: passcode -->
+    <div id="gateStep1">
+      <div class="gate-field">
+        <label>Your access code</label>
+        <input id="gateCode" type="password" placeholder="Enter your access code" autocomplete="off">
+      </div>
+      <button class="gate-btn" id="gateSubmit" onclick="checkCode()">Sign in</button>
+      <div class="gate-error" id="gateError" style="display:none;">Code not recognised — check your code and try again.</div>
+      <div class="gate-hint">Your access code was provided by Karen Tate in HR.<br>For help contact <a href="mailto:karen.tate@completechildcare.co.uk" style="color:var(--teal);">karen.tate@completechildcare.co.uk</a></div>
     </div>
 
-    <!-- Manual email fallback (hidden until SSO fails) -->
-    <div id="gateForm" style="display:none;">
+    <!-- Step 2: HR name picker (shown only for HR code) -->
+    <div id="gateStep2" style="display:none;">
       <div class="gate-field">
-        <label>Your Complete Childcare email</label>
-        <input id="gateEmail" type="email" placeholder="name@completechildcare.co.uk" autocomplete="email">
+        <label>Select your name</label>
+        <select id="gateHRName">
+          <option value="">— Select your name —</option>
+        </select>
       </div>
-      <button class="gate-btn" onclick="submitManualEmail()">Continue</button>
-      <div class="gate-error" id="gateError" style="display:none;"></div>
-      <div class="gate-hint">Sign in with your Complete Childcare Microsoft account. For access issues contact <a href="mailto:karen.tate@completechildcare.co.uk" style="color:var(--teal);">Karen Tate, HR</a></div>
+      <button class="gate-btn" onclick="confirmHRUser()">Continue</button>
+      <div class="gate-error" id="gateError2" style="display:none;">Please select your name.</div>
     </div>
   </div>
 </div>
-<style>
-  @keyframes spin { to { transform: rotate(360deg); } }
-</style>
-
 
 <!-- ===================== APP ===================== -->
 <div id="app" style="display:none;">
@@ -1676,48 +1675,36 @@ I’m unable to create the requested pages because the policy documents you prov
 </div>
 
 <script>
-const USER_MAP = [
-  // Nursery shared accounts — map email prefix to nursery name
-  { match: 'woosehill@',       name: 'Woosehill Nursery',      nursery: 'Woosehill',          title: 'Nursery Manager' },
-  { match: 'bramleywood@',     name: 'Bramleywood Nursery',    nursery: 'Bramleywood',        title: 'Nursery Manager' },
-  { match: 'happitots@',       name: 'Happitots Nursery',      nursery: 'Happitots',          title: 'Nursery Manager' },
-  { match: 'northumberland@',  name: 'Northumberland Nursery', nursery: 'Northumberland',     title: 'Nursery Manager' },
-  { match: 'merrydale@',       name: 'Merrydale Nursery',      nursery: 'Merrydale',          title: 'Nursery Manager' },
-  { match: 'finchampstead@',   name: 'Finchampstead Nursery',  nursery: 'Finchampstead',      title: 'Nursery Manager' },
-  { match: 'beesknees@',       name: 'Bees Knees Nursery',     nursery: 'Bees Knees',         title: 'Nursery Manager' },
-  { match: 'smarttots@',       name: 'Smart Tots Nursery',     nursery: 'Smart Tots',         title: 'Nursery Manager' },
-  { match: 'hazebrouck@',      name: 'Hazebrouck Nursery',     nursery: 'Hazebrouck',         title: 'Nursery Manager' },
-  { match: 'bootfarm@',        name: 'Boot Farm Nursery',      nursery: 'Boot Farm',          title: 'Nursery Manager' },
-  { match: 'abacus@',          name: 'Abacus Nursery',         nursery: 'Abacus',             title: 'Nursery Manager' },
-  { match: 'kingsclere@',      name: 'Kingsclere Nursery',     nursery: 'Kingsclere',         title: 'Nursery Manager' },
-  { match: 'steppingstones@',  name: 'Stepping Stones Nursery',nursery: 'Stepping Stones',    title: 'Nursery Manager' },
-  { match: 'lowerearley@',     name: 'Lower Earley Nursery',   nursery: 'Lower Earley',       title: 'Nursery Manager' },
-  { match: 'cedars@',          name: 'Cedars Nursery',         nursery: 'Cedars',             title: 'Nursery Manager' },
-  { match: 'saltway@',         name: 'Saltway Day Nursery',    nursery: 'Saltway',            title: 'Nursery Manager' },
-  { match: 'ourden@',          name: 'Our Den Nursery',        nursery: 'Our Den',            title: 'Nursery Manager' },
-  // Named individuals
-  { match: 'alec.hodson@',     name: 'Alec Hodson',            nursery: 'Head Office',        title: 'Group Chief Executive', isHR: true },
-  { match: 'karen.tate@',      name: 'Karen Tate',             nursery: 'Head Office',        title: 'HR Business Partner',   isHR: true },
-  { match: 'pav.bilkhu@',      name: 'Pav Bilkhu',             nursery: 'BlueWater Area',     title: 'Area Manager' },
-  { match: 'leanne.maynard@',  name: 'Leanne Maynard',         nursery: 'Greenwood Area',     title: 'Area Manager' },
-  { match: 'louise.medley@',   name: 'Louise Medley',          nursery: 'Head Office',        title: 'PA to MD' },
-  { match: 'emma.mcintyre@',   name: 'Emma McIntyre',          nursery: 'Head Office',        title: 'Director' },
-  { match: 'simon.hasler@',    name: 'Simon Hasler',           nursery: 'Head Office',        title: 'Director' },
-  { match: 'abigail.webb@',    name: 'Abigail Webb',           nursery: 'Head Office',        title: 'Payroll Administrator' },
-  { match: 'jo.wilson@',       name: 'Jo Wilson',              nursery: 'Head Office',        title: 'Manager' },
-  { match: 'tanya.wilson@',    name: 'Tanya Wilson',           nursery: 'Head Office',        title: 'Manager' },
-  { match: 'ellie.richards@',  name: 'Ellie Richards',         nursery: 'Head Office',        title: 'Manager' },
-  { match: 'sally@',           name: 'Sally',                  nursery: 'Head Office',        title: 'AI Agent',              isHR: true },
-];
+const NURSERY_USERS = {
+  "manager1": {name:"Abacus Day Nursery", nursery:"Abacus Day Nursery", title:"Nursery Manager", email:"abacus@completechildcare.co.uk", isHR:false},
+  "manager2": {name:"Bees Knees Day Nursery", nursery:"Bees Knees Day Nursery", title:"Nursery Manager", email:"beesknees@completechildcare.co.uk", isHR:false},
+  "manager3": {name:"Bramley Wood Day Nursery", nursery:"Bramley Wood Day Nursery", title:"Nursery Manager", email:"bramleywood@completechildcare.co.uk", isHR:false},
+  "manager4": {name:"Cedars @ Boot Farm", nursery:"Cedars @ Boot Farm", title:"Nursery Manager", email:"bootfarm@completechildcare.co.uk", isHR:false},
+  "manager5": {name:"Cedars Day Nursery", nursery:"Cedars Day Nursery", title:"Nursery Manager", email:"cedars@completechildcare.co.uk", isHR:false},
+  "manager6": {name:"Finchampstead Day Nursery", nursery:"Finchampstead Day Nursery", title:"Nursery Manager", email:"finchampstead@completechildcare.co.uk", isHR:false},
+  "manager7": {name:"Happitots Day Nursery", nursery:"Happitots Day Nursery", title:"Nursery Manager", email:"happitots@completechildcare.co.uk", isHR:false},
+  "manager8": {name:"Hazebrouck Day Nursery", nursery:"Hazebrouck Day Nursery", title:"Nursery Manager", email:"hazebrouck@completechildcare.co.uk", isHR:false},
+  "manager9": {name:"Kingsclere Day Nursery", nursery:"Kingsclere Day Nursery", title:"Nursery Manager", email:"kingsclere@completechildcare.co.uk", isHR:false},
+  "manager10": {name:"Lower Earley Day Nursery", nursery:"Lower Earley Day Nursery", title:"Nursery Manager", email:"lowerearley@completechildcare.co.uk", isHR:false},
+  "manager11": {name:"Merrydale Day Nursery", nursery:"Merrydale Day Nursery", title:"Nursery Manager", email:"merrydale@completechildcare.co.uk", isHR:false},
+  "manager12": {name:"Northumberland Day Nursery", nursery:"Northumberland Day Nursery", title:"Nursery Manager", email:"northumberland@completechildcare.co.uk", isHR:false},
+  "manager13": {name:"Our Den @ Hillside", nursery:"Our Den @ Hillside", title:"Nursery Manager", email:"ourden@completechildcare.co.uk", isHR:false},
+  "manager14": {name:"Saltway Day Nursery", nursery:"Saltway Day Nursery", title:"Nursery Manager", email:"saltway@completechildcare.co.uk", isHR:false},
+  "manager15": {name:"Smart Tots Day Nursery", nursery:"Smart Tots Day Nursery", title:"Nursery Manager", email:"smarttots@completechildcare.co.uk", isHR:false},
+  "manager16": {name:"Stepping Stones Day Nursery", nursery:"Stepping Stones Day Nursery", title:"Nursery Manager", email:"steppingstones@completechildcare.co.uk", isHR:false},
+  "manager17": {name:"Woosehill Day Nursery", nursery:"Woosehill Day Nursery", title:"Nursery Manager", email:"woosehill@completechildcare.co.uk", isHR:false},
+};
 
-function resolveUser(email, displayName) {
-  if (!email) return null;
-  const lower = email.toLowerCase();
-  const match = USER_MAP.find(u => lower.startsWith(u.match.toLowerCase()));
-  if (match) return { ...match };
-  // Fallback: use display name from Teams context, unknown nursery
-  return { name: displayName || email.split('@')[0], nursery: 'Unknown', title: 'Nursery Manager', isHR: false };
-}
+const HR_USERS = [
+  {name:"Ellie Richards", nursery:"Head Office", title:"HR", email:"ellie.richards@completechildcare.co.uk", isHR:true},
+  {name:"Leanne Maynard", nursery:"Greenwood Area", title:"Area Manager", email:"leanne.maynard@completechildcare.co.uk", isHR:true},
+  {name:"Pav Bilkhu", nursery:"BlueWater Area", title:"Area Manager", email:"pav.bilkhu@completechildcare.co.uk", isHR:true},
+  {name:"Emma McIntyre", nursery:"Head Office", title:"Director", email:"emma.mcintyre@completechildcare.co.uk", isHR:true},
+  {name:"Karen Tate", nursery:"Head Office", title:"HR Business Partner", email:"karen.tate@completechildcare.co.uk", isHR:true},
+  {name:"Alec Hodson", nursery:"Head Office", title:"Group Chief Executive", email:"alec.hodson@completechildcare.co.uk", isHR:true},
+  {name:"Louise Medley", nursery:"Head Office", title:"PA to MD", email:"louise.medley@completechildcare.co.uk", isHR:true},
+];
+const HR_CODE = "hrdash2026";
 
 /* ================= SESSION ================= */
 let SESSION = null;
@@ -1737,105 +1724,81 @@ function signOut() {
   SESSION = null;
   document.getElementById('app').style.display = 'none';
   document.getElementById('gateOverlay').style.display = 'flex';
-  document.getElementById('gateSpinner').style.display = 'block';
-  document.getElementById('gateForm').style.display = 'none';
-  // Re-attempt SSO on next load
-  setTimeout(initAuth, 500);
+  document.getElementById('gateStep1').style.display = 'block';
+  document.getElementById('gateStep2').style.display = 'none';
+  document.getElementById('gateCode').value = '';
+  document.getElementById('gateError').style.display = 'none';
+  setTimeout(() => document.getElementById('gateCode').focus(), 100);
 }
 
-/* ================= ENTRA SSO INIT ================= */
-function initAuth() {
-  // 1. Check for existing valid session first
+/* ================= GATE LOGIC ================= */
+function checkCode() {
+  const code = (document.getElementById('gateCode').value || '').trim();
+  const errEl = document.getElementById('gateError');
+  errEl.style.display = 'none';
+
+  // Check nursery manager codes
+  if (NURSERY_USERS[code]) {
+    SESSION = { ...NURSERY_USERS[code] };
+    storeSession(SESSION);
+    document.getElementById('gateOverlay').style.display = 'none';
+    launchApp();
+    return;
+  }
+
+  // Check HR code
+  if (code === HR_CODE) {
+    // Populate HR name picker
+    const sel = document.getElementById('gateHRName');
+    sel.innerHTML = '<option value="">— Select your name —</option>';
+    HR_USERS.forEach((u, i) => {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = u.name + ' — ' + u.title;
+      sel.appendChild(opt);
+    });
+    document.getElementById('gateStep1').style.display = 'none';
+    document.getElementById('gateStep2').style.display = 'block';
+    setTimeout(() => sel.focus(), 100);
+    return;
+  }
+
+  // Wrong code
+  errEl.style.display = 'block';
+  document.getElementById('gateCode').select();
+}
+
+function confirmHRUser() {
+  const sel = document.getElementById('gateHRName');
+  const idx = sel.value;
+  const errEl = document.getElementById('gateError2');
+  if (idx === '') {
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+  SESSION = { ...HR_USERS[parseInt(idx)] };
+  storeSession(SESSION);
+  document.getElementById('gateOverlay').style.display = 'none';
+  launchApp();
+}
+
+/* ================= INIT ================= */
+(function() {
+  // Check for existing session
   const stored = getStoredSession();
   if (stored && stored.name && stored.nursery) {
     SESSION = stored;
     launchApp();
     return;
   }
-
-  // 2. Hard timeout — if SSO hasn't resolved in 2.5s, show the email form
-  const ssoTimeout = setTimeout(() => showManualGate(), 2500);
-
-  // 3. Try Teams SDK — wrap everything in safety checks
-  function attemptTeamsSSO() {
-    // Check SDK is loaded and we're in a Teams context
-    if (typeof microsoftTeams === 'undefined' || !microsoftTeams.app) {
-      clearTimeout(ssoTimeout);
-      showManualGate();
-      return;
-    }
-    try {
-      // Use a Promise.race so we never hang indefinitely
-      const ssoPromise = microsoftTeams.app.initialize()
-        .then(() => microsoftTeams.app.getContext())
-        .then(ctx => {
-          clearTimeout(ssoTimeout);
-          const email = (ctx?.user?.loginHint || ctx?.user?.userPrincipalName || '').toLowerCase();
-          const displayName = ctx?.user?.displayName || '';
-          if (!email) { showManualGate(); return; }
-          const user = resolveUser(email, displayName);
-          SESSION = {
-            ...(user || { name: displayName || email, nursery: 'Unknown', title: 'Manager', isHR: false }),
-            email,
-            fromTeams: true
-          };
-          storeSession(SESSION);
-          launchApp();
-        });
-
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('timeout')), 2000)
-      );
-
-      Promise.race([ssoPromise, timeoutPromise])
-        .catch(() => { clearTimeout(ssoTimeout); showManualGate(); });
-
-    } catch(e) {
-      clearTimeout(ssoTimeout);
-      showManualGate();
-    }
-  }
-
-  // Small delay to let the SDK script finish loading
-  setTimeout(attemptTeamsSSO, 300);
-}
-
-function showManualGate() {
-  // Guard against being called multiple times
-  if (document.getElementById('gateForm').style.display === 'block') return;
-  document.getElementById('gateSpinner').style.display = 'none';
-  document.getElementById('gateForm').style.display = 'block';
-  // Auto-focus the email field
+  // Show gate and focus code field
+  document.getElementById('gateOverlay').style.display = 'flex';
   setTimeout(() => {
-    const el = document.getElementById('gateEmail');
+    const el = document.getElementById('gateCode');
     if (el) el.focus();
   }, 100);
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  const emailEl = document.getElementById('gateEmail');
-  if (emailEl) emailEl.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') submitManualEmail();
-  });
-});
-
-function submitManualEmail() {
-  const email = (document.getElementById('gateEmail').value || '').trim().toLowerCase();
-  const errEl = document.getElementById('gateError');
-  if (!email || !email.includes('@completechildcare.co.uk')) {
-    errEl.textContent = 'Please enter your @completechildcare.co.uk email address.';
-    errEl.style.display = 'block';
-    return;
-  }
-  const user = resolveUser(email, '');
-  SESSION = { ...(user || { name: email.split('@')[0], nursery: 'Unknown', title: 'Manager', isHR: false }), email, fromTeams: false };
-  storeSession(SESSION);
-  document.getElementById('gateOverlay').style.display = 'none';
-  launchApp();
-}
-
-// Kick off auth immediately on load
-(function() { initAuth(); })();
+})();
 
 /* ================= NAV ================= */
 const NAV_ITEMS = [
@@ -2959,5 +2922,14 @@ letterSelect.value = 'invite_investigation';
 renderForm();
 </script>
 
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var codeEl = document.getElementById('gateCode');
+  if (codeEl) codeEl.addEventListener('keydown', function(e) { if (e.key === 'Enter') checkCode(); });
+  var nameEl = document.getElementById('gateHRName');
+  if (nameEl) nameEl.addEventListener('keydown', function(e) { if (e.key === 'Enter') confirmHRUser(); });
+});
+</script>
 </body>
 </html>
