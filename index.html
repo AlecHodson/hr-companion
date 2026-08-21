@@ -237,6 +237,7 @@
     <div id="gateSpinner" style="text-align:center;padding:20px 0;">
       <div style="display:inline-block;width:32px;height:32px;border:3px solid rgba(255,255,255,0.2);border-top-color:#F5EFE2;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
       <p style="color:#9FC0BA;font-size:13px;margin:12px 0 0;">Signing you in with your Complete Childcare account...</p>
+      <p style="margin-top:16px;"><a onclick="showManualGate()" style="color:#7FB8B0;font-size:12px;cursor:pointer;text-decoration:underline;">Taking too long? Sign in with email instead</a></p>
     </div>
 
     <!-- Manual email fallback (hidden until SSO fails) -->
@@ -1744,34 +1745,79 @@ function signOut() {
 
 /* ================= ENTRA SSO INIT ================= */
 function initAuth() {
-  // 1. Check for existing valid session
+  // 1. Check for existing valid session first
   const stored = getStoredSession();
   if (stored && stored.name && stored.nursery) {
     SESSION = stored;
     launchApp();
     return;
   }
-  // 2. Try Teams SDK context
-  try {
-    microsoftTeams.app.initialize().then(() => {
-      microsoftTeams.app.getContext().then(ctx => {
-        const email = (ctx?.user?.loginHint || ctx?.user?.userPrincipalName || '').toLowerCase();
-        const displayName = ctx?.user?.displayName || '';
-        const user = resolveUser(email, displayName);
-        SESSION = { ...(user || { name: displayName || email, nursery: 'Unknown', title: 'Manager', isHR: false }), email, fromTeams: true };
-        storeSession(SESSION);
-        launchApp();
-      }).catch(() => showManualGate());
-    }).catch(() => showManualGate());
-  } catch(e) {
-    showManualGate();
+
+  // 2. Hard timeout — if SSO hasn't resolved in 2.5s, show the email form
+  const ssoTimeout = setTimeout(() => showManualGate(), 2500);
+
+  // 3. Try Teams SDK — wrap everything in safety checks
+  function attemptTeamsSSO() {
+    // Check SDK is loaded and we're in a Teams context
+    if (typeof microsoftTeams === 'undefined' || !microsoftTeams.app) {
+      clearTimeout(ssoTimeout);
+      showManualGate();
+      return;
+    }
+    try {
+      // Use a Promise.race so we never hang indefinitely
+      const ssoPromise = microsoftTeams.app.initialize()
+        .then(() => microsoftTeams.app.getContext())
+        .then(ctx => {
+          clearTimeout(ssoTimeout);
+          const email = (ctx?.user?.loginHint || ctx?.user?.userPrincipalName || '').toLowerCase();
+          const displayName = ctx?.user?.displayName || '';
+          if (!email) { showManualGate(); return; }
+          const user = resolveUser(email, displayName);
+          SESSION = {
+            ...(user || { name: displayName || email, nursery: 'Unknown', title: 'Manager', isHR: false }),
+            email,
+            fromTeams: true
+          };
+          storeSession(SESSION);
+          launchApp();
+        });
+
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('timeout')), 2000)
+      );
+
+      Promise.race([ssoPromise, timeoutPromise])
+        .catch(() => { clearTimeout(ssoTimeout); showManualGate(); });
+
+    } catch(e) {
+      clearTimeout(ssoTimeout);
+      showManualGate();
+    }
   }
+
+  // Small delay to let the SDK script finish loading
+  setTimeout(attemptTeamsSSO, 300);
 }
 
 function showManualGate() {
+  // Guard against being called multiple times
+  if (document.getElementById('gateForm').style.display === 'block') return;
   document.getElementById('gateSpinner').style.display = 'none';
   document.getElementById('gateForm').style.display = 'block';
+  // Auto-focus the email field
+  setTimeout(() => {
+    const el = document.getElementById('gateEmail');
+    if (el) el.focus();
+  }, 100);
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  const emailEl = document.getElementById('gateEmail');
+  if (emailEl) emailEl.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') submitManualEmail();
+  });
+});
 
 function submitManualEmail() {
   const email = (document.getElementById('gateEmail').value || '').trim().toLowerCase();
