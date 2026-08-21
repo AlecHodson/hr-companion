@@ -222,42 +222,8 @@
 </head>
 <body>
 
-<!-- ===================== GATE OVERLAY ===================== -->
-<div id="gateOverlay" style="position:fixed;inset:0;background:#153634;display:flex;align-items:center;justify-content:center;z-index:9999;font-family:'Inter',sans-serif;">
-  <div class="gate-box">
-    <div style="text-align:center;margin-bottom:16px;">
-      <svg width="48" height="48" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="52" height="52" rx="10" fill="#153634"/><text x="26" y="34" font-family="Georgia,serif" font-size="22" font-weight="700" fill="#F5EFE2" text-anchor="middle">HR</text></svg>
-    </div>
-    <div class="gate-logo">Complete HR Companion</div>
-    <div class="gate-sub">Complete Childcare — internal use only</div>
-
-    <!-- Step 1: passcode -->
-    <div id="gateStep1">
-      <div class="gate-field">
-        <label>Your access code</label>
-        <input id="gateCode" type="password" placeholder="Enter your access code" autocomplete="off">
-      </div>
-      <button class="gate-btn" id="gateSubmit" onclick="checkCode()">Sign in</button>
-      <div class="gate-error" id="gateError" style="display:none;">Code not recognised — check your code and try again.</div>
-      <div class="gate-hint">Your access code was provided by Karen Tate in HR.<br>For help contact <a href="mailto:karen.tate@completechildcare.co.uk" style="color:var(--teal);">karen.tate@completechildcare.co.uk</a></div>
-    </div>
-
-    <!-- Step 2: HR name picker (shown only for HR code) -->
-    <div id="gateStep2" style="display:none;">
-      <div class="gate-field">
-        <label>Select your name</label>
-        <select id="gateHRName">
-          <option value="">— Select your name —</option>
-        </select>
-      </div>
-      <button class="gate-btn" onclick="confirmHRUser()">Continue</button>
-      <div class="gate-error" id="gateError2" style="display:none;">Please select your name.</div>
-    </div>
-  </div>
-</div>
-
 <!-- ===================== APP ===================== -->
-<div id="app" style="display:none;">
+<div id="app">
 
   <div id="sidebar">
     <div style="margin-bottom:14px;">
@@ -265,7 +231,7 @@
     </div>
     <div class="brand">Complete HR<br>Companion</div>
     <div class="brand-sub">Complete Childcare</div>
-    <div class="session-user" id="sessionUserBar">
+    <div class="session-user" id="sessionUserBar" style="cursor:default;">
       <span id="sessionUserName">—</span>
       <button onclick="signOut()">Sign out</button>
     </div>
@@ -1675,36 +1641,38 @@ I’m unable to create the requested pages because the policy documents you prov
 </div>
 
 <script>
-const NURSERY_USERS = {
-  "manager1": {name:"Abacus Day Nursery", nursery:"Abacus Day Nursery", title:"Nursery Manager", email:"abacus@completechildcare.co.uk", isHR:false},
-  "manager2": {name:"Bees Knees Day Nursery", nursery:"Bees Knees Day Nursery", title:"Nursery Manager", email:"beesknees@completechildcare.co.uk", isHR:false},
-  "manager3": {name:"Bramley Wood Day Nursery", nursery:"Bramley Wood Day Nursery", title:"Nursery Manager", email:"bramleywood@completechildcare.co.uk", isHR:false},
-  "manager4": {name:"Cedars @ Boot Farm", nursery:"Cedars @ Boot Farm", title:"Nursery Manager", email:"bootfarm@completechildcare.co.uk", isHR:false},
-  "manager5": {name:"Cedars Day Nursery", nursery:"Cedars Day Nursery", title:"Nursery Manager", email:"cedars@completechildcare.co.uk", isHR:false},
-  "manager6": {name:"Finchampstead Day Nursery", nursery:"Finchampstead Day Nursery", title:"Nursery Manager", email:"finchampstead@completechildcare.co.uk", isHR:false},
-  "manager7": {name:"Happitots Day Nursery", nursery:"Happitots Day Nursery", title:"Nursery Manager", email:"happitots@completechildcare.co.uk", isHR:false},
-  "manager8": {name:"Hazebrouck Day Nursery", nursery:"Hazebrouck Day Nursery", title:"Nursery Manager", email:"hazebrouck@completechildcare.co.uk", isHR:false},
-  "manager9": {name:"Kingsclere Day Nursery", nursery:"Kingsclere Day Nursery", title:"Nursery Manager", email:"kingsclere@completechildcare.co.uk", isHR:false},
-  "manager10": {name:"Lower Earley Day Nursery", nursery:"Lower Earley Day Nursery", title:"Nursery Manager", email:"lowerearley@completechildcare.co.uk", isHR:false},
-  "manager11": {name:"Merrydale Day Nursery", nursery:"Merrydale Day Nursery", title:"Nursery Manager", email:"merrydale@completechildcare.co.uk", isHR:false},
-  "manager12": {name:"Northumberland Day Nursery", nursery:"Northumberland Day Nursery", title:"Nursery Manager", email:"northumberland@completechildcare.co.uk", isHR:false},
-  "manager13": {name:"Our Den @ Hillside", nursery:"Our Den @ Hillside", title:"Nursery Manager", email:"ourden@completechildcare.co.uk", isHR:false},
-  "manager14": {name:"Saltway Day Nursery", nursery:"Saltway Day Nursery", title:"Nursery Manager", email:"saltway@completechildcare.co.uk", isHR:false},
-  "manager15": {name:"Smart Tots Day Nursery", nursery:"Smart Tots Day Nursery", title:"Nursery Manager", email:"smarttots@completechildcare.co.uk", isHR:false},
-  "manager16": {name:"Stepping Stones Day Nursery", nursery:"Stepping Stones Day Nursery", title:"Nursery Manager", email:"steppingstones@completechildcare.co.uk", isHR:false},
-  "manager17": {name:"Woosehill Day Nursery", nursery:"Woosehill Day Nursery", title:"Nursery Manager", email:"woosehill@completechildcare.co.uk", isHR:false},
-};
+/* ================= IDENTITY (lazy — asked when needed) ================= */
 
-const HR_USERS = [
-  {name:"Ellie Richards", nursery:"Head Office", title:"HR", email:"ellie.richards@completechildcare.co.uk", isHR:true},
-  {name:"Leanne Maynard", nursery:"Greenwood Area", title:"Area Manager", email:"leanne.maynard@completechildcare.co.uk", isHR:true},
-  {name:"Pav Bilkhu", nursery:"BlueWater Area", title:"Area Manager", email:"pav.bilkhu@completechildcare.co.uk", isHR:true},
-  {name:"Emma McIntyre", nursery:"Head Office", title:"Director", email:"emma.mcintyre@completechildcare.co.uk", isHR:true},
-  {name:"Karen Tate", nursery:"Head Office", title:"HR Business Partner", email:"karen.tate@completechildcare.co.uk", isHR:true},
-  {name:"Alec Hodson", nursery:"Head Office", title:"Group Chief Executive", email:"alec.hodson@completechildcare.co.uk", isHR:true},
-  {name:"Louise Medley", nursery:"Head Office", title:"PA to MD", email:"louise.medley@completechildcare.co.uk", isHR:true},
+// Nursery list from HR Companion users.xlsx
+const NURSERY_LIST = [
+  {name:"Abacus Day Nursery",          nursery:"Abacus Day Nursery",          title:"Nursery Manager", email:"abacus@completechildcare.co.uk",          isHR:false},
+  {name:"Bees Knees Day Nursery",       nursery:"Bees Knees Day Nursery",       title:"Nursery Manager", email:"beesknees@completechildcare.co.uk",       isHR:false},
+  {name:"Bramley Wood Day Nursery",     nursery:"Bramley Wood Day Nursery",     title:"Nursery Manager", email:"bramleywood@completechildcare.co.uk",     isHR:false},
+  {name:"Cedars @ Boot Farm",           nursery:"Cedars @ Boot Farm",           title:"Nursery Manager", email:"bootfarm@completechildcare.co.uk",        isHR:false},
+  {name:"Cedars Day Nursery",           nursery:"Cedars Day Nursery",           title:"Nursery Manager", email:"cedars@completechildcare.co.uk",          isHR:false},
+  {name:"Finchampstead Day Nursery",    nursery:"Finchampstead Day Nursery",    title:"Nursery Manager", email:"finchampstead@completechildcare.co.uk",   isHR:false},
+  {name:"Happitots Day Nursery",        nursery:"Happitots Day Nursery",        title:"Nursery Manager", email:"happitots@completechildcare.co.uk",       isHR:false},
+  {name:"Hazebrouck Day Nursery",       nursery:"Hazebrouck Day Nursery",       title:"Nursery Manager", email:"hazebrouck@completechildcare.co.uk",      isHR:false},
+  {name:"Kingsclere Day Nursery",       nursery:"Kingsclere Day Nursery",       title:"Nursery Manager", email:"kingsclere@completechildcare.co.uk",      isHR:false},
+  {name:"Lower Earley Day Nursery",     nursery:"Lower Earley Day Nursery",     title:"Nursery Manager", email:"lowerearley@completechildcare.co.uk",     isHR:false},
+  {name:"Merrydale Day Nursery",        nursery:"Merrydale Day Nursery",        title:"Nursery Manager", email:"merrydale@completechildcare.co.uk",       isHR:false},
+  {name:"Northumberland Day Nursery",   nursery:"Northumberland Day Nursery",   title:"Nursery Manager", email:"northumberland@completechildcare.co.uk",  isHR:false},
+  {name:"Our Den @ Hillside",           nursery:"Our Den @ Hillside",           title:"Nursery Manager", email:"ourden@completechildcare.co.uk",          isHR:false},
+  {name:"Saltway Day Nursery",          nursery:"Saltway Day Nursery",          title:"Nursery Manager", email:"saltway@completechildcare.co.uk",         isHR:false},
+  {name:"Smart Tots Day Nursery",       nursery:"Smart Tots Day Nursery",       title:"Nursery Manager", email:"smarttots@completechildcare.co.uk",       isHR:false},
+  {name:"Stepping Stones Day Nursery",  nursery:"Stepping Stones Day Nursery",  title:"Nursery Manager", email:"steppingstones@completechildcare.co.uk",  isHR:false},
+  {name:"Woosehill Day Nursery",        nursery:"Woosehill Day Nursery",        title:"Nursery Manager", email:"woosehill@completechildcare.co.uk",       isHR:false},
 ];
-const HR_CODE = "hrdash2026";
+
+const HR_LIST = [
+  {name:"Ellie Richards",  nursery:"Head Office",      title:"HR",                   email:"ellie.richards@completechildcare.co.uk",  isHR:true},
+  {name:"Leanne Maynard",  nursery:"Greenwood Area",   title:"Area Manager",         email:"leanne.maynard@completechildcare.co.uk",  isHR:true},
+  {name:"Pav Bilkhu",      nursery:"BlueWater Area",   title:"Area Manager",         email:"pav.bilkhu@completechildcare.co.uk",       isHR:true},
+  {name:"Emma McIntyre",   nursery:"Head Office",      title:"Director",             email:"emma.mcintyre@completechildcare.co.uk",   isHR:true},
+  {name:"Karen Tate",      nursery:"Head Office",      title:"HR Business Partner",  email:"karen.tate@completechildcare.co.uk",       isHR:true},
+  {name:"Alec Hodson",     nursery:"Head Office",      title:"Group Chief Executive",email:"alec.hodson@completechildcare.co.uk",      isHR:true},
+  {name:"Louise Medley",   nursery:"Head Office",      title:"PA to MD",             email:"louise.medley@completechildcare.co.uk",    isHR:true},
+];
 
 /* ================= SESSION ================= */
 let SESSION = null;
@@ -1719,110 +1687,92 @@ function clearSession() {
   try { localStorage.removeItem('hrCompanionSession'); } catch(e) {}
 }
 
+// Called when identity is needed — shows inline modal if not already set
+function requireIdentity(callback) {
+  if (SESSION && SESSION.name) { callback(); return; }
+  showIdentityModal(callback);
+}
+
+function showIdentityModal(callback) {
+  const modal = document.getElementById('identityModal');
+  modal.style.display = 'flex';
+  // Populate nursery dropdown
+  const sel = document.getElementById('idNursery');
+  sel.innerHTML = '<option value="">— Select your nursery —</option>';
+  NURSERY_LIST.forEach((u, i) => {
+    const o = document.createElement('option');
+    o.value = 'n:' + i;
+    o.textContent = u.nursery;
+    sel.appendChild(o);
+  });
+  // HR option group
+  const og = document.createElement('optgroup');
+  og.label = 'HR & Management';
+  HR_LIST.forEach((u, i) => {
+    const o = document.createElement('option');
+    o.value = 'h:' + i;
+    o.textContent = u.name + ' — ' + u.title;
+    og.appendChild(o);
+  });
+  sel.appendChild(og);
+  sel.focus();
+  // Store callback for when they confirm
+  window._idCallback = callback;
+}
+
+function confirmIdentity() {
+  const sel = document.getElementById('idNursery');
+  const val = sel.value;
+  const errEl = document.getElementById('idError');
+  if (!val) { errEl.style.display = 'block'; return; }
+  errEl.style.display = 'none';
+  if (val.startsWith('n:')) {
+    SESSION = { ...NURSERY_LIST[parseInt(val.slice(2))] };
+  } else {
+    SESSION = { ...HR_LIST[parseInt(val.slice(2))] };
+  }
+  storeSession(SESSION);
+  document.getElementById('identityModal').style.display = 'none';
+  updateSessionBar();
+  if (window._idCallback) { window._idCallback(); window._idCallback = null; }
+}
+
+function updateSessionBar() {
+  const bar = document.getElementById('sessionUserName');
+  if (bar && SESSION) bar.textContent = SESSION.name + ' \u00b7 ' + SESSION.nursery;
+}
+
 function signOut() {
   clearSession();
   SESSION = null;
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('gateOverlay').style.display = 'flex';
-  document.getElementById('gateStep1').style.display = 'block';
-  document.getElementById('gateStep2').style.display = 'none';
-  document.getElementById('gateCode').value = '';
-  document.getElementById('gateError').style.display = 'none';
-  setTimeout(() => document.getElementById('gateCode').focus(), 100);
+  const bar = document.getElementById('sessionUserName');
+  if (bar) bar.textContent = 'Not identified';
 }
 
-/* ================= GATE LOGIC ================= */
-function checkCode() {
-  const code = (document.getElementById('gateCode').value || '').trim();
-  const errEl = document.getElementById('gateError');
-  errEl.style.display = 'none';
-
-  // Check nursery manager codes
-  if (NURSERY_USERS[code]) {
-    SESSION = { ...NURSERY_USERS[code] };
-    storeSession(SESSION);
-    document.getElementById('gateOverlay').style.display = 'none';
-    launchApp();
-    return;
-  }
-
-  // Check HR code
-  if (code === HR_CODE) {
-    // Populate HR name picker
-    const sel = document.getElementById('gateHRName');
-    sel.innerHTML = '<option value="">— Select your name —</option>';
-    HR_USERS.forEach((u, i) => {
-      const opt = document.createElement('option');
-      opt.value = i;
-      opt.textContent = u.name + ' — ' + u.title;
-      sel.appendChild(opt);
-    });
-    document.getElementById('gateStep1').style.display = 'none';
-    document.getElementById('gateStep2').style.display = 'block';
-    setTimeout(() => sel.focus(), 100);
-    return;
-  }
-
-  // Wrong code
-  errEl.style.display = 'block';
-  document.getElementById('gateCode').select();
-}
-
-function confirmHRUser() {
-  const sel = document.getElementById('gateHRName');
-  const idx = sel.value;
-  const errEl = document.getElementById('gateError2');
-  if (idx === '') {
-    errEl.style.display = 'block';
-    return;
-  }
-  errEl.style.display = 'none';
-  SESSION = { ...HR_USERS[parseInt(idx)] };
-  storeSession(SESSION);
-  document.getElementById('gateOverlay').style.display = 'none';
-  launchApp();
+/* ================= LAUNCH APP ================= */
+function launchApp() {
+  updateSessionBar();
+  buildNav();
+  renderCaseLog();
+  if (SESSION && SESSION.isHR) renderHRDash();
+  prefillManagerFields();
 }
 
 /* ================= INIT ================= */
 (function() {
-  // Check for existing session
   const stored = getStoredSession();
-  if (stored && stored.name && stored.nursery) {
+  if (stored && stored.name) {
     SESSION = stored;
-    launchApp();
-    return;
   }
-  // Show gate and focus code field
-  document.getElementById('gateOverlay').style.display = 'flex';
-  setTimeout(() => {
-    const el = document.getElementById('gateCode');
-    if (el) el.focus();
-  }, 100);
-})();
-
-
-/* ================= LAUNCH APP ================= */
-function launchApp() {
-  document.getElementById('gateOverlay').style.display = 'none';
-  document.getElementById('app').style.display = '';
-
-  // Populate session bar in sidebar
-  const bar = document.getElementById('sessionUserName');
-  if (bar) bar.textContent = SESSION.name + ' · ' + SESSION.nursery;
-
-  // Pre-fill feedback form fields
-  try {
-    const fbName = document.getElementById('fb_name');
-    const fbLoc  = document.getElementById('fb_location');
-    if (fbName) fbName.value = SESSION.name;
-    if (fbLoc)  fbLoc.value  = SESSION.nursery;
-  } catch(e) {}
-
+  // App is always visible — just update the bar and build nav
+  updateSessionBar();
   buildNav();
-  renderCaseLog();
-  if (SESSION.isHR) renderHRDash();
-  prefillManagerFields();
-}
+  // Initialise letter generator
+  if (typeof letterSelect !== 'undefined') {
+    letterSelect.value = 'invite_investigation';
+    renderForm();
+  }
+})();
 
 /* ================= NAV ================= */
 const NAV_ITEMS = [
@@ -1854,7 +1804,7 @@ const NAV_ITEMS = [
 function buildNav(){
   const navlist = document.getElementById('navlist');
   navlist.innerHTML = '';
-  const items = SESSION && SESSION.isHR
+  const items = (SESSION && SESSION.isHR)
     ? [...NAV_ITEMS, {id:'hrdash', label:'HR Dashboard', tag:'HR only'}]
     : NAV_ITEMS;
   items.forEach(item => {
@@ -1888,7 +1838,10 @@ function saveCases(arr){
 }
 
 function logCase(){
-  if(!SESSION) return;
+  if(!SESSION || !SESSION.name){
+    requireIdentity(() => logCase());
+    return;
+  }
   const cat = document.getElementById('cl_category').value;
   const ref = document.getElementById('cl_ref').value.trim();
   const action = document.getElementById('cl_action').value.trim();
@@ -1920,7 +1873,11 @@ function logCase(){
 }
 
 function renderCaseLog(){
-  if(!SESSION) return;
+  if(!SESSION || !SESSION.name) {
+    const list = document.getElementById('caseLogList');
+    if(list) list.innerHTML = '<div class="case-empty">Select your nursery above to view your case log.</div>';
+    return;
+  }
   const list = document.getElementById('caseLogList');
   if(!list) return;
   const cases = getAllCases().filter(c => c.manager === SESSION.name);
@@ -2653,7 +2610,7 @@ disciplinary_appeal_outcome: {
 
 // Auto-prefill manager fields from session
 function prefillManagerFields(){
-  if(!SESSION) return;
+  if(!SESSION || !SESSION.name) return;
   // Will be called after form render too
 }
 
@@ -2950,10 +2907,21 @@ renderForm();
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   var codeEl = document.getElementById('gateCode');
-  if (codeEl) codeEl.addEventListener('keydown', function(e) { if (e.key === 'Enter') checkCode(); });
   var nameEl = document.getElementById('gateHRName');
   if (nameEl) nameEl.addEventListener('keydown', function(e) { if (e.key === 'Enter') confirmHRUser(); });
 });
 </script>
+
+<!-- Identity modal — shown on demand when nursery identification is needed -->
+<div id="identityModal" style="display:none;position:fixed;inset:0;background:rgba(21,54,52,0.7);z-index:8888;align-items:center;justify-content:center;font-family:'Inter',sans-serif;">
+  <div style="background:#FFFDF8;border-radius:12px;padding:28px 28px 24px;max-width:360px;width:90%;box-shadow:0 16px 48px rgba(0,0,0,0.25);">
+    <div style="font-family:'Fraunces',serif;font-size:17px;font-weight:700;color:#153634;margin-bottom:6px;">Which nursery are you?</div>
+    <div style="font-size:13px;color:#7A8580;margin-bottom:18px;">Select your nursery so your details are recorded correctly.</div>
+    <select id="idNursery" style="width:100%;padding:9px 10px;border:1px solid #D8CDB5;border-radius:6px;font-size:14px;font-family:'Inter',sans-serif;background:#F5EFE2;color:#1B2321;margin-bottom:10px;"></select>
+    <div id="idError" style="display:none;color:#B5533E;font-size:12px;margin-bottom:8px;">Please select your nursery or name.</div>
+    <button onclick="confirmIdentity()" style="width:100%;background:#B5533E;color:#fff;border:none;padding:10px;border-radius:6px;font-weight:600;font-size:13.5px;cursor:pointer;">Confirm</button>
+    <div style="font-size:11.5px;color:#8A9490;margin-top:12px;text-align:center;">This is remembered on this device. You won't be asked again.</div>
+  </div>
+</div>
 </body>
 </html>
