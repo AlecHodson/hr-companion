@@ -2598,14 +2598,180 @@ Yours sincerely
 ${d.mgrname}
 ${d.mgrtitle}`
 },
-disciplinary_appeal_outcome: {
-  preSendCheck:true,
-  title:"Disciplinary appeal outcome",
-  category:"Disciplinary & Investigation",
-  fields:[
-    F('Employee name','empname'),
-    F('Appeal hearing date','hearingdate'),
-    F('Original
+  disciplinary_appeal_outcome: {
+    preSendCheck:true,
+    title:"Disciplinary appeal outcome",
+    category:"Disciplinary & Investigation",
+    fields:[
+      F('Employee name','empname'),
+      F('Appeal hearing date','hearingdate','date'),
+      F('Original sanction','originalsanction','text','e.g. First and final written warning'),
+      F('Appeal outcome','outcome','select',['Appeal upheld — sanction removed','Appeal partially upheld — sanction reduced','Appeal not upheld — original sanction stands']),
+      F('Reasons for decision','reasons','textarea','Summarise the grounds considered and why the decision was reached'),
+      F('Revised sanction (if partially upheld)','revised','text','Leave blank if not applicable'),
+      F('Your name','mgrname'),F('Your job title','mgrtitle')
+    ],
+    build:d=>`Private and Confidential
+
+${d.empname}
+
+Dear ${d.empname}
+
+Re: Outcome of disciplinary appeal hearing — ${d.hearingdate}
+
+I write to confirm the outcome of your appeal against the disciplinary decision of ${d.originalsanction}.
+
+Having considered the grounds of your appeal and the evidence presented at the hearing on ${d.hearingdate}, the outcome is as follows:
+
+${d.outcome}.
+
+${d.reasons || '[Insert reasons for the decision]'}
+
+${d.revised ? 'The revised sanction is: ' + d.revised + '.' : ''}
+
+This decision is final. There is no further right of appeal.
+
+Yours sincerely
+
+${d.mgrname}
+${d.mgrtitle}`
+  },
+  annual_leave_approval: {
+    title:"Annual leave — approval or refusal",
+    category:"General",
+    fields:[
+      F('Employee name','empname'),
+      F('Leave dates requested','dates','text','e.g. 14–18 July 2026'),
+      F('Number of days','days','text','e.g. 5'),
+      F('Decision','decision','select',['Approved','Refused']),
+      F('Reason if refused','reason','textarea','e.g. Insufficient staffing cover during this period'),
+      F('Alternative dates suggested (if refused)','alternative','text','Leave blank if none'),
+      F('Your name','mgrname'),F('Your job title','mgrtitle')
+    ],
+    build:d=>`Dear ${d.empname}
+
+Re: Annual leave request — ${d.dates}
+
+Thank you for your request for ${d.days} day(s) annual leave on ${d.dates}.
+
+${d.decision === 'Approved'
+  ? 'I am pleased to confirm that your request has been approved. Please ensure your absence is recorded on the rota and that handover arrangements are in place before you leave.'
+  : `Unfortunately I am unable to approve this request. ${d.reason || '[Insert reason]'}${d.alternative ? '
+
+I would be happy to consider an alternative request for ' + d.alternative + ' if this would work for you.' : ''}`}
+
+Yours sincerely
+
+${d.mgrname}
+${d.mgrtitle}`
+  },
+  harassment_investigation_invite: {
+    title:"Invite to harassment/bullying investigation meeting",
+    category:"Bullying & Harassment",
+    fields:[
+      F('Employee name','empname'),
+      F('Meeting date','date','date'),
+      F('Meeting time','time','text','e.g. 10:00am'),
+      F('Location','location','text','e.g. Manager\'s office / via Teams'),
+      F('Brief neutral description of matter','matter','textarea','e.g. concerns raised about conduct in the workplace — do not prejudge'),
+      F('Note-taker name','notetaker'),
+      F('Your name','mgrname'),F('Your job title','mgrtitle')
+    ],
+    build:d=>`Private and Confidential
+
+${d.empname}
+
+Dear ${d.empname}
+
+Re: Investigation meeting
+
+I am writing to invite you to attend an investigation meeting on ${d.date} at ${d.time} at ${d.location}.
+
+The purpose of this meeting is to discuss ${d.matter || '[brief neutral description of the matter under investigation]'}.
+
+This is an investigation meeting only — it is not a disciplinary hearing and no decision will be made at this stage. You are not required to bring documentation, but you are welcome to make notes.
+
+${d.notetaker || '[NAME]'} will attend to take notes.
+
+Please note that you have the right to be accompanied by a work colleague or trade union representative. If you wish to bring a companion, please let me know in advance.
+
+If the proposed time is not convenient, please contact me as soon as possible.
+
+Yours sincerely
+
+${d.mgrname}
+${d.mgrtitle}`
+  },
+  nfa_letter: {
+    title:"No further action outcome letter",
+    category:"Disciplinary & Investigation",
+    fields:[
+      F('Employee name','empname'),
+      F('Meeting date','date','date'),
+      F('Matter investigated','matter','textarea','e.g. alleged failure to follow absence reporting procedure on [date]'),
+      F('Reasons for no further action','reasons','textarea'),
+      F('Your name','mgrname'),F('Your job title','mgrtitle')
+    ],
+    build:d=>`Private and Confidential
+
+${d.empname}
+
+Dear ${d.empname}
+
+Re: Outcome of investigation — no further action
+
+I write further to the investigation meeting held on ${d.date}, at which we discussed ${d.matter || '[matter investigated]'}.
+
+Having carefully considered the evidence gathered and your explanation, I have decided that no further action will be taken in this matter. ${d.reasons || '[Insert brief reasons]'}
+
+This matter is now closed and will not be placed on your personnel file.
+
+Yours sincerely
+
+${d.mgrname}
+${d.mgrtitle}`
+  },
+  change_of_terms: {
+    title:"Change of terms and conditions letter",
+    category:"General",
+    fields:[
+      F('Employee name','empname'),
+      F('Current term being changed','currentterm','textarea','e.g. Working hours: currently 37.5 hours per week, Monday to Friday'),
+      F('New term','newterm','textarea','e.g. Working hours: 30 hours per week, Monday to Thursday'),
+      F('Effective date of change','effectivedate','date'),
+      F('Reason for change','reason','textarea','e.g. restructuring of operational requirements'),
+      F('Consultation note','consultation','textarea','e.g. This change was discussed with you on [date] and you confirmed your agreement'),
+      F('Your name','mgrname'),F('Your job title','mgrtitle')
+    ],
+    build:d=>`Private and Confidential
+
+${d.empname}
+
+Dear ${d.empname}
+
+Re: Change to your terms and conditions of employment
+
+I write to confirm a change to your terms and conditions of employment, effective ${d.effectivedate || '[date]'}.
+
+Current term:
+${d.currentterm || '[Insert current term]'}
+
+New term:
+${d.newterm || '[Insert new term]'}
+
+Reason for change:
+${d.reason || '[Insert reason]'}
+
+${d.consultation || '[Insert consultation note — e.g. this was discussed and agreed with you on [date]]'}
+
+All other terms and conditions of your employment remain unchanged. Please sign and return the enclosed copy of this letter to confirm your acceptance of this change.
+
+Yours sincerely
+
+${d.mgrname}
+${d.mgrtitle}`
+  },
+
 };
 
 // Auto-prefill manager fields from session
