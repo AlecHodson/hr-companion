@@ -1800,6 +1800,30 @@ function confirmHRUser() {
   }, 100);
 })();
 
+
+/* ================= LAUNCH APP ================= */
+function launchApp() {
+  document.getElementById('gateOverlay').style.display = 'none';
+  document.getElementById('app').style.display = '';
+
+  // Populate session bar in sidebar
+  const bar = document.getElementById('sessionUserName');
+  if (bar) bar.textContent = SESSION.name + ' · ' + SESSION.nursery;
+
+  // Pre-fill feedback form fields
+  try {
+    const fbName = document.getElementById('fb_name');
+    const fbLoc  = document.getElementById('fb_location');
+    if (fbName) fbName.value = SESSION.name;
+    if (fbLoc)  fbLoc.value  = SESSION.nursery;
+  } catch(e) {}
+
+  buildNav();
+  renderCaseLog();
+  if (SESSION.isHR) renderHRDash();
+  prefillManagerFields();
+}
+
 /* ================= NAV ================= */
 const NAV_ITEMS = [
   {id:'overview', label:'Overview', tag:''},
