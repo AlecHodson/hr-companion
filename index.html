@@ -1758,18 +1758,7 @@ function launchApp() {
   prefillManagerFields();
 }
 
-/* ================= INIT ================= */
-(function() {
-  const stored = getStoredSession();
-  if (stored && stored.name) {
-    SESSION = stored;
-  }
-  updateSessionBar();
-  buildNav();
-  showPage('overview');
-  letterSelect.value = 'invite_investigation';
-  renderForm();
-})();
+/* init moved to DOMContentLoaded at end of script */
 
 /* ================= NAV ================= */
 const NAV_ITEMS = [
@@ -3061,19 +3050,21 @@ document.addEventListener('keydown', function(e){
   });
 })();
 
-// Init letter generator
-letterSelect.value = 'invite_investigation';
-renderForm();
-</script>
-
-
-<script>
 document.addEventListener('DOMContentLoaded', function() {
-  var codeEl = document.getElementById('gateCode');
-  var nameEl = document.getElementById('gateHRName');
-  if (nameEl) nameEl.addEventListener('keydown', function(e) { if (e.key === 'Enter') confirmHRUser(); });
+  const stored = getStoredSession();
+  if (stored && stored.name) {
+    SESSION = stored;
+  }
+  updateSessionBar();
+  buildNav();
+  showPage('overview');
+  letterSelect.value = 'invite_investigation';
+  renderForm();
 });
 </script>
+
+
+
 
 <!-- Identity modal — shown on demand when nursery identification is needed -->
 <div id="identityModal" style="display:none;position:fixed;inset:0;background:rgba(21,54,52,0.7);z-index:8888;align-items:center;justify-content:center;font-family:'Inter',sans-serif;">
