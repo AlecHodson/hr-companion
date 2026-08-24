@@ -1764,14 +1764,11 @@ function launchApp() {
   if (stored && stored.name) {
     SESSION = stored;
   }
-  // App is always visible — just update the bar and build nav
   updateSessionBar();
   buildNav();
-  // Initialise letter generator
-  if (typeof letterSelect !== 'undefined') {
-    letterSelect.value = 'invite_investigation';
-    renderForm();
-  }
+  showPage('overview');
+  letterSelect.value = 'invite_investigation';
+  renderForm();
 })();
 
 /* ================= NAV ================= */
