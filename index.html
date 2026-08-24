@@ -3050,10 +3050,9 @@ function logLetterToCase() {
 }
 
 /* ============================================================
-   OVERRIDE buildNav TO INCLUDE NEW PAGES + HR DASHBOARD
+   buildNav — builds nav with all pages including new ones
    ============================================================ */
-var _origBuildNav = buildNav;
-buildNav = function() {
+function buildNav() {
   var navlist = document.getElementById('navlist');
   navlist.innerHTML = '';
   var NAV = [
@@ -3094,10 +3093,9 @@ buildNav = function() {
 };
 
 /* ============================================================
-   OVERRIDE showPage TO HANDLE NEW PAGES
+   showPage — handles all pages including new ones
    ============================================================ */
-var _origShowPage = showPage;
-showPage = function(id) {
+function showPage(id) {
   document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
   var pg = document.getElementById('page-'+id);
   if (pg) pg.classList.add('active');
