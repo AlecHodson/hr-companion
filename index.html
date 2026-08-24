@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <title>Complete HR Companion</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#153634">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HR Companion">
+<link rel="apple-touch-icon" href="icon-192.png">
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="googlebot" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,41 +34,45 @@
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
-  body{background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;font-size:15px;line-height:1.55;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+    line-height:1.55;
+  }
   h1,h2,h3,h4{font-family:'Fraunces',serif;font-weight:600;margin:0;color:var(--teal-deep);}
   .mono{font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:0.01em;}
   a{color:var(--teal);}
 
-  /* ---- Gate overlay ---- */
-  #gateOverlay{position:fixed;inset:0;background:#153634;display:flex;align-items:center;justify-content:center;z-index:9999;font-family:'Inter',sans-serif;}
-  .gate-box{background:#FFFDF8;border-radius:14px;padding:36px 32px;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
-  .gate-logo{font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:#153634;margin-bottom:4px;text-align:center;}
-  .gate-sub{font-size:12.5px;color:#7A8580;margin-bottom:22px;text-align:center;}
-  .gate-field{margin-bottom:12px;}
-  .gate-field label{display:block;font-size:11.5px;font-weight:600;color:#4B5650;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:5px;}
-  .gate-field select,.gate-field input{width:100%;padding:10px 12px;border:1px solid #D8CDB5;border-radius:6px;font-size:14px;font-family:'Inter',sans-serif;background:#F5EFE2;color:#1B2321;}
-  .gate-btn{width:100%;background:#B5533E;color:#fff;border:none;padding:11px;border-radius:6px;font-weight:600;font-size:13.5px;cursor:pointer;margin-top:4px;}
-  .gate-btn:hover{background:#95412F;}
-  .gate-error{color:#B5533E;font-size:12px;margin-top:10px;display:none;text-align:center;}
-  .gate-hint{font-size:11.5px;color:#8A9490;margin-top:14px;text-align:center;}
-  .gate-hr-link{font-size:12px;color:var(--teal);cursor:pointer;text-decoration:underline;margin-top:10px;display:block;text-align:center;}
-
   /* ---- Layout ---- */
   #app{display:flex;min-height:100vh;}
-  #sidebar{width:250px;flex-shrink:0;background:var(--teal-deep);color:var(--paper);padding:28px 20px;position:sticky;top:0;height:100vh;overflow-y:auto;}
+  #sidebar{
+    width:250px;flex-shrink:0;background:var(--teal-deep);color:var(--paper);
+    padding:28px 20px;position:sticky;top:0;height:100vh;overflow-y:auto;
+  }
   #sidebar .brand{font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--white);line-height:1.25;margin-bottom:4px;}
-  #sidebar .brand-sub{font-size:11.5px;color:#9FC0BA;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;}
-  #sidebar .session-user{font-size:12px;color:#7FB8B0;margin-bottom:20px;padding:8px 10px;background:rgba(255,255,255,0.07);border-radius:6px;display:flex;justify-content:space-between;align-items:center;}
-  #sidebar .session-user button{all:unset;cursor:pointer;font-size:11px;color:#BFE1DA;text-decoration:underline;}
+  #sidebar .brand-sub{font-size:11.5px;color:#9FC0BA;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:28px;}
   nav.navlist{display:flex;flex-direction:column;gap:3px;margin-bottom:26px;}
-  nav.navlist button{all:unset;cursor:pointer;padding:9px 12px;border-radius:6px;color:#D9E8E3;font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:9px;}
+  nav.navlist button{
+    all:unset;cursor:pointer;padding:9px 12px;border-radius:6px;color:#D9E8E3;
+    font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:9px;
+  }
   nav.navlist button:hover{background:#1E4D4A;}
   nav.navlist button.active{background:var(--paper);color:var(--teal-deep);font-weight:600;}
-  nav.navlist .tag{font-family:'IBM Plex Mono',monospace;font-size:9.5px;background:rgba(255,255,255,0.12);padding:1px 5px;border-radius:3px;color:#BFE1DA;}
+  nav.navlist .tag{
+    font-family:'IBM Plex Mono',monospace;font-size:9.5px;background:rgba(255,255,255,0.12);
+    padding:1px 5px;border-radius:3px;color:#BFE1DA;
+  }
   nav.navlist button.active .tag{background:var(--teal-tint);color:var(--teal-deep);}
-  .escalate-box{background:#28524F;border:1px solid #3C6863;border-radius:10px;padding:14px;margin-top:auto;}
+  .escalate-box{
+    background:#28524F;border:1px solid #3C6863;border-radius:10px;padding:14px;margin-top:auto;
+  }
   .escalate-box p{font-size:12px;color:#BFE1DA;margin:0 0 8px;}
-  .escalate-box a.btn{display:block;text-align:center;background:var(--coral);color:var(--white);padding:8px;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none;}
+  .escalate-box a.btn{
+    display:block;text-align:center;background:var(--coral);color:var(--white);
+    padding:8px;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none;
+  }
 
   #main{flex:1;padding:40px 56px 90px;max-width:980px;}
   .page{display:none;}
@@ -71,14 +82,18 @@
   .page h1{font-size:34px;margin-bottom:10px;}
   .lede{font-size:16px;color:#3C4844;max-width:640px;margin-bottom:30px;}
 
-  /* Chips */
+  /* Law watch chip legend */
   .chiprow{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 4px;}
-  .chip{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:3px 9px;border-radius:20px;display:inline-flex;align-items:center;gap:5px;font-weight:500;}
+  .chip{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;padding:3px 9px;border-radius:20px;
+    display:inline-flex;align-items:center;gap:5px;font-weight:500;
+  }
   .chip.policy{background:var(--teal-tint);color:var(--teal-deep);}
   .chip.law{background:var(--sage-tint);color:var(--sage);}
   .chip.changing{background:var(--amber-tint);color:var(--amber);}
   .chip.flag{background:var(--coral-tint);color:var(--coral);}
   .chip::before{content:"●";font-size:8px;}
+
   .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;color:#5B6660;margin-bottom:26px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:10px 0;}
   .legend span{display:flex;align-items:center;gap:6px;}
 
@@ -86,30 +101,56 @@
   .steps{position:relative;padding-left:28px;border-left:2px solid var(--line);margin-bottom:40px;}
   .step{position:relative;margin-bottom:26px;padding-left:6px;}
   .step:last-child{margin-bottom:0;}
-  .step::before{content:attr(data-n);position:absolute;left:-40px;top:-2px;width:26px;height:26px;border-radius:50%;background:var(--teal);color:var(--white);font-family:'IBM Plex Mono',monospace;font-size:12px;display:flex;align-items:center;justify-content:center;font-weight:600;}
+  .step::before{
+    content:attr(data-n);position:absolute;left:-40px;top:-2px;width:26px;height:26px;border-radius:50%;
+    background:var(--teal);color:var(--white);font-family:'IBM Plex Mono',monospace;font-size:12px;
+    display:flex;align-items:center;justify-content:center;font-weight:600;
+  }
   .step h3{font-size:17px;margin-bottom:6px;}
   .step p{margin:0 0 8px;color:#333;}
-  .step .note{background:var(--white);border:1px solid var(--line);border-radius:8px;padding:10px 14px;font-size:13.5px;color:#3C4844;margin-top:8px;}
-  .step .lawnote{background:var(--sage-tint);border-left:3px solid var(--sage);border-radius:0 8px 8px 0;padding:10px 14px;font-size:13px;color:#354A38;margin-top:8px;}
-  .step .flagnote{background:var(--coral-tint);border-left:3px solid var(--coral);border-radius:0 8px 8px 0;padding:10px 14px;font-size:13px;color:#5C2E23;margin-top:8px;}
-  .step .changenote{background:var(--amber-tint);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:10px 14px;font-size:13px;color:#5A430F;margin-top:8px;}
-  .step .genbtn{display:inline-block;margin-top:10px;background:var(--teal);color:var(--white);border:none;padding:7px 14px;border-radius:6px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
+  .step .note{
+    background:var(--white);border:1px solid var(--line);border-radius:8px;padding:10px 14px;
+    font-size:13.5px;color:#3C4844;margin-top:8px;
+  }
+  .step .lawnote{
+    background:var(--sage-tint);border-left:3px solid var(--sage);border-radius:0 8px 8px 0;padding:10px 14px;
+    font-size:13px;color:#354A38;margin-top:8px;
+  }
+  .step .flagnote{
+    background:var(--coral-tint);border-left:3px solid var(--coral);border-radius:0 8px 8px 0;padding:10px 14px;
+    font-size:13px;color:#5C2E23;margin-top:8px;
+  }
+  .step .changenote{
+    background:var(--amber-tint);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:10px 14px;
+    font-size:13px;color:#5A430F;margin-top:8px;
+  }
+  .step .genbtn{
+    display:inline-block;margin-top:10px;background:var(--teal);color:var(--white);border:none;
+    padding:7px 14px;border-radius:6px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;
+  }
   .step .genbtn:hover{background:var(--teal-deep);}
-  .escalate-panel{background:var(--teal-deep);color:var(--paper);border-radius:12px;padding:20px 24px;margin:34px 0;}
+
+  .escalate-panel{
+    background:var(--teal-deep);color:var(--paper);border-radius:12px;padding:20px 24px;margin:34px 0;
+  }
   .escalate-panel h4{color:var(--white);font-size:15px;margin-bottom:8px;}
   .escalate-panel ul{margin:0;padding-left:18px;font-size:13.5px;color:#CFE3DE;}
   .escalate-panel li{margin-bottom:4px;}
 
-  /* Cards */
+  /* Dashboard cards */
   .cardgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:30px;}
-  .card{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:20px;cursor:pointer;transition:box-shadow .15s, transform .15s;}
+  .card{
+    background:var(--white);border:1px solid var(--line);border-radius:12px;padding:20px;cursor:pointer;
+    transition:box-shadow .15s, transform .15s;
+  }
   .card:hover{box-shadow:0 6px 18px rgba(27,35,33,0.08);transform:translateY(-2px);}
   .card .eyebrow{margin-bottom:6px;}
   .card h3{font-size:18px;margin-bottom:6px;}
   .card p{font-size:13px;color:#4B5650;margin:0;}
 
-  /* Law watch */
-  .lawwatch-item{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin-bottom:12px;}
+  .lawwatch-item{
+    background:var(--white);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin-bottom:12px;
+  }
   .lawwatch-item .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;}
   .lawwatch-item h4{font-size:15.5px;}
   .lawwatch-item .date{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#7A8580;}
@@ -118,21 +159,31 @@
   /* Generator */
   .gen-wrap{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:24px;margin-top:10px;}
   .gen-select-row{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
-  select,input[type=text],input[type=date],textarea{font-family:'Inter',sans-serif;font-size:13.5px;border:1px solid var(--line);border-radius:6px;padding:8px 10px;background:var(--paper);color:var(--ink);width:100%;}
+  select, input[type=text], input[type=date], textarea{
+    font-family:'Inter',sans-serif;font-size:13.5px;border:1px solid var(--line);border-radius:6px;
+    padding:8px 10px;background:var(--paper);color:var(--ink);width:100%;
+  }
   label{font-size:12px;font-weight:600;color:#4B5650;display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.03em;}
   .field{margin-bottom:14px;}
   .fieldgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
   .radiogroup{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
-  .radiogroup label{all:unset;font-size:13px;font-weight:500;background:var(--paper-2);border:1px solid var(--line);border-radius:20px;padding:6px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;text-transform:none;}
+  .radiogroup label{
+    all:unset;font-size:13px;font-weight:500;background:var(--paper-2);border:1px solid var(--line);border-radius:20px;
+    padding:6px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;text-transform:none;
+  }
   .radiogroup input{margin:0;}
   .radiogroup label.checked{background:var(--teal);color:var(--white);border-color:var(--teal);}
-  .outputarea{width:100%;min-height:340px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.65;background:var(--teal-deep);color:#E7F1EE;border-radius:10px;padding:20px;white-space:pre-wrap;margin-top:16px;}
-  .copybtn{margin-top:10px;background:var(--coral);color:var(--white);border:none;padding:9px 18px;border-radius:6px;font-weight:600;font-size:13px;cursor:pointer;}
+  .outputarea{
+    width:100%;min-height:340px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.65;
+    background:var(--teal-deep);color:#E7F1EE;border-radius:10px;padding:20px;white-space:pre-wrap;margin-top:16px;
+  }
+  .copybtn{
+    margin-top:10px;background:var(--coral);color:var(--white);border:none;padding:9px 18px;border-radius:6px;
+    font-weight:600;font-size:13px;cursor:pointer;
+  }
   .copybtn:hover{background:#95412F;}
   .placeholder-hint{font-size:11.5px;color:#8A9490;margin-top:4px;}
-
-  /* Role cards */
-  .rolecard{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin-bottom:10px;}
+    .rolecard{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin-bottom:10px;}
   .rolecard summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;}
   .rolecard summary::-webkit-details-marker{display:none;}
   .rolecard summary h4{font-size:15.5px;margin:0;}
@@ -142,8 +193,6 @@
   .rolecard .body li{margin-bottom:3px;}
   .levelgroup{margin-bottom:26px;}
   .levelgroup h3{font-size:14px;text-transform:uppercase;letter-spacing:0.05em;color:var(--coral);margin-bottom:10px;font-family:'Inter',sans-serif;font-weight:700;}
-
-  /* Ask */
   .ask-wrap{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:24px;}
   .ask-input-row{display:flex;gap:10px;align-items:flex-start;}
   #askInput{flex:1;min-height:70px;resize:vertical;font-size:14px;}
@@ -161,80 +210,26 @@
   .askerror{color:var(--coral);}
   .presend-banner{background:var(--coral-tint);border:1px solid var(--coral);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13.5px;color:#5C2E23;grid-column:1/-1;}
   .ask-disclaimer{font-size:12px;color:#8A9490;margin-top:16px;border-top:1px solid var(--line);padding-top:14px;}
-
-  /* Feedback */
   .feedback-wrap{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:24px;}
+  .feedback-wrap .fieldgrid{margin-bottom:0;}
   #feedbackSuccess{display:none;background:var(--sage-tint);border:1px solid var(--sage);border-radius:8px;padding:16px;margin-top:16px;color:#354A38;font-size:13.5px;}
   #feedbackError{display:none;background:var(--coral-tint);border:1px solid var(--coral);border-radius:8px;padding:16px;margin-top:16px;color:#5C2E23;font-size:13.5px;}
   #feedbackSubmitBtn{background:var(--coral);color:var(--white);border:none;padding:11px 24px;border-radius:8px;font-weight:600;font-size:13.5px;cursor:pointer;margin-top:6px;}
   #feedbackSubmitBtn:hover{background:#95412F;}
   #feedbackSubmitBtn:disabled{opacity:0.6;cursor:default;}
-
-  /* Case Log */
-  .caselog-wrap{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:24px;margin-bottom:24px;}
-  .caselog-form .fieldgrid{margin-bottom:14px;}
-  #caseLogBtn{background:var(--teal);color:var(--white);border:none;padding:10px 22px;border-radius:7px;font-weight:600;font-size:13.5px;cursor:pointer;}
-  #caseLogBtn:hover{background:var(--teal-deep);}
-  .case-entry{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:10px;}
-  .case-entry .case-meta{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#7A8580;margin-bottom:6px;display:flex;gap:14px;flex-wrap:wrap;}
-  .case-entry .case-cat{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;background:var(--teal-tint);color:var(--teal-deep);padding:2px 8px;border-radius:12px;}
-  .case-entry .case-body{font-size:13.5px;color:#3C4844;}
-  .case-entry .case-outcome{margin-top:6px;font-size:12.5px;font-weight:600;}
-  .case-entry .case-outcome.escalated{color:var(--coral);}
-  .case-entry .case-outcome.resolved{color:var(--sage);}
-  .case-entry .case-outcome.ongoing{color:var(--amber);}
-  .case-empty{color:#8A9490;font-style:italic;font-size:13.5px;padding:20px 0;}
-  .case-delete{float:right;background:none;border:none;color:#C0A89A;cursor:pointer;font-size:12px;padding:0;}
-  .case-delete:hover{color:var(--coral);}
-
-  /* HR Dashboard */
-  .hr-dash-wrap{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:24px;}
-  .hr-stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
-  .hr-stat{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:16px;text-align:center;}
-  .hr-stat .num{font-family:'Fraunces',serif;font-size:32px;font-weight:700;color:var(--teal-deep);}
-  .hr-stat .lbl{font-size:12px;color:#7A8580;margin-top:4px;}
-  .hr-filter-row{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;align-items:flex-end;}
-  .hr-filter-row select{width:auto;min-width:160px;}
-  .hr-export-btn{background:var(--sage);color:var(--white);border:none;padding:9px 18px;border-radius:6px;font-weight:600;font-size:13px;cursor:pointer;}
-  .hr-export-btn:hover{background:#4A6B4D;}
-  .hr-case-table{width:100%;border-collapse:collapse;font-size:13px;}
-  .hr-case-table th{background:var(--teal-deep);color:var(--paper);padding:10px 12px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:0.04em;}
-  .hr-case-table td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;}
-  .hr-case-table tr:last-child td{border-bottom:none;}
-  .hr-case-table tr:hover td{background:var(--paper);}
-  .badge{font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:10px;display:inline-block;}
-  .badge.escalated{background:var(--coral-tint);color:var(--coral);}
-  .badge.resolved{background:var(--sage-tint);color:var(--sage);}
-  .badge.ongoing{background:var(--amber-tint);color:var(--amber);}
-  .badge.pending{background:var(--teal-tint);color:var(--teal);}
-
-  hr.div{border:none;border-top:1px solid var(--line);margin:34px 0;}
-
-  /* Mobile */
-  @media(max-width:720px){
-    #sidebar{display:none;}
-    #main{padding:20px 18px 60px;}
-    .cardgrid{grid-template-columns:1fr;}
-    .fieldgrid{grid-template-columns:1fr;}
-    .hr-stat-row{grid-template-columns:1fr 1fr;}
-  }
+hr.div{border:none;border-top:1px solid var(--line);margin:34px 0;}
 </style>
 </head>
 <body>
 
-<!-- ===================== APP ===================== -->
+
 <div id="app">
 
   <div id="sidebar">
-    <div style="margin-bottom:14px;">
-      <svg width="44" height="44" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;"><rect width="52" height="52" rx="10" fill="rgba(255,255,255,0.12)"/><text x="26" y="34" font-family="Georgia,serif" font-size="22" font-weight="700" fill="#F5EFE2" text-anchor="middle">HR</text></svg>
-    </div>
+    <img src="data:image/png;base64,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" alt="Complete Childcare" style="width:52px;height:52px;display:block;margin-bottom:14px;">
     <div class="brand">Complete HR<br>Companion</div>
     <div class="brand-sub">Complete Childcare</div>
-    <div class="session-user" id="sessionUserBar" style="cursor:default;">
-      <span id="sessionUserName">—</span>
-      <button onclick="signOut()">Sign out</button>
-    </div>
+    <div class="session-user" id="sessionUserBar" style="font-size:12px;color:#7FB8B0;margin-bottom:20px;padding:8px 10px;background:rgba(255,255,255,0.07);border-radius:6px;display:flex;justify-content:space-between;align-items:center;"><span id="sessionUserName">Select your nursery below</span><button onclick="clearIdentity()" style="all:unset;cursor:pointer;font-size:11px;color:#BFE1DA;text-decoration:underline;">Change</button></div>
     <nav class="navlist" id="navlist"></nav>
     <div class="escalate-box">
       <p>High risk, discrimination, safeguarding, or you're just not sure? Don't go it alone.</p>
@@ -329,9 +324,9 @@
           <p>Every legal change affecting these processes, with dates and status.</p>
         </div>
         <div class="card" onclick="showPage('harassment')" style="border-color:var(--coral);">
-          <div class="eyebrow">Bullying &amp; Harassment</div>
+          <div class="eyebrow">Conduct</div>
           <h3>Bullying &amp; Harassment</h3>
-          <p>Definitions, manager obligations, investigation steps, sexual harassment policy.</p>
+          <p>Definitions, manager obligations, investigation steps, and the sexual harassment policy.</p>
         </div>
         <div class="card" onclick="showPage('gossip')">
           <div class="eyebrow">Conduct</div>
@@ -375,140 +370,6 @@
           <li>Dismissal is a realistic outcome, or the employee has under 2 years' service and you're unsure of the risk</li>
           <li>The employee raises a grievance about you personally, or about the person running the process</li>
         </ul>
-      </div>
-    </section>
-
-    <!-- CASE LOG -->
-    <section class="page" id="page-caselog">
-      <div class="eyebrow">My records</div>
-      <h1>Case Log</h1>
-      <p class="lede">Record every HR action you take — what happened, what you did, and where it landed. This is your protection as well as HR's visibility. Entries are stored on this device and visible to the HR team in the dashboard.</p>
-
-      <div class="caselog-wrap caselog-form">
-        <h3 style="margin-bottom:18px;font-size:18px;">Log a new action</h3>
-        <div class="fieldgrid">
-          <div class="field">
-            <label>Category</label>
-            <select id="cl_category">
-              <option>Disciplinary &amp; Investigation</option>
-              <option>Probation &amp; Performance</option>
-              <option>Grievance</option>
-              <option>Conflict &amp; Mediation</option>
-              <option>Flexible Working</option>
-              <option>Absence &amp; Return to Work</option>
-              <option>Pregnancy &amp; Family Leave</option>
-              <option>Training Agreement</option>
-              <option>Resignation &amp; Leaver</option>
-              <option>Wellbeing</option>
-              <option>Recruitment</option>
-              <option>General / Other</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Employee reference (no full names)</label>
-            <input type="text" id="cl_ref" placeholder="e.g. EMP-001 or initials only">
-          </div>
-          <div class="field" style="grid-column:1/-1;">
-            <label>What action did you take?</label>
-            <textarea id="cl_action" rows="3" placeholder="e.g. Held investigation meeting re: unauthorised absence. Employee explained family emergency. No further action at this stage — monitoring."></textarea>
-          </div>
-          <div class="field">
-            <label>Outcome / status</label>
-            <select id="cl_outcome">
-              <option value="ongoing">Ongoing — monitoring</option>
-              <option value="resolved">Resolved — no further action</option>
-              <option value="escalated">Escalated to HR</option>
-              <option value="pending">Pending — awaiting next step</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Letter generated? (if any)</label>
-            <input type="text" id="cl_letter" placeholder="e.g. Invite to investigation meeting">
-          </div>
-        </div>
-        <button id="caseLogBtn" onclick="logCase()">Save to case log</button>
-        <div id="caseLogSuccess" style="display:none;margin-top:12px;color:var(--sage);font-size:13.5px;font-weight:600;">&#10003; Saved.</div>
-      </div>
-
-      <div class="caselog-wrap">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
-          <h3 style="font-size:18px;">My case log</h3>
-          <button onclick="exportMyCases()" style="background:var(--sage);color:var(--white);border:none;padding:8px 16px;border-radius:6px;font-weight:600;font-size:13px;cursor:pointer;">Export my log (CSV)</button>
-        </div>
-        <div id="caseLogList"></div>
-      </div>
-    </section>
-
-    <!-- HR DASHBOARD -->
-    <section class="page" id="page-hrdash">
-      <div class="eyebrow">HR visibility</div>
-      <h1>HR Dashboard</h1>
-      <p class="lede">All case log entries across all managers, in one view. Filter by manager, category, or outcome. Export to CSV for reporting.</p>
-
-      <div class="hr-dash-wrap">
-        <div class="hr-stat-row" id="hrStatRow">
-          <div class="hr-stat"><div class="num" id="hrStatTotal">0</div><div class="lbl">Total entries</div></div>
-          <div class="hr-stat"><div class="num" id="hrStatEscalated">0</div><div class="lbl">Escalated to HR</div></div>
-          <div class="hr-stat"><div class="num" id="hrStatOngoing">0</div><div class="lbl">Ongoing</div></div>
-          <div class="hr-stat"><div class="num" id="hrStatResolved">0</div><div class="lbl">Resolved</div></div>
-        </div>
-
-        <div class="hr-filter-row">
-          <div>
-            <label style="margin-bottom:4px;">Filter by manager</label>
-            <select id="hrFilterManager" onchange="renderHRDash()">
-              <option value="">All managers</option>
-            </select>
-          </div>
-          <div>
-            <label style="margin-bottom:4px;">Filter by category</label>
-            <select id="hrFilterCat" onchange="renderHRDash()">
-              <option value="">All categories</option>
-              <option>Disciplinary &amp; Investigation</option>
-              <option>Probation &amp; Performance</option>
-              <option>Grievance</option>
-              <option>Conflict &amp; Mediation</option>
-              <option>Flexible Working</option>
-              <option>Absence &amp; Return to Work</option>
-              <option>Pregnancy &amp; Family Leave</option>
-              <option>Training Agreement</option>
-              <option>Resignation &amp; Leaver</option>
-              <option>Wellbeing</option>
-              <option>Recruitment</option>
-              <option>General / Other</option>
-            </select>
-          </div>
-          <div>
-            <label style="margin-bottom:4px;">Filter by outcome</label>
-            <select id="hrFilterOutcome" onchange="renderHRDash()">
-              <option value="">All outcomes</option>
-              <option value="escalated">Escalated to HR</option>
-              <option value="ongoing">Ongoing</option>
-              <option value="pending">Pending</option>
-              <option value="resolved">Resolved</option>
-            </select>
-          </div>
-          <button class="hr-export-btn" onclick="exportAllCases()">Export all (CSV)</button>
-        </div>
-
-        <div id="hrCaseTableWrap">
-          <table class="hr-case-table">
-            <thead>
-              <tr>
-                <th>Date &amp; time</th>
-                <th>Manager</th>
-                <th>Nursery</th>
-                <th>Category</th>
-                <th>Ref</th>
-                <th>Action taken</th>
-                <th>Letter</th>
-                <th>Outcome</th>
-              </tr>
-            </thead>
-            <tbody id="hrCaseTableBody"></tbody>
-          </table>
-          <div id="hrCaseEmpty" class="case-empty" style="display:none;">No entries match the current filters.</div>
-        </div>
       </div>
     </section>
 
@@ -1378,6 +1239,8 @@
       </div>
     </section>
 
+
+
 <section class="page" id="page-harassment">
   <div class="eyebrow">Bullying &amp; Harassment</div>
   <h1>Bullying &amp; Harassment</h1>
@@ -1525,8 +1388,60 @@ I’m unable to create the requested pages because the policy documents you prov
       </div>
     </section>
 
-    <!-- DEPENDANTS & CARER'S LEAVE -->
-    <section class="page" id="page-dependants">
+<section class="page" id="page-whistleblowing">
+      <div class="eyebrow">Protected</div>
+      <h1>Whistleblowing &amp; Protected Disclosure</h1>
+      <p class="lede">What counts as a protected disclosure, how to raise one, and what managers must do when they receive one. Victimising someone who has blown the whistle is itself a serious breach — escalate to HR immediately.</p>
+
+      <div class="steps">
+        <div class="step" data-n="1">
+          <h3>What qualifies as a protected disclosure</h3>
+          <p>A protected disclosure is a disclosure of information that an employee reasonably believes shows one or more of the following: a criminal offence, a failure to comply with a legal obligation, a miscarriage of justice, a danger to health or safety, damage to the environment, or the deliberate concealment of any of the above.</p>
+          <div class="lawnote"><b>Policy:</b> The Company will take all disclosures seriously and investigate appropriately. Employees are protected from detriment or dismissal for making a protected disclosure in good faith. (Employee Handbook — Public Interest Disclosure)</div>
+        </div>
+
+        <div class="step" data-n="2">
+          <h3>How an employee raises a disclosure</h3>
+          <p>The employee should raise the concern in writing to their line manager, or if the concern involves their line manager, directly to a more senior manager or HR. The disclosure should set out what they believe is happening and why they believe it to be in the public interest to raise it.</p>
+          <div class="note">Disclosures can also be made to a prescribed person or body (e.g. Ofsted, the Health and Safety Executive) where the employee reasonably believes the Company will not address it.</div>
+        </div>
+
+        <div class="step" data-n="3">
+          <h3>Your obligations as a manager when you receive a disclosure</h3>
+          <p>If an employee raises a concern that might be a protected disclosure, your obligations are clear:</p>
+          <ul style="margin:8px 0 0 18px;font-size:13.5px;color:#333;">
+            <li>Do <b>not</b> investigate it yourself — escalate to HR immediately</li>
+            <li>Do <b>not</b> discourage the employee from raising it or suggest they are wrong to do so</li>
+            <li>Do <b>not</b> treat them differently, exclude them, or subject them to any detriment because of the disclosure</li>
+            <li>Keep the disclosure confidential — do not discuss it with others</li>
+            <li>Make a written note of what was said and when</li>
+          </ul>
+          <div class="flagnote"><b>Flag:</b> Victimising or dismissing an employee for making a protected disclosure is automatically unfair dismissal, with no qualifying period and no cap on compensation. The risk is severe. Do not attempt to handle this alone.</div>
+        </div>
+
+        <div class="step" data-n="4">
+          <h3>Protections for the person who raises a concern</h3>
+          <p>An employee who makes a protected disclosure in good faith is protected from any detriment or dismissal as a result. This protection applies even if the disclosure turns out to be unfounded, as long as they had reasonable grounds for believing it to be true.</p>
+        </div>
+
+        <div class="step" data-n="5">
+          <h3>False or malicious disclosures</h3>
+          <div class="lawnote"><b>Policy:</b> Raising a false allegation or maliciously abusing the whistleblowing procedure can lead to disciplinary action up to and including dismissal without notice for gross misconduct. (Employee Handbook)</div>
+        </div>
+      </div>
+
+      <div class="escalate-panel">
+        <h4>Always escalate to HR immediately if:</h4>
+        <ul>
+          <li>Any employee raises a concern that could be a protected disclosure</li>
+          <li>A disclosure involves a safeguarding concern, criminal activity, or regulatory breach</li>
+          <li>You are the subject of the disclosure, or too close to it</li>
+          <li>You are unsure whether something constitutes a protected disclosure — err on the side of caution</li>
+        </ul>
+      </div>
+    </section>
+
+<section class="page" id="page-dependants">
       <div class="eyebrow">Leave</div>
       <h1>Time Off for Dependants &amp; Carer's Leave</h1>
       <p class="lede">Two separate rights that are often confused. Time off for dependants covers genuine emergencies. Carer's leave is a planned entitlement for longer-term caring responsibilities. Neither is paid.</p>
@@ -1572,11 +1487,144 @@ I’m unable to create the requested pages because the policy documents you prov
       </div>
     </section>
 
+<section class="page" id="page-caselog">
+      <div class="eyebrow">My records</div>
+      <h1>Case Log</h1>
+      <p class="lede">Record every HR action you take — what happened, what you did, and where it landed. This is your protection as well as HR's visibility. Entries are stored on this device and visible to the HR team in the dashboard.</p>
+
+      <div class="caselog-wrap caselog-form">
+        <h3 style="margin-bottom:18px;font-size:18px;">Log a new action</h3>
+        <div class="fieldgrid">
+          <div class="field">
+            <label>Category</label>
+            <select id="cl_category">
+              <option>Disciplinary &amp; Investigation</option>
+              <option>Probation &amp; Performance</option>
+              <option>Grievance</option>
+              <option>Conflict &amp; Mediation</option>
+              <option>Flexible Working</option>
+              <option>Absence &amp; Return to Work</option>
+              <option>Pregnancy &amp; Family Leave</option>
+              <option>Training Agreement</option>
+              <option>Resignation &amp; Leaver</option>
+              <option>Wellbeing</option>
+              <option>Recruitment</option>
+              <option>General / Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Employee reference (no full names)</label>
+            <input type="text" id="cl_ref" placeholder="e.g. EMP-001 or initials only">
+          </div>
+          <div class="field" style="grid-column:1/-1;">
+            <label>What action did you take?</label>
+            <textarea id="cl_action" rows="3" placeholder="e.g. Held investigation meeting re: unauthorised absence. Employee explained family emergency. No further action at this stage — monitoring."></textarea>
+          </div>
+          <div class="field">
+            <label>Outcome / status</label>
+            <select id="cl_outcome">
+              <option value="ongoing">Ongoing — monitoring</option>
+              <option value="resolved">Resolved — no further action</option>
+              <option value="escalated">Escalated to HR</option>
+              <option value="pending">Pending — awaiting next step</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Letter generated? (if any)</label>
+            <input type="text" id="cl_letter" placeholder="e.g. Invite to investigation meeting">
+          </div>
+        </div>
+        <button id="caseLogBtn" onclick="logCase()">Save to case log</button>
+        <div id="caseLogSuccess" style="display:none;margin-top:12px;color:var(--sage);font-size:13.5px;font-weight:600;">&#10003; Saved.</div>
+      </div>
+
+      <div class="caselog-wrap">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+          <h3 style="font-size:18px;">My case log</h3>
+          <button onclick="exportMyCases()" style="background:var(--sage);color:var(--white);border:none;padding:8px 16px;border-radius:6px;font-weight:600;font-size:13px;cursor:pointer;">Export my log (CSV)</button>
+        </div>
+        <div id="caseLogList"></div>
+      </div>
+    </section>
+
+<section class="page" id="page-hrdash">
+      <div class="eyebrow">HR visibility</div>
+      <h1>HR Dashboard</h1>
+      <p class="lede">All case log entries across all managers, in one view. Filter by manager, category, or outcome. Export to CSV for reporting.</p>
+
+      <div class="hr-dash-wrap">
+        <div class="hr-stat-row" id="hrStatRow">
+          <div class="hr-stat"><div class="num" id="hrStatTotal">0</div><div class="lbl">Total entries</div></div>
+          <div class="hr-stat"><div class="num" id="hrStatEscalated">0</div><div class="lbl">Escalated to HR</div></div>
+          <div class="hr-stat"><div class="num" id="hrStatOngoing">0</div><div class="lbl">Ongoing</div></div>
+          <div class="hr-stat"><div class="num" id="hrStatResolved">0</div><div class="lbl">Resolved</div></div>
+        </div>
+
+        <div class="hr-filter-row">
+          <div>
+            <label style="margin-bottom:4px;">Filter by manager</label>
+            <select id="hrFilterManager" onchange="renderHRDash()">
+              <option value="">All managers</option>
+            </select>
+          </div>
+          <div>
+            <label style="margin-bottom:4px;">Filter by category</label>
+            <select id="hrFilterCat" onchange="renderHRDash()">
+              <option value="">All categories</option>
+              <option>Disciplinary &amp; Investigation</option>
+              <option>Probation &amp; Performance</option>
+              <option>Grievance</option>
+              <option>Conflict &amp; Mediation</option>
+              <option>Flexible Working</option>
+              <option>Absence &amp; Return to Work</option>
+              <option>Pregnancy &amp; Family Leave</option>
+              <option>Training Agreement</option>
+              <option>Resignation &amp; Leaver</option>
+              <option>Wellbeing</option>
+              <option>Recruitment</option>
+              <option>General / Other</option>
+            </select>
+          </div>
+          <div>
+            <label style="margin-bottom:4px;">Filter by outcome</label>
+            <select id="hrFilterOutcome" onchange="renderHRDash()">
+              <option value="">All outcomes</option>
+              <option value="escalated">Escalated to HR</option>
+              <option value="ongoing">Ongoing</option>
+              <option value="pending">Pending</option>
+              <option value="resolved">Resolved</option>
+            </select>
+          </div>
+          <button class="hr-export-btn" onclick="exportAllCases()">Export all (CSV)</button>
+        </div>
+
+        <div id="hrCaseTableWrap">
+          <table class="hr-case-table">
+            <thead>
+              <tr>
+                <th>Date &amp; time</th>
+                <th>Manager</th>
+                <th>Nursery</th>
+                <th>Category</th>
+                <th>Ref</th>
+                <th>Action taken</th>
+                <th>Letter</th>
+                <th>Outcome</th>
+              </tr>
+            </thead>
+            <tbody id="hrCaseTableBody"></tbody>
+          </table>
+          <div id="hrCaseEmpty" class="case-empty" style="display:none;">No entries match the current filters.</div>
+        </div>
+      </div>
+    </section>
+
     <!-- GENERATOR -->
     <section class="page" id="page-generator">
       <div class="eyebrow">Letter library</div>
       <h1>Letter generator</h1>
       <p class="lede">Pick a letter, fill in the details, and get a draft built from our own templates. Anything still in [brackets] needs your own judgement before it goes out — this drafts the letter, it doesn't replace thinking about the case.</p>
+
       <div class="gen-wrap">
         <div class="gen-select-row" style="flex-direction:column;">
           <label for="letterSelect">Choose a letter</label>
@@ -1585,32 +1633,29 @@ I’m unable to create the requested pages because the policy documents you prov
         <div id="formFields"></div>
         <div id="outputWrap" style="display:none;">
           <div class="outputarea" id="outputArea"></div>
-          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;">
-            <button class="copybtn" onclick="copyOutput()">Copy to clipboard</button>
-            <button class="copybtn" onclick="logLetterToCase()" style="background:var(--teal);">Log this to case log</button>
-            <span id="copiedMsg" style="margin-left:4px;font-size:12.5px;color:var(--sage);display:none;">Copied.</span>
-          </div>
+          <button class="copybtn" onclick="copyOutput()">Copy to clipboard</button>
+          <span id="copiedMsg" style="margin-left:10px;font-size:12.5px;color:var(--sage);display:none;">Copied.</span>
         </div>
       </div>
-    </section>
-
     <!-- FEEDBACK -->
     <section class="page" id="page-feedback">
       <div class="eyebrow">Tell us</div>
       <h1>Suggestions &amp; Errors</h1>
       <p class="lede">Spotted a mistake, want to see a process, letter, or piece of documentation added, or just have a suggestion? This goes straight through — no need to track anyone down.</p>
+
       <div class="feedback-wrap">
         <form id="feedbackForm" name="suggestions" method="POST" data-netlify="true" netlify-honeypot="bot-field">
           <input type="hidden" name="form-name" value="suggestions">
           <p style="display:none;"><label>Don't fill this out if you're human: <input name="bot-field"></label></p>
+
           <div class="fieldgrid">
             <div class="field">
-              <label for="fb_name">Your name</label>
-              <input type="text" id="fb_name" name="name" readonly>
+              <label for="fb_name">Your name (optional)</label>
+              <input type="text" id="fb_name" name="name">
             </div>
             <div class="field">
-              <label for="fb_location">Nursery / location</label>
-              <input type="text" id="fb_location" name="location" readonly>
+              <label for="fb_location">Nursery / location (optional)</label>
+              <input type="text" id="fb_location" name="location">
             </div>
             <div class="field">
               <label for="fb_type">What's this about?</label>
@@ -1623,7 +1668,7 @@ I’m unable to create the requested pages because the policy documents you prov
             </div>
             <div class="field">
               <label for="fb_page">Which page or letter does this relate to? (optional)</label>
-              <input type="text" id="fb_page" name="page" placeholder="e.g. Absence &amp; Return to Work">
+              <input type="text" id="fb_page" name="page" placeholder="e.g. Absence &amp; Return to Work, or the Grievance invite letter">
             </div>
             <div class="field" style="grid-column:1/-1;">
               <label for="fb_details">Details</label>
@@ -1641,127 +1686,8 @@ I’m unable to create the requested pages because the policy documents you prov
 </div>
 
 <script>
-/* ================= IDENTITY (lazy — asked when needed) ================= */
-
-// Nursery list from HR Companion users.xlsx
-const NURSERY_LIST = [
-  {name:"Abacus Day Nursery",          nursery:"Abacus Day Nursery",          title:"Nursery Manager", email:"abacus@completechildcare.co.uk",          isHR:false},
-  {name:"Bees Knees Day Nursery",       nursery:"Bees Knees Day Nursery",       title:"Nursery Manager", email:"beesknees@completechildcare.co.uk",       isHR:false},
-  {name:"Bramley Wood Day Nursery",     nursery:"Bramley Wood Day Nursery",     title:"Nursery Manager", email:"bramleywood@completechildcare.co.uk",     isHR:false},
-  {name:"Cedars @ Boot Farm",           nursery:"Cedars @ Boot Farm",           title:"Nursery Manager", email:"bootfarm@completechildcare.co.uk",        isHR:false},
-  {name:"Cedars Day Nursery",           nursery:"Cedars Day Nursery",           title:"Nursery Manager", email:"cedars@completechildcare.co.uk",          isHR:false},
-  {name:"Finchampstead Day Nursery",    nursery:"Finchampstead Day Nursery",    title:"Nursery Manager", email:"finchampstead@completechildcare.co.uk",   isHR:false},
-  {name:"Happitots Day Nursery",        nursery:"Happitots Day Nursery",        title:"Nursery Manager", email:"happitots@completechildcare.co.uk",       isHR:false},
-  {name:"Hazebrouck Day Nursery",       nursery:"Hazebrouck Day Nursery",       title:"Nursery Manager", email:"hazebrouck@completechildcare.co.uk",      isHR:false},
-  {name:"Kingsclere Day Nursery",       nursery:"Kingsclere Day Nursery",       title:"Nursery Manager", email:"kingsclere@completechildcare.co.uk",      isHR:false},
-  {name:"Lower Earley Day Nursery",     nursery:"Lower Earley Day Nursery",     title:"Nursery Manager", email:"lowerearley@completechildcare.co.uk",     isHR:false},
-  {name:"Merrydale Day Nursery",        nursery:"Merrydale Day Nursery",        title:"Nursery Manager", email:"merrydale@completechildcare.co.uk",       isHR:false},
-  {name:"Northumberland Day Nursery",   nursery:"Northumberland Day Nursery",   title:"Nursery Manager", email:"northumberland@completechildcare.co.uk",  isHR:false},
-  {name:"Our Den @ Hillside",           nursery:"Our Den @ Hillside",           title:"Nursery Manager", email:"ourden@completechildcare.co.uk",          isHR:false},
-  {name:"Saltway Day Nursery",          nursery:"Saltway Day Nursery",          title:"Nursery Manager", email:"saltway@completechildcare.co.uk",         isHR:false},
-  {name:"Smart Tots Day Nursery",       nursery:"Smart Tots Day Nursery",       title:"Nursery Manager", email:"smarttots@completechildcare.co.uk",       isHR:false},
-  {name:"Stepping Stones Day Nursery",  nursery:"Stepping Stones Day Nursery",  title:"Nursery Manager", email:"steppingstones@completechildcare.co.uk",  isHR:false},
-  {name:"Woosehill Day Nursery",        nursery:"Woosehill Day Nursery",        title:"Nursery Manager", email:"woosehill@completechildcare.co.uk",       isHR:false},
-];
-
-const HR_LIST = [
-  {name:"Ellie Richards",  nursery:"Head Office",      title:"HR",                   email:"ellie.richards@completechildcare.co.uk",  isHR:true},
-  {name:"Leanne Maynard",  nursery:"Greenwood Area",   title:"Area Manager",         email:"leanne.maynard@completechildcare.co.uk",  isHR:true},
-  {name:"Pav Bilkhu",      nursery:"BlueWater Area",   title:"Area Manager",         email:"pav.bilkhu@completechildcare.co.uk",       isHR:true},
-  {name:"Emma McIntyre",   nursery:"Head Office",      title:"Director",             email:"emma.mcintyre@completechildcare.co.uk",   isHR:true},
-  {name:"Karen Tate",      nursery:"Head Office",      title:"HR Business Partner",  email:"karen.tate@completechildcare.co.uk",       isHR:true},
-  {name:"Alec Hodson",     nursery:"Head Office",      title:"Group Chief Executive",email:"alec.hodson@completechildcare.co.uk",      isHR:true},
-  {name:"Louise Medley",   nursery:"Head Office",      title:"PA to MD",             email:"louise.medley@completechildcare.co.uk",    isHR:true},
-];
-
-/* ================= SESSION ================= */
-let SESSION = null;
-
-function getStoredSession() {
-  try { return JSON.parse(localStorage.getItem('hrCompanionSession') || 'null'); } catch(e) { return null; }
-}
-function storeSession(s) {
-  try { localStorage.setItem('hrCompanionSession', JSON.stringify(s)); } catch(e) {}
-}
-function clearSession() {
-  try { localStorage.removeItem('hrCompanionSession'); } catch(e) {}
-}
-
-// Called when identity is needed — shows inline modal if not already set
-function requireIdentity(callback) {
-  if (SESSION && SESSION.name) { callback(); return; }
-  showIdentityModal(callback);
-}
-
-function showIdentityModal(callback) {
-  const modal = document.getElementById('identityModal');
-  modal.style.display = 'flex';
-  // Populate nursery dropdown
-  const sel = document.getElementById('idNursery');
-  sel.innerHTML = '<option value="">— Select your nursery —</option>';
-  NURSERY_LIST.forEach((u, i) => {
-    const o = document.createElement('option');
-    o.value = 'n:' + i;
-    o.textContent = u.nursery;
-    sel.appendChild(o);
-  });
-  // HR option group
-  const og = document.createElement('optgroup');
-  og.label = 'HR & Management';
-  HR_LIST.forEach((u, i) => {
-    const o = document.createElement('option');
-    o.value = 'h:' + i;
-    o.textContent = u.name + ' — ' + u.title;
-    og.appendChild(o);
-  });
-  sel.appendChild(og);
-  sel.focus();
-  // Store callback for when they confirm
-  window._idCallback = callback;
-}
-
-function confirmIdentity() {
-  const sel = document.getElementById('idNursery');
-  const val = sel.value;
-  const errEl = document.getElementById('idError');
-  if (!val) { errEl.style.display = 'block'; return; }
-  errEl.style.display = 'none';
-  if (val.startsWith('n:')) {
-    SESSION = { ...NURSERY_LIST[parseInt(val.slice(2))] };
-  } else {
-    SESSION = { ...HR_LIST[parseInt(val.slice(2))] };
-  }
-  storeSession(SESSION);
-  document.getElementById('identityModal').style.display = 'none';
-  updateSessionBar();
-  if (window._idCallback) { window._idCallback(); window._idCallback = null; }
-}
-
-function updateSessionBar() {
-  const bar = document.getElementById('sessionUserName');
-  if (bar && SESSION) bar.textContent = SESSION.name + ' \u00b7 ' + SESSION.nursery;
-}
-
-function signOut() {
-  clearSession();
-  SESSION = null;
-  const bar = document.getElementById('sessionUserName');
-  if (bar) bar.textContent = 'Not identified';
-}
-
-/* ================= LAUNCH APP ================= */
-function launchApp() {
-  updateSessionBar();
-  buildNav();
-  renderCaseLog();
-  if (SESSION && SESSION.isHR) renderHRDash();
-  prefillManagerFields();
-}
-
-/* init moved to DOMContentLoaded at end of script */
-
-/* ================= NAV ================= */
-const NAV_ITEMS = [
+/* ---------------- NAV ---------------- */
+const NAV = [
   {id:'overview', label:'Overview', tag:''},
   {id:'ask', label:'Ask a Question', tag:'new'},
   {id:'disciplinary', label:'Disciplinary & Investigation', tag:'8 steps'},
@@ -1777,215 +1703,33 @@ const NAV_ITEMS = [
   {id:'recruitment', label:'Recruitment & Safer Onboarding', tag:'6 steps'},
   {id:'roles', label:'Role Library', tag:'21 roles'},
   {id:'lawwatch', label:'Law Watch', tag:'9 updates'},
-  {id:'generator', label:'Letter Generator', tag:'48 letters'},
-  {id:'harassment', label:'Bullying & Harassment', tag:'standalone'},
-  {id:'gossip', label:'Gossip & Conduct', tag:'policy'},
-  {id:'annualleave', label:'Annual Leave', tag:'entitlements'},
-  {id:'whistleblowing', label:'Whistleblowing', tag:'protected'},
-  {id:'dependants', label:'Dependants & Carer\'s Leave', tag:'leave'},
+  {id:'generator', label:'Letter Generator', tag:'36 letters'},
+  {id:'harassment', label:'Bullying & Harassment', tag:''},
+  {id:'gossip', label:'Gossip & Conduct', tag:''},
+  {id:'annualleave', label:'Annual Leave', tag:''},
+  {id:'whistleblowing', label:'Whistleblowing', tag:''},
+  {id:'dependants', label:"Dependants & Carer's Leave", tag:''},
   {id:'caselog', label:'Case Log', tag:'my records'},
   {id:'feedback', label:'Suggestions & Errors', tag:''},
 ];
-
-function buildNav(){
-  const navlist = document.getElementById('navlist');
-  navlist.innerHTML = '';
-  const items = (SESSION && SESSION.isHR)
-    ? [...NAV_ITEMS, {id:'hrdash', label:'HR Dashboard', tag:'HR only'}]
-    : NAV_ITEMS;
-  items.forEach(item => {
-    const b = document.createElement('button');
-    b.innerHTML = '<span>' + item.label + '</span>' + (item.tag ? '<span class="tag">'+item.tag+'</span>' : '');
-    b.onclick = () => showPage(item.id);
-    b.dataset.id = item.id;
-    navlist.appendChild(b);
-  });
-}
-
+const navlist = document.getElementById('navlist');
+NAV.forEach(item=>{
+  const b = document.createElement('button');
+  b.innerHTML = `<span>${item.label}</span>` + (item.tag ? `<span class="tag">${item.tag}</span>`:'');
+  b.onclick = ()=>showPage(item.id);
+  b.dataset.id = item.id;
+  navlist.appendChild(b);
+});
 function showPage(id){
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const pg = document.getElementById('page-'+id);
-  if(pg) pg.classList.add('active');
-  document.querySelectorAll('#navlist button').forEach(b => b.classList.toggle('active', b.dataset.id===id));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('#navlist button').forEach(b=>b.classList.toggle('active', b.dataset.id===id));
   document.getElementById('main').scrollTop = 0;
   window.scrollTo(0,0);
-  if(id==='caselog') renderCaseLog();
-  if(id==='hrdash') renderHRDash();
 }
 
-/* ================= CASE LOG ================= */
-const CASE_LOG_KEY = 'hrCompanionCaseLog';
-
-function getAllCases(){
-  try { return JSON.parse(localStorage.getItem(CASE_LOG_KEY) || '[]'); } catch(e) { return []; }
-}
-function saveCases(arr){
-  try { localStorage.setItem(CASE_LOG_KEY, JSON.stringify(arr)); } catch(e){}
-}
-
-function logCase(){
-  if(!SESSION || !SESSION.name){
-    requireIdentity(() => logCase());
-    return;
-  }
-  const cat = document.getElementById('cl_category').value;
-  const ref = document.getElementById('cl_ref').value.trim();
-  const action = document.getElementById('cl_action').value.trim();
-  const outcome = document.getElementById('cl_outcome').value;
-  const letter = document.getElementById('cl_letter').value.trim();
-  if(!action){ alert('Please describe the action taken before saving.'); return; }
-  const entry = {
-    id: Date.now(),
-    ts: new Date().toISOString(),
-    manager: SESSION.name,
-    nursery: SESSION.nursery,
-    title: SESSION.title,
-    category: cat,
-    ref: ref || '—',
-    action: action,
-    outcome: outcome,
-    letter: letter || '—'
-  };
-  const cases = getAllCases();
-  cases.unshift(entry);
-  saveCases(cases);
-  document.getElementById('cl_action').value = '';
-  document.getElementById('cl_ref').value = '';
-  document.getElementById('cl_letter').value = '';
-  const s = document.getElementById('caseLogSuccess');
-  s.style.display='block';
-  setTimeout(()=>s.style.display='none', 2000);
-  renderCaseLog();
-}
-
-function renderCaseLog(){
-  if(!SESSION || !SESSION.name) {
-    const list = document.getElementById('caseLogList');
-    if(list) list.innerHTML = '<div class="case-empty">Select your nursery above to view your case log.</div>';
-    return;
-  }
-  const list = document.getElementById('caseLogList');
-  if(!list) return;
-  const cases = getAllCases().filter(c => c.manager === SESSION.name);
-  if(cases.length===0){
-    list.innerHTML = '<div class="case-empty">No entries yet — log your first action above.</div>';
-    return;
-  }
-  list.innerHTML = cases.map(c => `
-    <div class="case-entry">
-      <button class="case-delete" onclick="deleteCase(${c.id})" title="Delete">&#x2715;</button>
-      <div class="case-meta">
-        <span>${formatTS(c.ts)}</span>
-        <span class="case-cat">${c.category}</span>
-        <span>Ref: ${c.ref}</span>
-        ${c.letter !== '—' ? '<span>Letter: ' + c.letter + '</span>' : ''}
-      </div>
-      <div class="case-body">${escHtml(c.action)}</div>
-      <div class="case-outcome ${c.outcome}">${outcomeLabel(c.outcome)}</div>
-    </div>
-  `).join('');
-}
-
-function deleteCase(id){
-  if(!confirm('Delete this entry?')) return;
-  const cases = getAllCases().filter(c => c.id !== id);
-  saveCases(cases);
-  renderCaseLog();
-  if(SESSION && SESSION.isHR) renderHRDash();
-}
-
-function formatTS(iso){
-  const d = new Date(iso);
-  return d.toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'}) + ' ' +
-         d.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'});
-}
-
-function outcomeLabel(v){
-  return {escalated:'&#9650; Escalated to HR', resolved:'&#10003; Resolved', ongoing:'&#9679; Ongoing', pending:'&#9675; Pending'}[v] || v;
-}
-
-function escHtml(s){
-  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
-}
-
-function exportMyCases(){
-  if(!SESSION) return;
-  const cases = getAllCases().filter(c => c.manager === SESSION.name);
-  downloadCSV(cases, 'my-case-log-' + SESSION.name.replace(/\s+/g,'-').toLowerCase() + '.csv');
-}
-
-function exportAllCases(){
-  downloadCSV(getAllCases(), 'all-case-log-' + new Date().toISOString().slice(0,10) + '.csv');
-}
-
-function downloadCSV(cases, filename){
-  if(!cases.length){ alert('No entries to export.'); return; }
-  const headers = ['Date/time','Manager','Nursery','Title','Category','Ref','Action taken','Letter generated','Outcome'];
-  const rows = cases.map(c => [
-    formatTS(c.ts), c.manager, c.nursery, c.title, c.category, c.ref,
-    '"' + (c.action||'').replace(/"/g,'""') + '"',
-    c.letter, c.outcome
-  ]);
-  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-  const blob = new Blob([csv], {type:'text/csv'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href=url; a.download=filename; a.click();
-  URL.revokeObjectURL(url);
-}
-
-/* ================= HR DASHBOARD ================= */
-function renderHRDash(){
-  const allCases = getAllCases();
-  const mgrFilter = (document.getElementById('hrFilterManager')||{}).value || '';
-  const catFilter = (document.getElementById('hrFilterCat')||{}).value || '';
-  const outFilter = (document.getElementById('hrFilterOutcome')||{}).value || '';
-
-  // Populate manager filter
-  const mgrSelect = document.getElementById('hrFilterManager');
-  if(mgrSelect){
-    const existing = [...mgrSelect.options].map(o=>o.value);
-    const managers = [...new Set(allCases.map(c=>c.manager))].sort();
-    managers.forEach(m=>{
-      if(!existing.includes(m)){
-        const opt=document.createElement('option'); opt.value=m; opt.textContent=m; mgrSelect.appendChild(opt);
-      }
-    });
-  }
-
-  let filtered = allCases;
-  if(mgrFilter) filtered = filtered.filter(c=>c.manager===mgrFilter);
-  if(catFilter) filtered = filtered.filter(c=>c.category===catFilter);
-  if(outFilter) filtered = filtered.filter(c=>c.outcome===outFilter);
-
-  // Stats (on full set, not filtered)
-  document.getElementById('hrStatTotal').textContent = allCases.length;
-  document.getElementById('hrStatEscalated').textContent = allCases.filter(c=>c.outcome==='escalated').length;
-  document.getElementById('hrStatOngoing').textContent = allCases.filter(c=>c.outcome==='ongoing').length;
-  document.getElementById('hrStatResolved').textContent = allCases.filter(c=>c.outcome==='resolved').length;
-
-  const tbody = document.getElementById('hrCaseTableBody');
-  const empty = document.getElementById('hrCaseEmpty');
-  if(!tbody) return;
-  if(filtered.length===0){
-    tbody.innerHTML=''; empty.style.display='block'; return;
-  }
-  empty.style.display='none';
-  tbody.innerHTML = filtered.map(c=>`
-    <tr>
-      <td style="white-space:nowrap;font-family:'IBM Plex Mono',monospace;font-size:11.5px;">${formatTS(c.ts)}</td>
-      <td><b>${escHtml(c.manager)}</b></td>
-      <td style="font-size:12.5px;color:#7A8580;">${escHtml(c.nursery)}</td>
-      <td style="font-size:12.5px;">${escHtml(c.category)}</td>
-      <td style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;">${escHtml(c.ref)}</td>
-      <td style="max-width:280px;">${escHtml(c.action)}</td>
-      <td style="font-size:12.5px;">${escHtml(c.letter)}</td>
-      <td><span class="badge ${c.outcome}">${{'escalated':'Escalated','resolved':'Resolved','ongoing':'Ongoing','pending':'Pending'}[c.outcome]||c.outcome}</span></td>
-    </tr>
-  `).join('');
-}
-
-/* ================= LETTER GENERATOR ================= */
-const F = (label,key,type='text',ph='') => ({label,key,type,ph});
+/* ---------------- LETTER TEMPLATES ---------------- */
+const F = (label,key,type='text',ph='')=>({label,key,type,ph});
 
 const LETTERS = {
   invite_investigation: {
@@ -2760,21 +2504,16 @@ ${d.mgrtitle}`
 
 };
 
-// Auto-prefill manager fields from session
-function prefillManagerFields(){
-  if(!SESSION || !SESSION.name) return;
-  // Will be called after form render too
-}
-
+/* ---------------- GENERATOR UIUI ---------------- */
 const letterSelect = document.getElementById('letterSelect');
 const grouped = {};
-Object.entries(LETTERS).forEach(([id,l]) => {
+Object.entries(LETTERS).forEach(([id,l])=>{
   grouped[l.category] = grouped[l.category] || [];
-  grouped[l.category].push([id, l.title]);
+  grouped[l.category].push([id,l.title]);
 });
-Object.entries(grouped).sort((a,b) => a[0].localeCompare(b[0])).forEach(([cat,items]) => {
+Object.entries(grouped).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([cat,items])=>{
   const og = document.createElement('optgroup'); og.label = cat;
-  items.forEach(([id,title]) => {
+  items.forEach(([id,title])=>{
     const opt = document.createElement('option'); opt.value=id; opt.textContent=title; og.appendChild(opt);
   });
   letterSelect.appendChild(og);
@@ -2798,16 +2537,16 @@ function renderForm(){
   }
   const grid = document.createElement('div');
   grid.className = 'fieldgrid';
-  letter.fields.forEach(f => {
+  letter.fields.forEach(f=>{
     const box = document.createElement('div');
-    box.className = 'field';
+    box.className='field';
     if(f.type==='textarea') box.style.gridColumn='1 / -1';
     const lbl = document.createElement('label'); lbl.textContent = f.label; box.appendChild(lbl);
     let input;
-    if(f.type==='textarea'){ input = document.createElement('textarea'); input.rows=3; if(f.ph && typeof f.ph==='string') input.placeholder = f.ph; }
+    if(f.type==='textarea'){ input = document.createElement('textarea'); input.rows=3; if(f.ph && typeof f.ph === 'string') input.placeholder = f.ph; }
     else if(f.type==='select'){
       input = document.createElement('select');
-      f.ph.forEach(optText => { const o=document.createElement('option'); o.value=optText; o.textContent=optText; input.appendChild(o); });
+      f.ph.forEach(optText=>{ const o=document.createElement('option'); o.value=optText; o.textContent=optText; input.appendChild(o); });
     } else {
       input = document.createElement('input'); input.type = f.type==='date' ? 'date' : 'text';
       if(f.ph && f.type!=='date') input.placeholder = f.ph;
@@ -2819,18 +2558,6 @@ function renderForm(){
     grid.appendChild(box);
   });
   wrap.appendChild(grid);
-  // Auto-fill manager fields from session
-  if(SESSION){
-    ['mgrname','mgrtitle'].forEach(key => {
-      const el = document.getElementById('fld_'+key);
-      if(el && !el.value){
-        if(key==='mgrname') el.value = SESSION.name;
-        if(key==='mgrtitle') el.value = SESSION.title;
-      }
-    });
-    const locEl = document.getElementById('fld_location');
-    if(locEl && !locEl.value) locEl.value = SESSION.nursery;
-  }
   generateOutput();
 }
 
@@ -2838,7 +2565,7 @@ function generateOutput(){
   const id = letterSelect.value;
   const letter = LETTERS[id];
   const data = {};
-  letter.fields.forEach(f => {
+  letter.fields.forEach(f=>{
     const el = document.getElementById('fld_'+f.key);
     data[f.key] = el ? el.value : '';
   });
@@ -2848,25 +2575,14 @@ function generateOutput(){
 
 function copyOutput(){
   const text = document.getElementById('outputArea').textContent;
-  navigator.clipboard.writeText(text).then(() => {
+  navigator.clipboard.writeText(text).then(()=>{
     const msg = document.getElementById('copiedMsg');
     msg.style.display='inline';
     setTimeout(()=>msg.style.display='none', 1800);
   });
 }
 
-function logLetterToCase(){
-  const id = letterSelect.value;
-  const letter = LETTERS[id];
-  // Pre-fill case log form
-  showPage('caselog');
-  setTimeout(() => {
-    document.getElementById('cl_letter').value = letter.title;
-    document.getElementById('cl_action').focus();
-  }, 100);
-}
-
-/* ================= ASK A QUESTION ================= */
+/* ---------------- ASK A QUESTION (offline, no network call) ---------------- */
 const ESCALATE_LINE = "This should go to Karen Tate in HR before you act alone.";
 
 const ASK_ENTRIES = [
@@ -2969,7 +2685,7 @@ const ASK_ENTRIES = [
 
 function scoreEntry(entry, qLower){
   let score = 0;
-  entry.kw.forEach(k => { if(qLower.indexOf(k) !== -1) score += 1; });
+  entry.kw.forEach(k=>{ if(qLower.indexOf(k) !== -1) score += 1; });
   return score;
 }
 
@@ -2982,7 +2698,7 @@ function renderAskMarkdown(text){
   const lines = text.split('\n');
   let html = '';
   let inList = false;
-  lines.forEach(line => {
+  lines.forEach(line=>{
     const trimmed = line.trim();
     if(/^[-•]\s+/.test(trimmed)){
       if(!inList){ html += '<ul>'; inList = true; }
@@ -3002,16 +2718,18 @@ function askQuestion(){
   if(!q) return;
   const out = document.getElementById('askOutput');
   out.style.display = 'block';
+
   const qLower = q.toLowerCase();
   let best = null, bestScore = 0;
-  ASK_ENTRIES.forEach(entry => {
+  ASK_ENTRIES.forEach(entry=>{
     const s = scoreEntry(entry, qLower);
     if(s > bestScore){ bestScore = s; best = entry; }
   });
+
   if(best && bestScore > 0){
     out.innerHTML = renderAskMarkdown(best.a);
   } else {
-    out.innerHTML = '<div class="askerror">Nothing in the portal matches that closely enough to answer safely. Try rephrasing with a plainer description (e.g. "employee off sick a lot" rather than a specific name or date), or browse the relevant process page from the sidebar.</div>';
+    out.innerHTML = '<div class="askerror">Nothing in the portal matches that closely enough to answer safely. Try rephrasing with a plainer description (e.g. "employee off sick a lot" rather than a specific name or date), or browse the relevant process page from the sidebar — Disciplinary, Probation, Grievance, Flexible Working, Absence, Family Leave, Wellbeing, or Recruitment.</div>';
   }
 }
 
@@ -3022,7 +2740,7 @@ document.addEventListener('keydown', function(e){
   }
 });
 
-/* ================= FEEDBACK FORM ================= */
+/* ---------------- FEEDBACK FORM ---------------- */
 (function(){
   const form = document.getElementById('feedbackForm');
   if(!form) return;
@@ -3035,6 +2753,7 @@ document.addEventListener('keydown', function(e){
     error.style.display = 'none';
     btn.disabled = true;
     btn.textContent = 'Sending…';
+
     const data = new URLSearchParams(new FormData(form)).toString();
     fetch('/', {
       method: 'POST',
@@ -3042,40 +2761,393 @@ document.addEventListener('keydown', function(e){
       body: data
     })
     .then(function(res){
-      if(res.ok){ success.style.display='block'; form.reset(); }
-      else { error.style.display='block'; }
+      if(res.ok){
+        success.style.display = 'block';
+        form.reset();
+      } else {
+        error.style.display = 'block';
+      }
     })
-    .catch(function(){ error.style.display='block'; })
-    .finally(function(){ btn.disabled=false; btn.textContent='Send'; });
+    .catch(function(){
+      error.style.display = 'block';
+    })
+    .finally(function(){
+      btn.disabled = false;
+      btn.textContent = 'Send';
+    });
   });
 })();
 
-document.addEventListener('DOMContentLoaded', function() {
-  const stored = getStoredSession();
-  if (stored && stored.name) {
-    SESSION = stored;
-  }
-  updateSessionBar();
-  buildNav();
-  showPage('overview');
-  letterSelect.value = 'invite_investigation';
-  renderForm();
-});
+// init
+letterSelect.value = 'invite_investigation';
+renderForm();
+</script>
+<script>
 </script>
 
 
-
-
-<!-- Identity modal — shown on demand when nursery identification is needed -->
-<div id="identityModal" style="display:none;position:fixed;inset:0;background:rgba(21,54,52,0.7);z-index:8888;align-items:center;justify-content:center;font-family:'Inter',sans-serif;">
-  <div style="background:#FFFDF8;border-radius:12px;padding:28px 28px 24px;max-width:360px;width:90%;box-shadow:0 16px 48px rgba(0,0,0,0.25);">
-    <div style="font-family:'Fraunces',serif;font-size:17px;font-weight:700;color:#153634;margin-bottom:6px;">Which nursery are you?</div>
-    <div style="font-size:13px;color:#7A8580;margin-bottom:18px;">Select your nursery so your details are recorded correctly.</div>
+<!-- Identity modal -->
+<div id="identityModal" style="display:none;position:fixed;inset:0;background:rgba(21,54,52,0.75);z-index:9999;align-items:center;justify-content:center;font-family:'Inter',sans-serif;">
+  <div style="background:#FFFDF8;border-radius:12px;padding:28px;max-width:360px;width:90%;box-shadow:0 16px 48px rgba(0,0,0,0.3);">
+    <div style="font-family:'Fraunces',serif;font-size:18px;font-weight:700;color:#153634;margin-bottom:6px;">Which nursery are you?</div>
+    <div style="font-size:13px;color:#7A8580;margin-bottom:18px;">Select once — remembered on this device.</div>
     <select id="idNursery" style="width:100%;padding:9px 10px;border:1px solid #D8CDB5;border-radius:6px;font-size:14px;font-family:'Inter',sans-serif;background:#F5EFE2;color:#1B2321;margin-bottom:10px;"></select>
     <div id="idError" style="display:none;color:#B5533E;font-size:12px;margin-bottom:8px;">Please select your nursery or name.</div>
-    <button onclick="confirmIdentity()" style="width:100%;background:#B5533E;color:#fff;border:none;padding:10px;border-radius:6px;font-weight:600;font-size:13.5px;cursor:pointer;">Confirm</button>
-    <div style="font-size:11.5px;color:#8A9490;margin-top:12px;text-align:center;">This is remembered on this device. You won't be asked again.</div>
+    <button onclick="confirmIdentity()" style="width:100%;background:#B5533E;color:#fff;border:none;padding:10px;border-radius:6px;font-weight:600;font-size:14px;cursor:pointer;">Confirm</button>
   </div>
 </div>
+
+<script>
+/* ============================================================
+   IDENTITY — asked once when first needed, stored in localStorage
+   ============================================================ */
+const NURSERY_LIST = [
+  {name:"Abacus Day Nursery",          nursery:"Abacus Day Nursery",          title:"Nursery Manager", email:"abacus@completechildcare.co.uk",          isHR:false},
+  {name:"Bees Knees Day Nursery",       nursery:"Bees Knees Day Nursery",       title:"Nursery Manager", email:"beesknees@completechildcare.co.uk",       isHR:false},
+  {name:"Bramley Wood Day Nursery",     nursery:"Bramley Wood Day Nursery",     title:"Nursery Manager", email:"bramleywood@completechildcare.co.uk",     isHR:false},
+  {name:"Cedars @ Boot Farm",           nursery:"Cedars @ Boot Farm",           title:"Nursery Manager", email:"bootfarm@completechildcare.co.uk",        isHR:false},
+  {name:"Cedars Day Nursery",           nursery:"Cedars Day Nursery",           title:"Nursery Manager", email:"cedars@completechildcare.co.uk",          isHR:false},
+  {name:"Finchampstead Day Nursery",    nursery:"Finchampstead Day Nursery",    title:"Nursery Manager", email:"finchampstead@completechildcare.co.uk",   isHR:false},
+  {name:"Happitots Day Nursery",        nursery:"Happitots Day Nursery",        title:"Nursery Manager", email:"happitots@completechildcare.co.uk",       isHR:false},
+  {name:"Hazebrouck Day Nursery",       nursery:"Hazebrouck Day Nursery",       title:"Nursery Manager", email:"hazebrouck@completechildcare.co.uk",      isHR:false},
+  {name:"Kingsclere Day Nursery",       nursery:"Kingsclere Day Nursery",       title:"Nursery Manager", email:"kingsclere@completechildcare.co.uk",      isHR:false},
+  {name:"Lower Earley Day Nursery",     nursery:"Lower Earley Day Nursery",     title:"Nursery Manager", email:"lowerearley@completechildcare.co.uk",     isHR:false},
+  {name:"Merrydale Day Nursery",        nursery:"Merrydale Day Nursery",        title:"Nursery Manager", email:"merrydale@completechildcare.co.uk",       isHR:false},
+  {name:"Northumberland Day Nursery",   nursery:"Northumberland Day Nursery",   title:"Nursery Manager", email:"northumberland@completechildcare.co.uk",  isHR:false},
+  {name:"Our Den @ Hillside",           nursery:"Our Den @ Hillside",           title:"Nursery Manager", email:"ourden@completechildcare.co.uk",          isHR:false},
+  {name:"Saltway Day Nursery",          nursery:"Saltway Day Nursery",          title:"Nursery Manager", email:"saltway@completechildcare.co.uk",         isHR:false},
+  {name:"Smart Tots Day Nursery",       nursery:"Smart Tots Day Nursery",       title:"Nursery Manager", email:"smarttots@completechildcare.co.uk",       isHR:false},
+  {name:"Stepping Stones Day Nursery",  nursery:"Stepping Stones Day Nursery",  title:"Nursery Manager", email:"steppingstones@completechildcare.co.uk",  isHR:false},
+  {name:"Woosehill Day Nursery",        nursery:"Woosehill Day Nursery",        title:"Nursery Manager", email:"woosehill@completechildcare.co.uk",       isHR:false},
+];
+
+const HR_LIST = [
+  {name:"Ellie Richards",  nursery:"Head Office",      title:"HR",                   email:"ellie.richards@completechildcare.co.uk",  isHR:true},
+  {name:"Leanne Maynard",  nursery:"Greenwood Area",   title:"Area Manager",         email:"leanne.maynard@completechildcare.co.uk",  isHR:true},
+  {name:"Pav Bilkhu",      nursery:"BlueWater Area",   title:"Area Manager",         email:"pav.bilkhu@completechildcare.co.uk",       isHR:true},
+  {name:"Emma McIntyre",   nursery:"Head Office",      title:"Director",             email:"emma.mcintyre@completechildcare.co.uk",   isHR:true},
+  {name:"Karen Tate",      nursery:"Head Office",      title:"HR Business Partner",  email:"karen.tate@completechildcare.co.uk",       isHR:true},
+  {name:"Alec Hodson",     nursery:"Head Office",      title:"Group Chief Executive",email:"alec.hodson@completechildcare.co.uk",      isHR:true},
+  {name:"Louise Medley",   nursery:"Head Office",      title:"PA to MD",             email:"louise.medley@completechildcare.co.uk",    isHR:true},
+];
+
+var SESSION = null;
+
+function getStoredSession() {
+  try { return JSON.parse(localStorage.getItem('hrCompanionSession') || 'null'); } catch(e) { return null; }
+}
+function storeSession(s) {
+  try { localStorage.setItem('hrCompanionSession', JSON.stringify(s)); } catch(e) {}
+}
+function clearIdentity() {
+  try { localStorage.removeItem('hrCompanionSession'); } catch(e) {}
+  SESSION = null;
+  document.getElementById('sessionUserName').textContent = 'Select your nursery below';
+  showIdentityModal(function(){});
+}
+
+function showIdentityModal(callback) {
+  var modal = document.getElementById('identityModal');
+  var sel = document.getElementById('idNursery');
+  sel.innerHTML = '<option value="">— Select your nursery —</option>';
+  NURSERY_LIST.forEach(function(u, i) {
+    var o = document.createElement('option');
+    o.value = 'n:' + i;
+    o.textContent = u.nursery;
+    sel.appendChild(o);
+  });
+  var og = document.createElement('optgroup');
+  og.label = 'HR & Management';
+  HR_LIST.forEach(function(u, i) {
+    var o = document.createElement('option');
+    o.value = 'h:' + i;
+    o.textContent = u.name + ' — ' + u.title;
+    og.appendChild(o);
+  });
+  sel.appendChild(og);
+  modal.style.display = 'flex';
+  window._idCallback = callback;
+  setTimeout(function(){ sel.focus(); }, 100);
+}
+
+function confirmIdentity() {
+  var sel = document.getElementById('idNursery');
+  var val = sel.value;
+  if (!val) { document.getElementById('idError').style.display = 'block'; return; }
+  document.getElementById('idError').style.display = 'none';
+  if (val.indexOf('n:') === 0) {
+    SESSION = JSON.parse(JSON.stringify(NURSERY_LIST[parseInt(val.slice(2))]));
+  } else {
+    SESSION = JSON.parse(JSON.stringify(HR_LIST[parseInt(val.slice(2))]));
+  }
+  storeSession(SESSION);
+  document.getElementById('identityModal').style.display = 'none';
+  document.getElementById('sessionUserName').textContent = SESSION.name + ' · ' + SESSION.nursery;
+  // Rebuild nav in case HR dashboard should now appear
+  buildNav();
+  if (window._idCallback) { window._idCallback(); window._idCallback = null; }
+}
+
+function requireIdentity(callback) {
+  if (SESSION && SESSION.name) { callback(); return; }
+  showIdentityModal(callback);
+}
+
+/* ============================================================
+   CASE LOG
+   ============================================================ */
+var CASE_LOG_KEY = 'hrCompanionCaseLog';
+
+function getAllCases() {
+  try { return JSON.parse(localStorage.getItem(CASE_LOG_KEY) || '[]'); } catch(e) { return []; }
+}
+function saveCases(arr) {
+  try { localStorage.setItem(CASE_LOG_KEY, JSON.stringify(arr)); } catch(e) {}
+}
+
+function logCase() {
+  if (!SESSION || !SESSION.name) { requireIdentity(function(){ logCase(); }); return; }
+  var action = document.getElementById('cl_action').value.trim();
+  if (!action) { alert('Please describe the action taken before saving.'); return; }
+  var entry = {
+    id: Date.now(),
+    ts: new Date().toISOString(),
+    manager: SESSION.name,
+    nursery: SESSION.nursery,
+    title: SESSION.title,
+    category: document.getElementById('cl_category').value,
+    ref: document.getElementById('cl_ref').value.trim() || '—',
+    action: action,
+    outcome: document.getElementById('cl_outcome').value,
+    letter: document.getElementById('cl_letter').value.trim() || '—'
+  };
+  var cases = getAllCases();
+  cases.unshift(entry);
+  saveCases(cases);
+  document.getElementById('cl_action').value = '';
+  document.getElementById('cl_ref').value = '';
+  document.getElementById('cl_letter').value = '';
+  var s = document.getElementById('caseLogSuccess');
+  s.style.display = 'block';
+  setTimeout(function(){ s.style.display = 'none'; }, 2000);
+  renderCaseLog();
+}
+
+function renderCaseLog() {
+  var list = document.getElementById('caseLogList');
+  if (!list) return;
+  if (!SESSION || !SESSION.name) {
+    list.innerHTML = '<div class="case-empty">Select your nursery to view your case log.</div>';
+    return;
+  }
+  var cases = getAllCases().filter(function(c){ return c.manager === SESSION.name; });
+  if (cases.length === 0) {
+    list.innerHTML = '<div class="case-empty">No entries yet — log your first action above.</div>';
+    return;
+  }
+  list.innerHTML = cases.map(function(c) {
+    return '<div class="case-entry">' +
+      '<button class="case-delete" onclick="deleteCase(' + c.id + ')" title="Delete">✕</button>' +
+      '<div class="case-meta"><span>' + formatTS(c.ts) + '</span>' +
+      '<span class="case-cat">' + esc(c.category) + '</span>' +
+      '<span>Ref: ' + esc(c.ref) + '</span>' +
+      (c.letter !== '—' ? '<span>Letter: ' + esc(c.letter) + '</span>' : '') + '</div>' +
+      '<div class="case-body">' + esc(c.action).replace(/\n/g,'<br>') + '</div>' +
+      '<div class="case-outcome ' + c.outcome + '">' + outcomeLabel(c.outcome) + '</div>' +
+      '</div>';
+  }).join('');
+}
+
+function deleteCase(id) {
+  if (!confirm('Delete this entry?')) return;
+  saveCases(getAllCases().filter(function(c){ return c.id !== id; }));
+  renderCaseLog();
+  if (SESSION && SESSION.isHR) renderHRDash();
+}
+
+function formatTS(iso) {
+  var d = new Date(iso);
+  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}) + ' ' +
+         d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+}
+function outcomeLabel(v) {
+  return {escalated:'▲ Escalated to HR', resolved:'✓ Resolved', ongoing:'● Ongoing', pending:'○ Pending'}[v] || v;
+}
+function esc(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function exportMyCases() {
+  if (!SESSION) return;
+  downloadCSV(getAllCases().filter(function(c){ return c.manager === SESSION.name; }),
+    'case-log-' + SESSION.name.replace(/\s+/g,'-').toLowerCase() + '.csv');
+}
+function exportAllCases() {
+  downloadCSV(getAllCases(), 'all-case-log-' + new Date().toISOString().slice(0,10) + '.csv');
+}
+function downloadCSV(cases, filename) {
+  if (!cases.length) { alert('No entries to export.'); return; }
+  var headers = ['Date/time','Manager','Nursery','Title','Category','Ref','Action','Letter','Outcome'];
+  var rows = cases.map(function(c){
+    return [formatTS(c.ts), c.manager, c.nursery, c.title, c.category, c.ref,
+            '"' + (c.action||'').replace(/"/g,'""') + '"', c.letter, c.outcome];
+  });
+  var csv = [headers.join(',')].concat(rows.map(function(r){ return r.join(','); })).join('\n');
+  var blob = new Blob([csv], {type:'text/csv'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a'); a.href=url; a.download=filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ============================================================
+   HR DASHBOARD
+   ============================================================ */
+function renderHRDash() {
+  var all = getAllCases();
+  var mf = (document.getElementById('hrFilterManager')||{}).value || '';
+  var cf = (document.getElementById('hrFilterCat')||{}).value || '';
+  var of = (document.getElementById('hrFilterOutcome')||{}).value || '';
+
+  // Populate manager filter
+  var msel = document.getElementById('hrFilterManager');
+  if (msel) {
+    var existing = Array.from(msel.options).map(function(o){ return o.value; });
+    Array.from(new Set(all.map(function(c){ return c.manager; }))).sort().forEach(function(m){
+      if (existing.indexOf(m) === -1) {
+        var o = document.createElement('option'); o.value=m; o.textContent=m; msel.appendChild(o);
+      }
+    });
+  }
+
+  var filtered = all.filter(function(c){
+    return (!mf || c.manager===mf) && (!cf || c.category===cf) && (!of || c.outcome===of);
+  });
+
+  document.getElementById('hrStatTotal').textContent = all.length;
+  document.getElementById('hrStatEscalated').textContent = all.filter(function(c){ return c.outcome==='escalated'; }).length;
+  document.getElementById('hrStatOngoing').textContent = all.filter(function(c){ return c.outcome==='ongoing'; }).length;
+  document.getElementById('hrStatResolved').textContent = all.filter(function(c){ return c.outcome==='resolved'; }).length;
+
+  var tbody = document.getElementById('hrCaseTableBody');
+  var empty = document.getElementById('hrCaseEmpty');
+  if (!tbody) return;
+  if (filtered.length === 0) { tbody.innerHTML=''; if(empty) empty.style.display='block'; return; }
+  if (empty) empty.style.display='none';
+  tbody.innerHTML = filtered.map(function(c){
+    var badge = {escalated:'Escalated',resolved:'Resolved',ongoing:'Ongoing',pending:'Pending'}[c.outcome]||c.outcome;
+    return '<tr><td style="white-space:nowrap;font-size:12px;">' + formatTS(c.ts) + '</td>' +
+      '<td><b>' + esc(c.manager) + '</b></td>' +
+      '<td style="font-size:12px;color:#7A8580;">' + esc(c.nursery) + '</td>' +
+      '<td style="font-size:12px;">' + esc(c.category) + '</td>' +
+      '<td style="font-size:12px;">' + esc(c.ref) + '</td>' +
+      '<td style="max-width:260px;">' + esc(c.action).replace(/\n/g,'<br>') + '</td>' +
+      '<td style="font-size:12px;">' + esc(c.letter) + '</td>' +
+      '<td><span class="badge ' + c.outcome + '">' + badge + '</span></td></tr>';
+  }).join('');
+}
+
+/* ============================================================
+   LETTER GENERATOR EXTRAS
+   ============================================================ */
+function logLetterToCase() {
+  var id = document.getElementById('letterSelect').value;
+  var letter = LETTERS[id];
+  showPage('caselog');
+  setTimeout(function(){
+    document.getElementById('cl_letter').value = letter ? letter.title : id;
+    document.getElementById('cl_action').focus();
+  }, 150);
+}
+
+/* ============================================================
+   OVERRIDE buildNav TO INCLUDE NEW PAGES + HR DASHBOARD
+   ============================================================ */
+var _origBuildNav = buildNav;
+buildNav = function() {
+  var navlist = document.getElementById('navlist');
+  navlist.innerHTML = '';
+  var NAV = [
+    {id:'overview', label:'Overview', tag:''},
+    {id:'ask', label:'Ask a Question', tag:'new'},
+    {id:'disciplinary', label:'Disciplinary & Investigation', tag:'8 steps'},
+    {id:'probation', label:'Probation & Performance', tag:'6 steps'},
+    {id:'grievance', label:'Grievance', tag:'5 steps'},
+    {id:'conflict', label:'Conflict & Mediation', tag:'7 steps'},
+    {id:'flexible', label:'Flexible Working', tag:'4 steps'},
+    {id:'absence', label:'Absence & Return to Work', tag:'5 steps'},
+    {id:'family', label:'Pregnancy & Family Leave', tag:'6 steps'},
+    {id:'training', label:'Training Agreements', tag:''},
+    {id:'leavers', label:'Resignations & Leavers', tag:''},
+    {id:'wellbeing', label:'Staff Wellbeing & Benefits', tag:'4 areas'},
+    {id:'recruitment', label:'Recruitment & Safer Onboarding', tag:'6 steps'},
+    {id:'roles', label:'Role Library', tag:'21 roles'},
+    {id:'lawwatch', label:'Law Watch', tag:'9 updates'},
+    {id:'generator', label:'Letter Generator', tag:'41 letters'},
+    {id:'harassment', label:'Bullying & Harassment', tag:''},
+    {id:'gossip', label:'Gossip & Conduct', tag:''},
+    {id:'annualleave', label:'Annual Leave', tag:''},
+    {id:'whistleblowing', label:'Whistleblowing', tag:''},
+    {id:'dependants', label:"Dependants & Carer's Leave", tag:''},
+    {id:'caselog', label:'Case Log', tag:'my records'},
+    {id:'feedback', label:'Suggestions & Errors', tag:''},
+  ];
+  if (SESSION && SESSION.isHR) {
+    NAV.push({id:'hrdash', label:'HR Dashboard', tag:'HR only'});
+  }
+  NAV.forEach(function(item) {
+    var b = document.createElement('button');
+    b.innerHTML = '<span>' + item.label + '</span>' + (item.tag ? '<span class="tag">'+item.tag+'</span>' : '');
+    b.onclick = function(){ showPage(item.id); };
+    b.dataset.id = item.id;
+    navlist.appendChild(b);
+  });
+};
+
+/* ============================================================
+   OVERRIDE showPage TO HANDLE NEW PAGES
+   ============================================================ */
+var _origShowPage = showPage;
+showPage = function(id) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  var pg = document.getElementById('page-'+id);
+  if (pg) pg.classList.add('active');
+  document.querySelectorAll('#navlist button').forEach(function(b){
+    b.classList.toggle('active', b.dataset.id === id);
+  });
+  var main = document.getElementById('main');
+  if (main) main.scrollTop = 0;
+  window.scrollTo(0,0);
+  if (id === 'caselog') renderCaseLog();
+  if (id === 'hrdash') renderHRDash();
+};
+
+/* ============================================================
+   INIT — runs after DOM and all scripts are ready
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', function() {
+  // Restore session if available
+  var stored = getStoredSession();
+  if (stored && stored.name) {
+    SESSION = stored;
+    document.getElementById('sessionUserName').textContent = SESSION.name + ' · ' + SESSION.nursery;
+  }
+
+  // Pre-fill feedback form
+  if (SESSION) {
+    var fbName = document.getElementById('fb_name');
+    var fbLoc  = document.getElementById('fb_location');
+    if (fbName) fbName.value = SESSION.name;
+    if (fbLoc)  fbLoc.value  = SESSION.nursery;
+  }
+
+  // Build nav and show overview
+  buildNav();
+  showPage('overview');
+
+  // Init letter generator
+  var ls = document.getElementById('letterSelect');
+  if (ls) { ls.value = 'invite_investigation'; renderForm(); }
+});
+</script>
+
 </body>
 </html>
