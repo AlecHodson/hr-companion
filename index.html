@@ -2125,7 +2125,7 @@ const LETTERS = {
       if(cost>1500) commitment='18 months'; else if(cost>500) commitment='12 months';
       return `EMPLOYEE TRAINING AGREEMENT — ${d.name}\n\nThis Agreement is made between:\n- Employer: Complete Childcare\n- Employee: ${d.name}, ${d.address}\n\n1. Purpose of the Agreement\nThe Employer agrees to provide financial support for the Employee's training and development, subject to the terms outlined below.\n\n2. Training Details\n- Course Name: ${d.course}\n- Training Provider: ${d.provider}\n- Course Cost: £${d.cost}\n- Duration of Training: ${d.duration}\n- Completion Requirement: The Employee must complete the course and provide certification/proof of completion.\n\n3. Employee Obligations\nBy signing this Agreement, the Employee agrees to:\na) Fully engage in and complete the training.\nb) Apply the skills learned to their role at the nursery.\nc) Remain employed with Complete Childcare for a minimum period after completing the training: ${commitment} (based on a course cost of £${d.cost}).\n\n4. Repayment Terms\nIf the Employee leaves employment voluntarily or is dismissed for misconduct before the commitment period ends, they must repay a proportion of the training cost as follows:\n- Less than 3 months: 100%\n- 3-6 months: 50%\n- 12-18 months: 25%\n- More than 18 months: 0%\n\nThe Employer may deduct repayment amounts from the final salary. If the amount exceeds the final salary, the Employee agrees to repay the outstanding amount within 30 days.\n\n5. Exceptions\nRepayment will not apply if the Employee is made redundant or unable to complete the training due to medical reasons supported by evidence.\n\n6. Agreement Acceptance\nBy signing below, both parties agree to the terms outlined in this Agreement.\n\nEmployer name: ${d.employer}      Date:\nEmployer signature:\nEmployer job title:\n\nEmployee name: ${d.name}      Date:\nEmployee signature:\nEmployee job title:`;
     }
-  },,
+  },
 grievance_outcome: {
   title:"Grievance outcome letter",
   category:"Grievance",
@@ -2371,30 +2371,21 @@ ${d.mgrtitle}`
     category:"General",
     fields:[
       F('Employee name','empname'),
-      F('Leave dates requested','dates','text','e.g. 14–18 July 2026'),
+      F('Leave dates requested','dates','text','e.g. 14-18 July 2026'),
       F('Number of days','days','text','e.g. 5'),
       F('Decision','decision','select',['Approved','Refused']),
       F('Reason if refused','reason','textarea','e.g. Insufficient staffing cover during this period'),
       F('Alternative dates suggested (if refused)','alternative','text','Leave blank if none'),
       F('Your name','mgrname'),F('Your job title','mgrtitle')
     ],
-    build:d=>`Dear ${d.empname}
-
-Re: Annual leave request — ${d.dates}
-
-Thank you for your request for ${d.days} day(s) annual leave on ${d.dates}.
-
-${d.decision === 'Approved'
-  ? 'I am pleased to confirm that your request has been approved. Please ensure your absence is recorded on the rota and that handover arrangements are in place before you leave.'
-  : `Unfortunately I am unable to approve this request. ${d.reason || '[Insert reason]'}${d.alternative ? '
-
-I would be happy to consider an alternative request for ' + d.alternative + ' if this would work for you.' : ''}`}
-
-Yours sincerely
-
-${d.mgrname}
-${d.mgrtitle}`
+    build:function(d){
+      var body = d.decision === 'Approved'
+        ? 'I am pleased to confirm that your request has been approved. Please ensure your absence is recorded on the rota and that handover arrangements are in place before you leave.'
+        : 'Unfortunately I am unable to approve this request. ' + (d.reason || '[Insert reason]') + (d.alternative ? '\n\nI would be happy to consider an alternative request for ' + d.alternative + ' if this would work for you.' : '');
+      return 'Dear ' + d.empname + '\n\nRe: Annual leave request \u2014 ' + d.dates + '\n\nThank you for your request for ' + d.days + ' day(s) annual leave on ' + d.dates + '.\n\n' + body + '\n\nYours sincerely\n\n' + d.mgrname + '\n' + d.mgrtitle;
+    }
   },
+
   harassment_investigation_invite: {
     title:"Invite to harassment/bullying investigation meeting",
     category:"Bullying & Harassment",
