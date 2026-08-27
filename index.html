@@ -9,24 +9,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#1B2321;
-  --paper:#F5EFE2;
-  --paper-2:#EDE4D1;
-  --teal:#1F4B49;
-  --teal-deep:#153634;
-  --teal-tint:#DCE8E4;
-  --coral:#B5533E;
-  --coral-tint:#F3DED8;
-  --sage:#5E7F62;
-  --sage-tint:#E1EAE1;
-  --amber:#B4842C;
-  --amber-tint:#F3E6CC;
-  --line:#D8CDB5;
-  --white:#FFFDF8;
-  --blue:#2b579a;
+  --ink:#1B2321; --paper:#F5EFE2; --paper-2:#EDE4D1;
+  --teal:#1F4B49; --teal-deep:#153634; --teal-tint:#DCE8E4;
+  --coral:#B5533E; --coral-tint:#F3DED8;
+  --sage:#5E7F62; --sage-tint:#E1EAE1;
+  --amber:#B4842C; --amber-tint:#F3E6CC;
+  --line:#D8CDB5; --white:#FFFDF8;
+  --risk-low:#2E7D32; --risk-low-bg:#E8F5E9;
+  --risk-med:#E65100; --risk-med-bg:#FFF3E0;
+  --risk-high:#B71C1C; --risk-high-bg:#FFEBEE;
 }
-*{box-sizing:border-box;}
-html,body{margin:0;padding:0;}
+*{box-sizing:border-box;} html,body{margin:0;padding:0;}
 body{background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;font-size:15px;line-height:1.55;}
 h1,h2,h3,h4{font-family:'Fraunces',serif;font-weight:600;margin:0;color:var(--teal-deep);}
 a{color:var(--teal);}
@@ -53,21 +46,19 @@ nav.navlist button.active .nav-tag{background:var(--teal-tint);color:var(--teal-
 
 /* === MAIN === */
 #main{flex:1;overflow-y:auto;padding:36px 40px;max-width:900px;}
-.page{display:none;}
-.page.active{display:block;}
+.page{display:none;} .page.active{display:block;}
 
-/* === SEARCH BAR === */
-.search-wrap{margin-bottom:28px;}
-.search-box{width:100%;padding:14px 18px;font-size:15px;border:2px solid var(--teal-tint);border-radius:10px;background:var(--white);outline:none;font-family:'Inter',sans-serif;transition:border-color 0.15s;}
-.search-box:focus{border-color:var(--teal);}
-.search-hint{font-size:12px;color:#888;margin-top:5px;}
-#search-results{margin-top:12px;}
-.search-result-item{background:var(--white);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:8px;cursor:pointer;transition:border-color 0.15s;}
-.search-result-item:hover{border-color:var(--teal);}
-.search-result-item h4{margin:0 0 4px;font-size:14px;color:var(--teal-deep);}
-.search-result-item p{margin:0;font-size:12.5px;color:#666;}
+/* === HERO === */
+.hero{background:var(--teal-deep);color:white;border-radius:12px;padding:28px 30px;margin-bottom:24px;}
+.hero h1{color:white;font-size:26px;margin-bottom:6px;}
+.hero p{font-size:14px;color:#BFE1DA;margin:0;}
+.quick-links{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:16px;}
+.quick-link{background:rgba(255,255,255,0.1);border-radius:8px;padding:12px 14px;cursor:pointer;border:1px solid rgba(255,255,255,0.15);transition:background 0.15s;}
+.quick-link:hover{background:rgba(255,255,255,0.18);}
+.quick-link .ql-icon{font-size:20px;margin-bottom:4px;}
+.quick-link p{margin:0;font-size:12.5px;color:#D9E8E3;font-weight:500;}
 
-/* === CATEGORY TILES === */
+/* === TILES === */
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:28px;}
 .tile{background:var(--white);border-radius:10px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,0.08);cursor:pointer;border:2px solid transparent;transition:all 0.15s ease;}
 .tile:hover{border-color:var(--teal);transform:translateY(-2px);}
@@ -80,32 +71,20 @@ nav.navlist button.active .nav-tag{background:var(--teal-tint);color:var(--teal-
 .content-panel h2{color:var(--teal-deep);margin-bottom:16px;font-size:22px;}
 .back-btn{all:unset;cursor:pointer;font-size:13px;color:var(--teal);margin-bottom:16px;display:inline-flex;align-items:center;gap:5px;}
 .back-btn:hover{text-decoration:underline;}
-
-/* === SECTION LABELS === */
 .section-label{font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:#888;margin:20px 0 8px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
 .section-label:first-child{margin-top:0;}
-
-/* === GUIDE TEXT === */
 .guide-text{line-height:1.7;font-size:14.5px;color:var(--ink);}
 .guide-text p{margin:0 0 10px;}
-
-/* === POLICY QUOTE === */
 .policy-quote{background:var(--teal-tint);border-left:4px solid var(--teal);padding:12px 16px;font-size:13.5px;font-style:italic;margin:0;border-radius:0 6px 6px 0;color:var(--teal-deep);}
 .policy-source{font-size:11.5px;color:#888;margin-top:6px;font-style:normal;}
-
-/* === LETTER BOX === */
 .letter-box{background:#FAFAF7;border:1px dashed var(--line);padding:16px 18px;font-size:13px;white-space:pre-line;font-family:'IBM Plex Mono',monospace;border-radius:8px;line-height:1.65;}
 .copy-btn{all:unset;cursor:pointer;margin-top:10px;padding:8px 16px;background:var(--teal-tint);color:var(--teal-deep);border-radius:6px;font-size:12.5px;font-weight:600;display:inline-block;}
 .copy-btn:hover{background:#C8DED9;}
-
-/* === STEP PROCESS === */
 .step-list{list-style:none;padding:0;margin:0;}
 .step-list li{display:flex;gap:14px;margin-bottom:14px;align-items:flex-start;}
 .step-num{width:28px;height:28px;border-radius:50%;background:var(--teal-deep);color:white;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
 .step-content h4{margin:0 0 3px;font-size:14px;color:var(--teal-deep);}
 .step-content p{margin:0;font-size:13.5px;color:#555;}
-
-/* === ESCALATION LEVELS === */
 .esc-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:600;margin-bottom:12px;}
 .esc-informal{background:var(--sage-tint);color:var(--sage);}
 .esc-formal{background:var(--amber-tint);color:var(--amber);}
@@ -120,6 +99,83 @@ nav.navlist button.active .nav-tag{background:var(--teal-tint);color:var(--teal-
 .btn-danger{background:var(--coral);color:white;}
 .btn-danger:hover{background:#9E4535;}
 .btn-row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
+hr.divider{border:none;border-top:1px solid var(--line);margin:20px 0;}
+.notice{background:var(--amber-tint);border:1px solid var(--amber);border-radius:8px;padding:12px 16px;font-size:13px;color:#7A5A1A;margin-bottom:16px;}
+.notice strong{color:var(--amber);}
+
+/* === DOCUMENT LIBRARY === */
+.doc-library{display:flex;flex-direction:column;gap:6px;}
+.doc-group{margin-bottom:10px;}
+.doc-group-label{font-size:10.5px;text-transform:uppercase;letter-spacing:0.07em;color:#888;font-weight:700;margin-bottom:5px;font-family:'IBM Plex Mono',monospace;}
+.doc-item{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--paper-2);border-radius:7px;text-decoration:none;color:var(--ink);border:1px solid transparent;transition:all 0.12s;font-size:13.5px;}
+.doc-item:hover{border-color:var(--teal);background:var(--teal-tint);}
+.doc-icon{font-size:16px;flex-shrink:0;}
+.doc-name{flex:1;font-weight:500;}
+.doc-tag{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:12px;flex-shrink:0;}
+.doc-source{font-size:11px;color:#888;flex-shrink:0;}
+
+/* === AI COPILOT INTERFACE === */
+.copilot-wrap{background:var(--white);border-radius:12px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,0.08);margin-bottom:20px;}
+.copilot-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.copilot-header .ai-badge{background:var(--teal-deep);color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;letter-spacing:0.05em;}
+.copilot-input-row{display:flex;gap:10px;}
+.copilot-input{flex:1;padding:13px 16px;font-size:14.5px;border:2px solid var(--teal-tint);border-radius:10px;background:var(--paper);outline:none;font-family:'Inter',sans-serif;transition:border-color 0.15s;}
+.copilot-input:focus{border-color:var(--teal);}
+.copilot-send{all:unset;cursor:pointer;background:var(--teal-deep);color:white;padding:13px 20px;border-radius:10px;font-size:14px;font-weight:600;transition:background 0.15s;flex-shrink:0;}
+.copilot-send:hover{background:var(--teal);}
+.copilot-hint{font-size:12px;color:#888;margin-top:6px;}
+
+/* === CHAT MESSAGES === */
+.chat-thread{display:flex;flex-direction:column;gap:14px;margin-top:20px;}
+.chat-msg{display:flex;gap:10px;align-items:flex-start;}
+.chat-msg.user{flex-direction:row-reverse;}
+.chat-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.chat-avatar.ai{background:var(--teal-deep);color:white;}
+.chat-avatar.user{background:var(--paper-2);color:var(--teal-deep);}
+.chat-bubble{max-width:82%;padding:12px 16px;border-radius:12px;font-size:14px;line-height:1.6;}
+.chat-bubble.ai{background:var(--paper-2);border:1px solid var(--line);border-top-left-radius:3px;}
+.chat-bubble.user{background:var(--teal-deep);color:white;border-top-right-radius:3px;}
+.chat-bubble p{margin:0 0 8px;}
+.chat-bubble p:last-child{margin:0;}
+.chat-bubble ul{margin:6px 0;padding-left:18px;}
+.chat-bubble li{margin-bottom:3px;}
+.chat-bubble strong{color:var(--teal-deep);}
+.chat-bubble.user strong{color:#BFE1DA;}
+
+/* === RISK INDICATOR === */
+.risk-bar{border-radius:8px;padding:12px 14px;margin-top:10px;display:flex;align-items:center;gap:12px;}
+.risk-bar.low{background:var(--risk-low-bg);border:1px solid #A5D6A7;}
+.risk-bar.medium{background:var(--risk-med-bg);border:1px solid #FFCC80;}
+.risk-bar.high{background:var(--risk-high-bg);border:1px solid #EF9A9A;}
+.risk-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.risk-dot.low{background:var(--risk-low);}
+.risk-dot.medium{background:var(--risk-med);}
+.risk-dot.high{background:var(--risk-high);}
+.risk-label{font-size:12.5px;font-weight:700;}
+.risk-label.low{color:var(--risk-low);}
+.risk-label.medium{color:var(--risk-med);}
+.risk-label.high{color:var(--risk-high);}
+.risk-detail{font-size:12px;color:#555;flex:1;}
+.risk-escalate-btn{all:unset;cursor:pointer;font-size:12.5px;font-weight:700;padding:6px 14px;border-radius:6px;background:var(--coral);color:white;flex-shrink:0;}
+.risk-escalate-btn:hover{background:#9E4535;}
+
+/* === TYPING INDICATOR === */
+.typing-dots{display:flex;gap:4px;padding:6px 0;}
+.typing-dots span{width:7px;height:7px;border-radius:50%;background:#aaa;animation:bounce 1.2s infinite;}
+.typing-dots span:nth-child(2){animation-delay:.2s;}
+.typing-dots span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+
+/* === RISK SETTINGS === */
+.settings-card{background:var(--white);border-radius:12px;padding:24px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.08);}
+.settings-card h3{margin-bottom:14px;font-size:17px;}
+.threshold-slider{width:100%;margin:10px 0;}
+.threshold-labels{display:flex;justify-content:space-between;font-size:11.5px;color:#888;margin-top:4px;}
+.threshold-preview{margin-top:14px;padding:12px;border-radius:8px;font-size:13px;}
+.keyword-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.keyword-chip{background:var(--teal-tint);color:var(--teal-deep);padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600;}
+.keyword-chip.high{background:var(--coral-tint);color:var(--coral);}
+.keyword-chip.medium{background:var(--amber-tint);color:var(--amber);}
 
 /* === CASE LOG === */
 .case-form{display:flex;flex-direction:column;gap:12px;}
@@ -133,16 +189,21 @@ nav.navlist button.active .nav-tag{background:var(--teal-tint);color:var(--teal-
 .case-entry h4{margin:0 0 4px;font-size:14px;}
 .case-entry .meta{font-size:12px;color:#888;}
 .case-entry .notes{font-size:13.5px;margin-top:8px;color:var(--ink);}
-
-/* === HR DASHBOARD === */
-.hr-dash-table{width:100%;border-collapse:collapse;font-size:13.5px;}
-.hr-dash-table th{background:var(--teal-deep);color:white;padding:10px 12px;text-align:left;font-weight:600;}
-.hr-dash-table td{padding:10px 12px;border-bottom:1px solid var(--line);}
-.hr-dash-table tr:hover td{background:var(--paper-2);}
 .badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;}
 .badge-informal{background:var(--sage-tint);color:var(--sage);}
 .badge-formal{background:var(--amber-tint);color:var(--amber);}
 .badge-urgent{background:var(--coral-tint);color:var(--coral);}
+
+/* === HR DASHBOARD TABLE === */
+.hr-dash-table{width:100%;border-collapse:collapse;font-size:13.5px;}
+.hr-dash-table th{background:var(--teal-deep);color:white;padding:10px 12px;text-align:left;font-weight:600;}
+.hr-dash-table td{padding:10px 12px;border-bottom:1px solid var(--line);}
+.hr-dash-table tr:hover td{background:var(--paper-2);}
+
+/* === LAW WATCH === */
+.law-item{background:var(--amber-tint);border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:10px;}
+.law-item h4{margin:0 0 4px;font-size:14px;color:var(--amber);}
+.law-item p{margin:0;font-size:13px;color:var(--ink);}
 
 /* === PANIC BUTTON === */
 .panic-btn{position:fixed;bottom:24px;right:24px;background:#a80000;color:white;border:none;border-radius:50px;padding:14px 22px;font-size:13.5px;font-weight:700;box-shadow:0 4px 14px rgba(168,0,0,0.4);cursor:pointer;z-index:999;display:flex;align-items:center;gap:8px;transition:all 0.15s;}
@@ -157,36 +218,15 @@ nav.navlist button.active .nav-tag{background:var(--teal-tint);color:var(--teal-
 .modal-box textarea{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:7px;font-size:13.5px;min-height:90px;font-family:'Inter',sans-serif;resize:vertical;margin-top:4px;}
 .modal-box label{font-size:12px;font-weight:600;color:#555;}
 .modal-box select{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:7px;font-size:14px;margin-top:4px;background:white;}
-
-/* === IDENTITY MODAL === */
 #identityModal{background:rgba(21,54,52,0.92);}
 #identityModal .modal-box{max-width:380px;}
 #identityModal h2{color:var(--teal-deep);}
 
-/* === OVERVIEW HERO === */
-.hero{background:var(--teal-deep);color:white;border-radius:12px;padding:28px 30px;margin-bottom:24px;}
-.hero h1{color:white;font-size:26px;margin-bottom:6px;}
-.hero p{font-size:14px;color:#BFE1DA;margin:0;}
-.quick-links{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-top:16px;}
-.quick-link{background:rgba(255,255,255,0.1);border-radius:8px;padding:12px 14px;cursor:pointer;border:1px solid rgba(255,255,255,0.15);transition:background 0.15s;}
-.quick-link:hover{background:rgba(255,255,255,0.18);}
-.quick-link .ql-icon{font-size:20px;margin-bottom:4px;}
-.quick-link p{margin:0;font-size:12.5px;color:#D9E8E3;font-weight:500;}
-
-/* === LAW WATCH === */
-.law-item{background:var(--amber-tint);border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:10px;}
-.law-item h4{margin:0 0 4px;font-size:14px;color:var(--amber);}
-.law-item p{margin:0;font-size:13px;color:var(--ink);}
-
-/* === RESPONSIVE === */
 @media(max-width:768px){
   #sidebar{display:none;}
   #main{padding:20px 16px;}
   .tiles{grid-template-columns:1fr 1fr;}
 }
-.notice{background:var(--amber-tint);border:1px solid var(--amber);border-radius:8px;padding:12px 16px;font-size:13px;color:#7A5A1A;margin-bottom:16px;}
-.notice strong{color:var(--amber);}
-hr.divider{border:none;border-top:1px solid var(--line);margin:20px 0;}
 </style>
 </head>
 <body>
@@ -195,12 +235,10 @@ hr.divider{border:none;border-top:1px solid var(--line);margin:20px 0;}
 <div class="modal-overlay active" id="identityModal">
   <div class="modal-box">
     <h2>Welcome to HR Companion</h2>
-    <p>Select your nursery or name to personalise your session. This is stored locally on your device.</p>
+    <p>Select your nursery or name to personalise your session. Stored locally on this device.</p>
     <label for="idSelect">Your nursery / name</label>
-    <select id="idSelect">
-      <option value="">— Select —</option>
-    </select>
-    <div id="idError" style="display:none;color:#B5533E;font-size:12px;margin-top:6px;">Please select your nursery or name to continue.</div>
+    <select id="idSelect"><option value="">— Select —</option></select>
+    <div id="idError" style="display:none;color:#B5533E;font-size:12px;margin-top:6px;">Please select to continue.</div>
     <div class="btn-row" style="margin-top:16px;">
       <button class="btn btn-primary" onclick="confirmIdentity()">Continue</button>
     </div>
@@ -211,7 +249,7 @@ hr.divider{border:none;border-top:1px solid var(--line);margin:20px 0;}
 <div class="modal-overlay" id="panicModal">
   <div class="modal-box">
     <h2 style="color:#a80000;">⚠ Flag as Urgent to HR</h2>
-    <p>This sends an immediate high-priority alert directly to the HR Manager — outside the normal queue. Use this when a case feels too complex or sensitive to handle alone.</p>
+    <p>Sends an immediate high-priority alert directly to the HR Manager — outside the normal queue.</p>
     <label>Brief description of the issue</label>
     <textarea id="panicText" placeholder="e.g. Disciplinary case has escalated — I'm not sure how to proceed..."></textarea>
     <div class="btn-row" style="margin-top:14px;">
@@ -225,17 +263,13 @@ hr.divider{border:none;border-top:1px solid var(--line);margin:20px 0;}
 <div class="modal-overlay" id="escalateModal">
   <div class="modal-box">
     <h2>Escalate to HR</h2>
-    <p>This will notify the HR team with your query and context. They will respond within one working day.</p>
+    <p>The HR team will be notified with your query and context. They will respond within one working day.</p>
     <label>Category</label>
     <select id="escCategory">
-      <option value="Sickness & Absence">Sickness &amp; Absence</option>
-      <option value="Conduct & Lateness">Conduct &amp; Lateness</option>
-      <option value="Performance">Performance</option>
-      <option value="Ratios & Cover">Ratios &amp; Cover</option>
-      <option value="Recruitment & Onboarding">Recruitment &amp; Onboarding</option>
-      <option value="Leave">Leave</option>
-      <option value="Grievances">Grievances</option>
-      <option value="Safeguarding-Related HR">Safeguarding-Related HR</option>
+      <option>Sickness &amp; Absence</option><option>Conduct &amp; Lateness</option>
+      <option>Performance</option><option>Ratios &amp; Cover</option>
+      <option>Recruitment &amp; Onboarding</option><option>Leave</option>
+      <option>Grievances</option><option>Safeguarding-Related HR</option>
     </select>
     <label style="margin-top:12px;display:block;">Your query</label>
     <textarea id="escText" placeholder="Describe the situation..."></textarea>
@@ -247,7 +281,6 @@ hr.divider{border:none;border-top:1px solid var(--line);margin:20px 0;}
 </div>
 
 <div id="app">
-  <!-- SIDEBAR -->
   <div id="sidebar">
     <div class="brand">HR Companion</div>
     <div class="brand-sub">Complete Childcare Group</div>
@@ -259,42 +292,53 @@ hr.divider{border:none;border-top:1px solid var(--line);margin:20px 0;}
     <div class="sidebar-section-label">Topics</div>
     <nav class="navlist" id="navlist"></nav>
     <div class="escalate-box">
-      <p>Complex case, discrimination, or safeguarding concern? Escalate directly to HR.</p>
+      <p>Complex case, discrimination, or safeguarding concern?</p>
       <button onclick="openEscalate()">Escalate to HR</button>
     </div>
   </div>
 
-  <!-- MAIN -->
   <div id="main">
 
-    <!-- OVERVIEW PAGE -->
+    <!-- OVERVIEW -->
     <div class="page active" id="page-overview">
       <div class="hero">
         <h1>HR Companion</h1>
-        <p>Plain-English guides, policy extracts, and letter templates — organised by everyday HR scenario.</p>
+        <p>Plain-English guides, AI-powered answers, policy extracts, and letter templates — organised by everyday HR scenario.</p>
         <div class="quick-links">
-          <div class="quick-link" onclick="showPage('search')"><div class="ql-icon">🔍</div><p>Search a question</p></div>
+          <div class="quick-link" onclick="showPage('ask')"><div class="ql-icon">🤖</div><p>Ask the AI</p></div>
           <div class="quick-link" onclick="showPage('caselog')"><div class="ql-icon">📋</div><p>My Case Log</p></div>
           <div class="quick-link" onclick="showPage('lawwatch')"><div class="ql-icon">⚖️</div><p>Law Watch</p></div>
           <div class="quick-link" onclick="openEscalate()"><div class="ql-icon">📩</div><p>Escalate to HR</p></div>
         </div>
       </div>
-      <div class="tiles" id="overviewTiles"></div>
       <div class="notice"><strong>New:</strong> Employment Rights Act 2025 — key changes now in force. See Law Watch for a summary.</div>
+      <div class="tiles" id="overviewTiles"></div>
     </div>
 
-    <!-- SEARCH PAGE -->
-    <div class="page" id="page-search">
-      <h2 style="margin-bottom:16px;">Ask a Question</h2>
-      <div class="search-wrap">
-        <input type="text" class="search-box" id="searchBox" placeholder="e.g. staff member off sick for three weeks, flexible working request..." onkeyup="handleSearch(event)">
-        <div class="search-hint">Type your question and press Enter — or browse by topic below.</div>
-        <div id="search-results"></div>
+    <!-- ASK THE AI -->
+    <div class="page" id="page-ask">
+      <h2 style="margin-bottom:6px;">Ask the AI</h2>
+      <p style="font-size:13.5px;color:#666;margin-bottom:20px;">Ask any everyday HR question in plain English. The AI will give you a practical answer grounded in CCG policy. If the situation meets the risk threshold, it will prompt you to escalate to HR.</p>
+      <div class="copilot-wrap">
+        <div class="copilot-header">
+          <span style="font-size:22px;">🤖</span>
+          <div>
+            <div style="font-weight:600;font-size:15px;color:var(--teal-deep);">HR Copilot</div>
+            <div style="font-size:12px;color:#888;">Powered by CCG policy &amp; employment law knowledge</div>
+          </div>
+          <span class="ai-badge">AI</span>
+        </div>
+        <div class="copilot-input-row">
+          <input type="text" class="copilot-input" id="copilotInput" placeholder="e.g. A staff member has been off sick for 3 weeks — what do I do?" onkeydown="if(event.key==='Enter')sendCopilot()">
+          <button class="copilot-send" onclick="sendCopilot()">Ask →</button>
+        </div>
+        <div class="copilot-hint">Press Enter or click Ask. The AI scores every response for risk — if it crosses your threshold, escalation is suggested automatically.</div>
+        <div class="chat-thread" id="chatThread"></div>
       </div>
-      <div class="tiles" id="searchTiles"></div>
+      <div class="tiles" id="askTiles"></div>
     </div>
 
-    <!-- CATEGORY PAGES (8 categories) -->
+    <!-- CATEGORY PAGES -->
     <div class="page" id="page-sickness"></div>
     <div class="page" id="page-conduct"></div>
     <div class="page" id="page-performance"></div>
@@ -304,87 +348,36 @@ hr.divider{border:none;border-top:1px solid var(--line);margin:20px 0;}
     <div class="page" id="page-grievances"></div>
     <div class="page" id="page-safeguarding"></div>
 
-    <!-- LAW WATCH PAGE -->
+    <!-- LAW WATCH -->
     <div class="page" id="page-lawwatch">
       <h2 style="margin-bottom:20px;">Law Watch</h2>
       <p style="font-size:14px;color:#555;margin-bottom:20px;">Key employment law updates relevant to Complete Childcare Group managers.</p>
-      <div class="law-item">
-        <h4>SSP from Day 1 — in force April 2026</h4>
-        <p>Statutory Sick Pay now applies from the first day of absence (no more 3-day waiting period). Ensure all absence records are updated accordingly.</p>
-      </div>
-      <div class="law-item">
-        <h4>Flexible Working — right from Day 1 (in force since June 2024)</h4>
-        <p>All employees can request flexible working from their first day. Two requests per 12 months are permitted. Decisions must be made within 2 months.</p>
-      </div>
-      <div class="law-item">
-        <h4>Employment Rights Act 2025 — Unfair Dismissal from 6 months (Jan 2027)</h4>
-        <p>From January 2027, employees will be protected from unfair dismissal from 6 months' service (currently 2 years). Review probation processes now.</p>
-      </div>
-      <div class="law-item">
-        <h4>Zero-Hours Contract Reforms — ERA 2025</h4>
-        <p>Workers on zero-hours contracts will have the right to request a guaranteed-hours contract after 12 weeks. Review any bank/casual staff arrangements.</p>
-      </div>
-      <div class="law-item">
-        <h4>Fire & Rehire Restrictions — ERA 2025</h4>
-        <p>Dismissal and re-engagement to change terms is now heavily restricted. Any variation to contracts must follow proper consultation processes.</p>
-      </div>
-      <div class="law-item">
-        <h4>Sexual Harassment — Preventive Duty (in force Oct 2024)</h4>
-        <p>Employers must take reasonable steps to prevent sexual harassment. Ensure the Contractor Code of Conduct is signed and staff training is current.</p>
-      </div>
-      <div class="law-item">
-        <h4>Carer's Leave — right from Day 1 (in force April 2024)</h4>
-        <p>Employees can take up to 5 days unpaid carer's leave per year from day one of employment. No qualifying period required.</p>
-      </div>
-      <div class="law-item">
-        <h4>Neonatal Care Leave — in force April 2025</h4>
-        <p>Parents of babies receiving neonatal care can take up to 12 weeks additional leave. Applies where baby receives neonatal care for 7+ consecutive days.</p>
-      </div>
+      <div class="law-item"><h4>SSP from Day 1 — in force April 2026</h4><p>Statutory Sick Pay now applies from the first day of absence. Ensure all absence records are updated accordingly.</p></div>
+      <div class="law-item"><h4>Flexible Working — right from Day 1 (June 2024)</h4><p>All employees can request flexible working from day one. Two requests per 12 months. Decisions within 2 months.</p></div>
+      <div class="law-item"><h4>Unfair Dismissal from 6 months — ERA 2025 (Jan 2027)</h4><p>From January 2027, unfair dismissal protection begins at 6 months' service (currently 2 years). Review probation processes now.</p></div>
+      <div class="law-item"><h4>Zero-Hours Contract Reforms — ERA 2025</h4><p>Workers on zero-hours contracts will have the right to request guaranteed hours after 12 weeks. Review bank/casual staff arrangements.</p></div>
+      <div class="law-item"><h4>Fire &amp; Rehire Restrictions — ERA 2025</h4><p>Dismissal and re-engagement to change terms is now heavily restricted. Any variation to contracts must follow proper consultation.</p></div>
+      <div class="law-item"><h4>Sexual Harassment — Preventive Duty (Oct 2024)</h4><p>Employers must take reasonable steps to prevent sexual harassment. Ensure the Contractor Code of Conduct is signed and training is current.</p></div>
+      <div class="law-item"><h4>Carer's Leave — right from Day 1 (April 2024)</h4><p>Up to 5 days unpaid carer's leave per year from day one. No qualifying period required.</p></div>
+      <div class="law-item"><h4>Neonatal Care Leave — in force April 2025</h4><p>Parents of babies receiving neonatal care can take up to 12 weeks additional leave (7+ consecutive days of neonatal care).</p></div>
       <div class="btn-row">
-        <a href="https://www.legislation.gov.uk/ukpga/2025/15/contents" target="_blank" class="btn btn-secondary">Employment Rights Act 2025 (full text)</a>
+        <a href="https://www.legislation.gov.uk/ukpga/2025/15/contents" target="_blank" class="btn btn-secondary">Employment Rights Act 2025</a>
         <a href="https://www.acas.org.uk" target="_blank" class="btn btn-secondary">ACAS Guidance</a>
       </div>
     </div>
 
-    <!-- CASE LOG PAGE -->
+    <!-- CASE LOG -->
     <div class="page" id="page-caselog">
       <h2 style="margin-bottom:6px;">My Case Log</h2>
-      <p style="font-size:13.5px;color:#666;margin-bottom:20px;">A private record of HR cases you are managing. Stored locally on this device only.</p>
+      <p style="font-size:13.5px;color:#666;margin-bottom:20px;">A private record of HR cases you are managing. Stored locally on this device.</p>
       <div class="content-panel">
         <h3 style="font-size:16px;margin-bottom:16px;">Log a new case</h3>
         <div class="case-form">
-          <div>
-            <label>Employee name (or reference)</label>
-            <input type="text" id="caseEmployee" placeholder="e.g. Staff member A">
-          </div>
-          <div>
-            <label>Category</label>
-            <select id="caseCat">
-              <option value="Sickness & Absence">Sickness &amp; Absence</option>
-              <option value="Conduct & Lateness">Conduct &amp; Lateness</option>
-              <option value="Performance">Performance</option>
-              <option value="Ratios & Cover">Ratios &amp; Cover</option>
-              <option value="Recruitment & Onboarding">Recruitment &amp; Onboarding</option>
-              <option value="Leave">Leave</option>
-              <option value="Grievances">Grievances</option>
-              <option value="Safeguarding-Related HR">Safeguarding-Related HR</option>
-            </select>
-          </div>
-          <div>
-            <label>Escalation level</label>
-            <select id="caseLevel">
-              <option value="informal">Informal</option>
-              <option value="formal">Formal</option>
-              <option value="urgent">Must Escalate</option>
-            </select>
-          </div>
-          <div>
-            <label>Notes</label>
-            <textarea id="caseNotes" placeholder="Brief summary of the situation and actions taken..."></textarea>
-          </div>
-          <div>
-            <button class="btn btn-primary" onclick="saveCase()">Save Case Entry</button>
-          </div>
+          <div><label>Employee name (or reference)</label><input type="text" id="caseEmployee" placeholder="e.g. Staff member A"></div>
+          <div><label>Category</label><select id="caseCat"><option>Sickness &amp; Absence</option><option>Conduct &amp; Lateness</option><option>Performance</option><option>Ratios &amp; Cover</option><option>Recruitment &amp; Onboarding</option><option>Leave</option><option>Grievances</option><option>Safeguarding-Related HR</option></select></div>
+          <div><label>Escalation level</label><select id="caseLevel"><option value="informal">Informal</option><option value="formal">Formal</option><option value="urgent">Must Escalate</option></select></div>
+          <div><label>Notes</label><textarea id="caseNotes" placeholder="Brief summary of the situation and actions taken..."></textarea></div>
+          <div><button class="btn btn-primary" onclick="saveCase()">Save Case Entry</button></div>
         </div>
       </div>
       <div id="caseList"></div>
@@ -394,50 +387,97 @@ hr.divider{border:none;border-top:1px solid var(--line);margin:20px 0;}
       </div>
     </div>
 
-    <!-- HR DASHBOARD PAGE -->
+    <!-- HR DASHBOARD -->
     <div class="page" id="page-hrdash">
       <h2 style="margin-bottom:6px;">HR Dashboard</h2>
-      <p style="font-size:13.5px;color:#666;margin-bottom:20px;">All case log entries across all managers — visible to HR &amp; management only.</p>
+      <p style="font-size:13.5px;color:#666;margin-bottom:20px;">All case log entries — visible to HR &amp; management only.</p>
       <div class="notice">This view shows case log entries from <strong>this device only</strong>. In the full deployment, this would aggregate entries from all managers via a central store.</div>
       <div id="hrDashContent"></div>
     </div>
 
-  </div><!-- /main -->
-</div><!-- /app -->
+    <!-- RISK SETTINGS (HR only) -->
+    <div class="page" id="page-risksettings">
+      <h2 style="margin-bottom:6px;">AI Risk Settings</h2>
+      <p style="font-size:13.5px;color:#666;margin-bottom:20px;">Configure when the AI Copilot should prompt managers to escalate to HR. These settings apply across all nurseries.</p>
+      <div class="settings-card">
+        <h3>Escalation Threshold</h3>
+        <p style="font-size:13.5px;color:#555;margin-bottom:14px;">Drag the slider to set the risk score at which the AI automatically suggests escalation to HR. Lower = more escalations. Higher = more self-service.</p>
+        <input type="range" class="threshold-slider" id="thresholdSlider" min="1" max="10" step="1" value="6" oninput="updateThresholdPreview()">
+        <div class="threshold-labels"><span>1 — Escalate almost everything</span><span>10 — Self-serve almost everything</span></div>
+        <div class="threshold-preview" id="thresholdPreview"></div>
+        <div class="btn-row" style="margin-top:16px;">
+          <button class="btn btn-primary" onclick="saveThreshold()">Save Threshold</button>
+          <button class="btn btn-secondary" onclick="resetThreshold()">Reset to Default (6)</button>
+        </div>
+      </div>
+      <div class="settings-card">
+        <h3>Risk Scoring — How It Works</h3>
+        <p style="font-size:13.5px;color:#555;margin-bottom:10px;">Every AI response is scored 1–10 based on the topic and keywords detected. The score reflects potential legal, safeguarding, or reputational risk to the organisation.</p>
+        <div style="margin-bottom:12px;">
+          <div style="font-size:12.5px;font-weight:700;color:var(--risk-high);margin-bottom:5px;">High risk (score 8–10) — always triggers escalation prompt</div>
+          <div class="keyword-list">
+            <span class="keyword-chip high">safeguarding</span><span class="keyword-chip high">allegation</span><span class="keyword-chip high">LADO</span>
+            <span class="keyword-chip high">dismissal</span><span class="keyword-chip high">discrimination</span><span class="keyword-chip high">harassment</span>
+            <span class="keyword-chip high">whistleblowing</span><span class="keyword-chip high">DBS</span><span class="keyword-chip high">gross misconduct</span>
+            <span class="keyword-chip high">pregnancy</span><span class="keyword-chip high">disability</span><span class="keyword-chip high">tribunal</span>
+          </div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div style="font-size:12.5px;font-weight:700;color:var(--risk-med);margin-bottom:5px;">Medium risk (score 4–7) — escalation depends on your threshold</div>
+          <div class="keyword-list">
+            <span class="keyword-chip medium">formal warning</span><span class="keyword-chip medium">grievance</span><span class="keyword-chip medium">performance</span>
+            <span class="keyword-chip medium">absence trigger</span><span class="keyword-chip medium">redundancy</span><span class="keyword-chip medium">flexible working</span>
+            <span class="keyword-chip medium">probation</span><span class="keyword-chip medium">investigation</span><span class="keyword-chip medium">TUPE</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:12.5px;font-weight:700;color:var(--risk-low);margin-bottom:5px;">Low risk (score 1–3) — AI handles independently</div>
+          <div class="keyword-list">
+            <span class="keyword-chip">return to work</span><span class="keyword-chip">annual leave</span><span class="keyword-chip">rota</span>
+            <span class="keyword-chip">ratios</span><span class="keyword-chip">induction</span><span class="keyword-chip">supervision</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<!-- PANIC BUTTON -->
+  </div>
+</div>
+
 <button class="panic-btn" onclick="openPanic()">⚠ Flag Urgent to HR</button>
 
 <script>
 /* ================================================================
    NAVIGATION
    ================================================================ */
-const NAV = [
+const NAV_ITEMS = [
   {id:'overview',     label:'Overview',               icon:'🏠', tag:''},
-  {id:'search',       label:'Ask a Question',          icon:'🔍', tag:'search'},
-  {id:'sickness',     label:'Sickness & Absence',      icon:'🤒', tag:''},
-  {id:'conduct',      label:'Conduct & Lateness',      icon:'⚠️', tag:''},
-  {id:'performance',  label:'Performance',             icon:'📈', tag:''},
-  {id:'ratios',       label:'Ratios & Cover',          icon:'👶', tag:''},
-  {id:'recruitment',  label:'Recruitment & Onboarding',icon:'🧑‍💼', tag:''},
-  {id:'leave',        label:'Leave',                   icon:'📅', tag:''},
-  {id:'grievances',   label:'Grievances',              icon:'🤝', tag:''},
-  {id:'safeguarding', label:'Safeguarding-Related HR', icon:'🛡️', tag:''},
-  {id:'lawwatch',     label:'Law Watch',               icon:'⚖️', tag:'9 updates'},
-  {id:'caselog',      label:'Case Log',                icon:'📋', tag:'my records'},
+  {id:'ask',          label:'Ask the AI',             icon:'🤖', tag:'new'},
+  {id:'sickness',     label:'Sickness & Absence',     icon:'🤒', tag:''},
+  {id:'conduct',      label:'Conduct & Lateness',     icon:'⚠️', tag:''},
+  {id:'performance',  label:'Performance',            icon:'📈', tag:''},
+  {id:'ratios',       label:'Ratios & Cover',         icon:'👶', tag:''},
+  {id:'recruitment',  label:'Recruitment & Onboarding',icon:'🧑‍💼',tag:''},
+  {id:'leave',        label:'Leave',                  icon:'📅', tag:''},
+  {id:'grievances',   label:'Grievances',             icon:'🤝', tag:''},
+  {id:'safeguarding', label:'Safeguarding-Related HR', icon:'🛡️',tag:''},
+  {id:'lawwatch',     label:'Law Watch',              icon:'⚖️', tag:'9 updates'},
+  {id:'caselog',      label:'Case Log',               icon:'📋', tag:'my records'},
 ];
-const HR_NAV = {id:'hrdash', label:'HR Dashboard', icon:'📊', tag:'HR only'};
+const HR_EXTRA = [
+  {id:'hrdash',       label:'HR Dashboard',           icon:'📊', tag:'HR only'},
+  {id:'risksettings', label:'AI Risk Settings',       icon:'⚙️', tag:'HR only'},
+];
 
-const navlist = document.getElementById('navlist');
 function buildNav(isHR) {
-  navlist.innerHTML = '';
-  const items = isHR ? [...NAV, HR_NAV] : NAV;
+  const nl = document.getElementById('navlist');
+  nl.innerHTML = '';
+  const items = isHR ? [...NAV_ITEMS, ...HR_EXTRA] : NAV_ITEMS;
   items.forEach(item => {
     const b = document.createElement('button');
     b.innerHTML = `<span class="nav-icon">${item.icon}</span><span>${item.label}</span>` + (item.tag ? `<span class="nav-tag">${item.tag}</span>` : '');
     b.onclick = () => showPage(item.id);
     b.dataset.id = item.id;
-    navlist.appendChild(b);
+    nl.appendChild(b);
   });
 }
 
@@ -447,351 +487,334 @@ function showPage(id) {
   if (pg) pg.classList.add('active');
   document.querySelectorAll('#navlist button').forEach(b => b.classList.toggle('active', b.dataset.id === id));
   document.getElementById('main').scrollTop = 0;
-  window.scrollTo(0, 0);
+  window.scrollTo(0,0);
   if (id === 'caselog') renderCaseLog();
   if (id === 'hrdash') renderHRDash();
+  if (id === 'risksettings') initThresholdSlider();
 }
 
 /* ================================================================
-   IDENTITY / SESSION
+   IDENTITY
    ================================================================ */
 const NURSERY_LIST = [
-  {name:"Abacus Day Nursery",         nursery:"Abacus Day Nursery",         title:"Nursery Manager", isHR:false},
-  {name:"Bees Knees Day Nursery",     nursery:"Bees Knees Day Nursery",     title:"Nursery Manager", isHR:false},
-  {name:"Bramley Wood Day Nursery",   nursery:"Bramley Wood Day Nursery",   title:"Nursery Manager", isHR:false},
-  {name:"Cedars @ Boot Farm",         nursery:"Cedars @ Boot Farm",         title:"Nursery Manager", isHR:false},
-  {name:"Cedars Day Nursery",         nursery:"Cedars Day Nursery",         title:"Nursery Manager", isHR:false},
-  {name:"Finchampstead Day Nursery",  nursery:"Finchampstead Day Nursery",  title:"Nursery Manager", isHR:false},
-  {name:"Happitots Day Nursery",      nursery:"Happitots Day Nursery",      title:"Nursery Manager", isHR:false},
-  {name:"Hazebrouck Day Nursery",     nursery:"Hazebrouck Day Nursery",     title:"Nursery Manager", isHR:false},
-  {name:"Kingsclere Day Nursery",     nursery:"Kingsclere Day Nursery",     title:"Nursery Manager", isHR:false},
-  {name:"Lower Earley Day Nursery",   nursery:"Lower Earley Day Nursery",   title:"Nursery Manager", isHR:false},
-  {name:"Merrydale Day Nursery",      nursery:"Merrydale Day Nursery",      title:"Nursery Manager", isHR:false},
-  {name:"Northumberland Day Nursery", nursery:"Northumberland Day Nursery", title:"Nursery Manager", isHR:false},
-  {name:"Our Den @ Hillside",         nursery:"Our Den @ Hillside",         title:"Nursery Manager", isHR:false},
-  {name:"Saltway Day Nursery",        nursery:"Saltway Day Nursery",        title:"Nursery Manager", isHR:false},
-  {name:"Smart Tots Day Nursery",     nursery:"Smart Tots Day Nursery",     title:"Nursery Manager", isHR:false},
-  {name:"Stepping Stones Day Nursery",nursery:"Stepping Stones Day Nursery",title:"Nursery Manager", isHR:false},
-  {name:"Woosehill Day Nursery",      nursery:"Woosehill Day Nursery",      title:"Nursery Manager", isHR:false},
+  {name:"Abacus Day Nursery",nursery:"Abacus Day Nursery",title:"Nursery Manager",isHR:false},
+  {name:"Bees Knees Day Nursery",nursery:"Bees Knees Day Nursery",title:"Nursery Manager",isHR:false},
+  {name:"Bramley Wood Day Nursery",nursery:"Bramley Wood Day Nursery",title:"Nursery Manager",isHR:false},
+  {name:"Cedars @ Boot Farm",nursery:"Cedars @ Boot Farm",title:"Nursery Manager",isHR:false},
+  {name:"Cedars Day Nursery",nursery:"Cedars Day Nursery",title:"Nursery Manager",isHR:false},
+  {name:"Finchampstead Day Nursery",nursery:"Finchampstead Day Nursery",title:"Nursery Manager",isHR:false},
+  {name:"Happitots Day Nursery",nursery:"Happitots Day Nursery",title:"Nursery Manager",isHR:false},
+  {name:"Hazebrouck Day Nursery",nursery:"Hazebrouck Day Nursery",title:"Nursery Manager",isHR:false},
+  {name:"Kingsclere Day Nursery",nursery:"Kingsclere Day Nursery",title:"Nursery Manager",isHR:false},
+  {name:"Lower Earley Day Nursery",nursery:"Lower Earley Day Nursery",title:"Nursery Manager",isHR:false},
+  {name:"Merrydale Day Nursery",nursery:"Merrydale Day Nursery",title:"Nursery Manager",isHR:false},
+  {name:"Northumberland Day Nursery",nursery:"Northumberland Day Nursery",title:"Nursery Manager",isHR:false},
+  {name:"Our Den @ Hillside",nursery:"Our Den @ Hillside",title:"Nursery Manager",isHR:false},
+  {name:"Saltway Day Nursery",nursery:"Saltway Day Nursery",title:"Nursery Manager",isHR:false},
+  {name:"Smart Tots Day Nursery",nursery:"Smart Tots Day Nursery",title:"Nursery Manager",isHR:false},
+  {name:"Stepping Stones Day Nursery",nursery:"Stepping Stones Day Nursery",title:"Nursery Manager",isHR:false},
+  {name:"Woosehill Day Nursery",nursery:"Woosehill Day Nursery",title:"Nursery Manager",isHR:false},
 ];
 const HR_LIST = [
-  {name:"Ellie Richards",  nursery:"Head Office",    title:"HR",                   isHR:true},
-  {name:"Leanne Maynard",  nursery:"Greenwood Area", title:"Area Manager",         isHR:true},
-  {name:"Pav Bilkhu",      nursery:"BlueWater Area", title:"Area Manager",         isHR:true},
-  {name:"Emma McIntyre",   nursery:"Head Office",    title:"Director",             isHR:true},
-  {name:"Karen Tate",      nursery:"Head Office",    title:"HR Business Partner",  isHR:true},
-  {name:"Alec Hodson",     nursery:"Head Office",    title:"Group Chief Executive",isHR:true},
-  {name:"Louise Medley",   nursery:"Head Office",    title:"PA to MD",             isHR:true},
+  {name:"Ellie Richards",nursery:"Head Office",title:"HR",isHR:true},
+  {name:"Leanne Maynard",nursery:"Greenwood Area",title:"Area Manager",isHR:true},
+  {name:"Pav Bilkhu",nursery:"BlueWater Area",title:"Area Manager",isHR:true},
+  {name:"Emma McIntyre",nursery:"Head Office",title:"Director",isHR:true},
+  {name:"Karen Tate",nursery:"Head Office",title:"HR Business Partner",isHR:true},
+  {name:"Alec Hodson",nursery:"Head Office",title:"Group Chief Executive",isHR:true},
+  {name:"Louise Medley",nursery:"Head Office",title:"PA to MD",isHR:true},
 ];
-
 var SESSION = null;
 
-function getStoredSession() {
-  try { return JSON.parse(localStorage.getItem('hrCompanionSession2') || 'null'); } catch(e) { return null; }
-}
-function storeSession(s) {
-  try { localStorage.setItem('hrCompanionSession2', JSON.stringify(s)); } catch(e) {}
-}
-function clearIdentity() {
-  try { localStorage.removeItem('hrCompanionSession2'); } catch(e) {}
-  SESSION = null;
+function getStoredSession(){try{return JSON.parse(localStorage.getItem('hrCompanionSession3')||'null');}catch(e){return null;}}
+function storeSession(s){try{localStorage.setItem('hrCompanionSession3',JSON.stringify(s));}catch(e){}}
+function clearIdentity(){
+  try{localStorage.removeItem('hrCompanionSession3');}catch(e){}
+  SESSION=null;
   document.getElementById('identityModal').classList.add('active');
   populateIdentitySelect();
 }
-function populateIdentitySelect() {
-  const sel = document.getElementById('idSelect');
-  sel.innerHTML = '<option value="">— Select —</option>';
-  NURSERY_LIST.forEach((u,i) => {
-    const o = document.createElement('option');
-    o.value = 'n:' + i;
-    o.textContent = u.nursery;
-    sel.appendChild(o);
-  });
-  const og = document.createElement('optgroup');
-  og.label = 'HR & Management';
-  HR_LIST.forEach((u,i) => {
-    const o = document.createElement('option');
-    o.value = 'h:' + i;
-    o.textContent = u.name + ' — ' + u.title;
-    og.appendChild(o);
-  });
+function populateIdentitySelect(){
+  const sel=document.getElementById('idSelect');
+  sel.innerHTML='<option value="">— Select —</option>';
+  NURSERY_LIST.forEach((u,i)=>{const o=document.createElement('option');o.value='n:'+i;o.textContent=u.nursery;sel.appendChild(o);});
+  const og=document.createElement('optgroup');og.label='HR & Management';
+  HR_LIST.forEach((u,i)=>{const o=document.createElement('option');o.value='h:'+i;o.textContent=u.name+' — '+u.title;og.appendChild(o);});
   sel.appendChild(og);
 }
-function confirmIdentity() {
-  const sel = document.getElementById('idSelect');
-  const val = sel.value;
-  if (!val) { document.getElementById('idError').style.display = 'block'; return; }
-  document.getElementById('idError').style.display = 'none';
-  if (val.startsWith('n:')) SESSION = JSON.parse(JSON.stringify(NURSERY_LIST[parseInt(val.slice(2))]));
-  else SESSION = JSON.parse(JSON.stringify(HR_LIST[parseInt(val.slice(2))]));
+function confirmIdentity(){
+  const sel=document.getElementById('idSelect');const val=sel.value;
+  if(!val){document.getElementById('idError').style.display='block';return;}
+  document.getElementById('idError').style.display='none';
+  SESSION=JSON.parse(JSON.stringify(val.startsWith('n:')?NURSERY_LIST[parseInt(val.slice(2))]:HR_LIST[parseInt(val.slice(2))]));
   storeSession(SESSION);
   document.getElementById('identityModal').classList.remove('active');
   applySession();
 }
-function applySession() {
-  if (!SESSION) return;
-  document.getElementById('sessionUserName').textContent = SESSION.name || SESSION.nursery;
-  document.getElementById('sessionNursery').textContent = SESSION.isHR ? SESSION.title + ' — ' + SESSION.nursery : SESSION.nursery;
+function applySession(){
+  if(!SESSION)return;
+  document.getElementById('sessionUserName').textContent=SESSION.name||SESSION.nursery;
+  document.getElementById('sessionNursery').textContent=SESSION.isHR?SESSION.title+' — '+SESSION.nursery:SESSION.nursery;
   buildNav(SESSION.isHR);
   buildCategoryPages();
   buildTiles('overviewTiles');
-  buildTiles('searchTiles');
+  buildTiles('askTiles');
 }
 
 /* ================================================================
-   CATEGORY DATA (from CCG policy documents)
+   DOCUMENT LIBRARY DATA
+   ================================================================ */
+const CAT_DOCS = {
+  sickness:[{name:"Absence Management Policy (PM-2-2)",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BEB8FAA88-B5C0-401F-9235-C230195A9139%7D&file=PM_2_2_Absence_Management_Policy%20Feb26.docx&action=default&mobileredirect=true",tag:"Policy",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Absence Management Guide 1",url:"https://completechildcare.sharepoint.com/sites/TheKnowledgeBase/_layouts/15/Doc.aspx?sourcedoc=%7BE7F0EA2D-FC4C-478C-B09F-440468C73BD7%7D&file=Absence%20Management%201.docx&action=default&mobileredirect=true",tag:"Guide",icon:"\ud83d\udcce",source:"Knowledge Base"},
+    {name:"Absence Management Guide 2",url:"https://completechildcare.sharepoint.com/sites/TheKnowledgeBase/_layouts/15/Doc.aspx?sourcedoc=%7BC919CD41-71D2-449B-A1EE-C22B9A706D33%7D&file=Absence%20Management%202.docx&action=default&mobileredirect=true",tag:"Guide",icon:"\ud83d\udcce",source:"Knowledge Base"},
+    {name:"Return to Work Interview Form",url:"https://completechildcare.sharepoint.com/sites/TheKnowledgeBase/Shared%20Documents/Staff%20Documents/Staff%20-%20General/People%20Matters/Attendance%20%26%20Absence/Return%20to%20Work%20Interview%20Form.pdf",tag:"Form",icon:"\ud83d\udcce",source:"Knowledge Base"}],
+  conduct:[{name:"Gossip & Inappropriate Communication Policy",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BA2EE67BF-F631-4F57-BA94-88C7D8CC44E8%7D&file=Gossip%20Policy.docx&action=default&mobileredirect=true",tag:"Policy",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Invite to Disciplinary Meeting",url:"https://completechildcare.sharepoint.com/sites/TheKnowledgeBase/_layouts/15/Doc.aspx?sourcedoc=%7BD18CFF11-C749-4F54-A9AE-4C53E6FC1E49%7D&file=Invite%20to%20Disciplinary%20Meeting%20Template.docx&action=default&mobileredirect=true",tag:"Letter Template",icon:"\ud83d\udcce",source:"Knowledge Base"},
+    {name:"Disciplinary Outcome \u2014 Formal Dismissal",url:"https://completechildcare.sharepoint.com/sites/TheKnowledgeBase/_layouts/15/Doc.aspx?sourcedoc=%7B1C6792E8-56FB-4DAF-9BAD-F17090B27C2B%7D&file=Disciplinary%20Outcome%20Letter%20Template%20Formal%20Dismissal.docx&action=default&mobileredirect=true",tag:"Letter Template",icon:"\ud83d\udcce",source:"Knowledge Base"},
+    {name:"Accepted Resignation Template",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BCFE898BE-601A-47F6-9E56-0F10D3971888%7D&file=Accepted%20Resignation%20template.docx&action=default&mobileredirect=true",tag:"Letter Template",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Disciplinary Meeting Notes",url:"https://completechildcare.sharepoint.com/sites/TheKnowledgeBase/_layouts/15/Doc.aspx?sourcedoc=%7BED3D6E17-400A-4999-A24E-85C446EE259E%7D&file=Disciplinary%20Meeting%20Notes%20.docx&action=default&mobileredirect=true",tag:"Form",icon:"\ud83d\udcce",source:"Knowledge Base"},
+    {name:"Witness Statement Template (Nov 2025)",url:"https://completechildcare.sharepoint.com/sites/TheKnowledgeBase/_layouts/15/Doc.aspx?sourcedoc=%7BF3525A5A-340E-469A-81CE-AA8FB09B24D1%7D&file=Witness%20Statement%20Template%20Nov25.docx&action=default&mobileredirect=true",tag:"Form",icon:"\ud83d\udcce",source:"Knowledge Base"}],
+  performance:[{name:"PIP \u2014 Formal Notification Letter",url:"https://completechildcare.sharepoint.com/sites/TheKnowledgeBase/_layouts/15/Doc.aspx?sourcedoc=%7B780AF7F9-1702-430E-B72C-9D2E5405B378%7D&file=Nursery%20Staff%20PIP%20-%20Formal%20Notification.docx&action=default&mobileredirect=true",tag:"Letter Template",icon:"\ud83d\udcce",source:"Knowledge Base"},
+    {name:"Investigation Outcome & PIP Letter",url:"https://completechildcare.sharepoint.com/sites/TheKnowledgeBase/_layouts/15/Doc.aspx?sourcedoc=%7B61D7A51C-BF49-4A60-8359-D927AF54AFBE%7D&file=Investigation%20Outcome%20and%20PIP%20Letter.docx&action=default&mobileredirect=true",tag:"Letter Template",icon:"\ud83d\udcce",source:"Knowledge Base"},
+    {name:"Invite to Investigation Meeting",url:"https://completechildcare.sharepoint.com/sites/TheKnowledgeBase/_layouts/15/Doc.aspx?sourcedoc=%7BE0D08A5C-D44E-4E12-AFE6-E1AC10ACE0FF%7D&file=Invite%20to%20Investigation%20Meeting%20Letter.docx&action=default&mobileredirect=true",tag:"Letter Template",icon:"\ud83d\udcce",source:"Knowledge Base"},
+    {name:"Supervision Form \u2014 Practitioner",url:"https://completechildcare.sharepoint.com/sites/TheKnowledgeBase/_layouts/15/Doc.aspx?sourcedoc=%7B49F2FFF1-FE30-46B6-9303-969D0B0B5CBC%7D&file=Supervision%20Form%20-%20Practitioner.docx&action=default&mobileredirect=true",tag:"Form",icon:"\ud83d\udcce",source:"Knowledge Base"},
+    {name:"Supervision Form \u2014 Cook",url:"https://completechildcare.sharepoint.com/sites/TheKnowledgeBase/_layouts/15/Doc.aspx?sourcedoc=%7BC0A47238-0143-43AA-AE4E-D47EFB38CDBD%7D&file=Supervision%20Form%20-%20Cook.docx&action=default&mobileredirect=true",tag:"Form",icon:"\ud83d\udcce",source:"Knowledge Base"},
+    {name:"Investigation Meeting Notes",url:"https://completechildcare.sharepoint.com/sites/TheKnowledgeBase/_layouts/15/Doc.aspx?sourcedoc=%7BC63BB829-1BA4-4093-BEBA-7954A787BB2D%7D&file=Investigation%20Meeting%20Notes%20%20.docx&action=default&mobileredirect=true",tag:"Form",icon:"\ud83d\udcce",source:"Knowledge Base"},
+    {name:"Nursery Staff PIP",url:"https://completechildcare.sharepoint.com/sites/TheKnowledgeBase/_layouts/15/Doc.aspx?sourcedoc=%7BFB9081AD-2BBC-4B92-847A-A36AA1DBED23%7D&file=Nursery%20Staff%20PIP.docx&action=default&mobileredirect=true",tag:"Template",icon:"\ud83d\udcce",source:"Knowledge Base"}],
+  ratios:[],
+  recruitment:[{name:"Intensive Induction Programme (Oct 2025)",url:"https://completechildcare.sharepoint.com/sites/TheKnowledgeBase/_layouts/15/Doc.aspx?sourcedoc=%7B62A6DD62-884F-4BA7-90FC-20D3B07343BB%7D&file=Intensive%20Induction%20Oct25.docx&action=default&mobileredirect=true",tag:"Guide",icon:"\ud83d\udcce",source:"Knowledge Base"},
+    {name:"Interviewing Applicants Guide",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7B0D6143C5-5E88-4230-84E5-36A2DFD3A776%7D&file=Interviewing%20Applicants.docx&action=default&mobileredirect=true",tag:"Guide",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Offer Letter Template",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7B37529A73-E77B-45DE-91DB-B78E414441FC%7D&file=offer%20letter%20template.docx&action=default&mobileredirect=true",tag:"Letter Template",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Reference Request Template",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7B0F785FBC-015D-4B14-87C1-3AA522A642A9%7D&file=Reference%20Request%20TEMPLATE.docx&action=default&mobileredirect=true",tag:"Letter Template",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Onboarding Email Template",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7B3AB3AD6F-AC0A-47E8-9C70-EF3ED773F0D8%7D&file=Onboarding%20email%20template.odt&action=default&mobileredirect=true",tag:"Email Template",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Application Form",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7B4A50A746-DA16-469C-A322-A6304C99AB09%7D&file=Application-Form.docx&action=default&mobileredirect=true",tag:"Form",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Pre-Employment Health Questionnaire",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7B92803581-EEE6-4AAF-84AA-10A76A35BCF3%7D&file=Health%20Questionnaire2021%20(1).docx&action=default&mobileredirect=true",tag:"Form",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Apprentice Contract",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7B5F9D01F0-873B-4C24-8F46-8DBC615BBCD4%7D&file=Apprentice%20Contract.docx&action=default&mobileredirect=true",tag:"Contract",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Nursery Assistant Contract",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7B46F043EE-457C-467C-ADDC-10425580E5C0%7D&file=Nursery%20Assistant%20Contract.docx&action=default&mobileredirect=true",tag:"Contract",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Nursery Practitioner Contract",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7B8B271A03-B60C-4059-9625-C8F21C2B0FC5%7D&file=Nursery%20Practitioner%20Contract.docx&action=default&mobileredirect=true",tag:"Contract",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Deputy Manager Contract",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7B731F92CC-2C8F-4BAF-9D00-480A9732F7DB%7D&file=Nursery%20Deputy%20Contract.docx&action=default&mobileredirect=true",tag:"Contract",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Nursery Manager Contract",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7B2FFEEC6D-67A8-44A3-BA4A-4344F24CA4A2%7D&file=Nursery%20Manager%20Contract.docx&action=default&mobileredirect=true",tag:"Contract",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Head Office Contract (3 Months)",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7B557CDD43-BF98-4525-9657-B374D41E9A50%7D&file=Head%20Office%203%20Mths.docx&action=default&mobileredirect=true",tag:"Contract",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Room Leader Contract",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7B0CA7E767-2139-4186-B68A-5D9364002D06%7D&file=RL%20Contract.docx&action=default&mobileredirect=true",tag:"Contract",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Job Description \u2014 Cook",url:"https://completechildcare.sharepoint.com/sites/HRFiling/Shared%20Documents/HRBP/Abby/ADP%20programme/Job%20Description%20-%20Cook.pdf",tag:"Job Description",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Job Description \u2014 Deputy Manager",url:"https://completechildcare.sharepoint.com/sites/HRFiling/Shared%20Documents/HRBP/Abby/ADP%20programme/Job%20description%20Deputy%20Manager%20(1).pdf",tag:"Job Description",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Job Description \u2014 Nursery Practitioner",url:"https://completechildcare.sharepoint.com/sites/HRFiling/Shared%20Documents/HRBP/Abby/ADP%20programme/Job%20Description%20Nursery%20Practitioner.pdf",tag:"Job Description",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Job Description \u2014 Senior Practitioner",url:"https://completechildcare.sharepoint.com/sites/HRFiling/Shared%20Documents/HRBP/Abby/ADP%20programme/Job%20description%20Senior%20Nursery%20Practitioner.pdf",tag:"Job Description",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Job Description \u2014 House Mother",url:"https://completechildcare.sharepoint.com/sites/TheKnowledgeBase/_layouts/15/Doc.aspx?sourcedoc=%7B4CBF7C8E-C974-4A77-A7AC-0A6401AA7133%7D&file=Job%20Description%20House%20Mother%20.docx&action=default&mobileredirect=true",tag:"Job Description",icon:"\ud83d\udcce",source:"Knowledge Base"},
+    {name:"Interview Questions \u2014 Manager",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BC12FE7D9-AAA5-4AE9-BCCE-425742876C96%7D&file=Interview%20Questions%20-%20CCL%20manager.docx&action=default&mobileredirect=true",tag:"Interview Qs",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Interview Questions \u2014 Room Senior / Deputy",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BE5CB928A-1AFF-440F-A206-4432C7E0FCCD%7D&file=Interview%20Questions%20-%20CCL%20room%20senior%20or%20deputy.docx&action=default&mobileredirect=true",tag:"Interview Qs",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Interview Questions \u2014 L2/L3 Practitioner",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BE4D0D6AC-43EB-4B6A-AA7F-3324D578607B%7D&file=Interview%20questions%20CCL%20L2%20or%203%20practitioner.docx&action=default&mobileredirect=true",tag:"Interview Qs",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Interview Questions \u2014 Deputy",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BF3237330-54DD-4090-A345-E6BD13A99B08%7D&file=interview%20questions%20dep.docx&action=default&mobileredirect=true",tag:"Interview Qs",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Interview Questions \u2014 Cook",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BEADA72D1-6A0A-40F3-ADD4-27DC85B31229%7D&file=interview%20questions%20cook.doc&action=default&mobileredirect=true",tag:"Interview Qs",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"New Starter Checklist 2024",url:"https://completechildcare.sharepoint.com/sites/HRFiling/Shared%20Documents/HRBP/Abby/ADP%20programme/Starter_checklist2024.pdf",tag:"Checklist",icon:"\ud83d\udcce",source:"HR Filing"}],
+  leave:[{name:"Flexible Working Policy (PM-2-6)",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BAA0862BD-3CCC-4595-8BC1-07A7DA263DCA%7D&file=PM_2_6_Flexible_Working%20Feb26.docx&action=default&mobileredirect=true",tag:"Policy",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Time Off for Dependants Policy",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BED6F36DE-6F0A-4CF8-929B-972C0A4D047D%7D&file=Time%20Off%20for%20Dependents%20Policy%20-%20Copy.docx&action=default&mobileredirect=true",tag:"Policy",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Change of Terms Letter Template",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BD4D48CF5-C62B-448D-A144-803B74468EC7%7D&file=change%20of%20terms%20template.docx&action=default&mobileredirect=true",tag:"Letter Template",icon:"\ud83d\udcce",source:"HR Filing"}],
+  grievances:[{name:"Invite to Investigation Meeting",url:"https://completechildcare.sharepoint.com/sites/TheKnowledgeBase/_layouts/15/Doc.aspx?sourcedoc=%7BE0D08A5C-D44E-4E12-AFE6-E1AC10ACE0FF%7D&file=Invite%20to%20Investigation%20Meeting%20Letter.docx&action=default&mobileredirect=true",tag:"Letter Template",icon:"\ud83d\udcce",source:"Knowledge Base"},
+    {name:"Investigation Meeting Notes",url:"https://completechildcare.sharepoint.com/sites/TheKnowledgeBase/_layouts/15/Doc.aspx?sourcedoc=%7BC63BB829-1BA4-4093-BEBA-7954A787BB2D%7D&file=Investigation%20Meeting%20Notes%20%20.docx&action=default&mobileredirect=true",tag:"Form",icon:"\ud83d\udcce",source:"Knowledge Base"},
+    {name:"Witness Statement Template",url:"https://completechildcare.sharepoint.com/sites/TheKnowledgeBase/_layouts/15/Doc.aspx?sourcedoc=%7BF3525A5A-340E-469A-81CE-AA8FB09B24D1%7D&file=Witness%20Statement%20Template%20Nov25.docx&action=default&mobileredirect=true",tag:"Form",icon:"\ud83d\udcce",source:"Knowledge Base"}],
+  safeguarding:[{name:"Contractor Code of Conduct \u2014 Sexual Harassment",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7B2DEEDB30-3A03-4146-A273-52144A97F5E4%7D&file=Contractor%20Code%20of%20Conduct%20-%20Sexual%20Harrassment%20Feb26.docx&action=default&mobileredirect=true",tag:"Policy",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Parent Code of Conduct \u2014 Sexual Harassment",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BE5FC66B6-02CF-43EE-96D7-9816BFAA7757%7D&file=Parent%20Code%20of%20Conduct%20-%20Sexual%20Harrassment%20Feb26.docx&action=default&mobileredirect=true",tag:"Policy",icon:"\ud83d\udcce",source:"HR Filing"},
+    {name:"Sexual Harassment Risk Assessment",url:"https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BE5F1C971-8F0E-4F73-B5BA-821F49E8675C%7D&file=Sexual%20Harrassment%20Risk%20Assessment%20Feb26.docx&action=default&mobileredirect=true",tag:"Risk Assessment",icon:"\ud83d\udcce",source:"HR Filing"}]
+};
+
+/* ================================================================
+   CATEGORY DATA
    ================================================================ */
 const CATEGORIES = [
-  {
-    id:'sickness',
-    label:'Sickness & Absence',
-    icon:'🤒',
-    desc:'Reporting, return to work, trigger points, fit notes',
-    escLevel:'informal',
-    escLabel:'Informal first',
-    guide:"If you feel too unwell to work, call your line manager at least 30 minutes before the nursery opens. Do not use email, text or social media for the initial call. For the first seven days you can self\u2011certify on return; beyond that you must provide a doctor's fit note. Keep your manager updated on your expected return date.",
-    policyQuote:"If you are unwell and unable to attend work, then you should phone your Line Manager as early as possible, and in any event, at least 30 minutes prior to the nursery opening time.",
-    policySource:"Absence Management Policy",
-    letterSubject:"Notification of Sickness Absence",
-    letterBody:"Dear [Employee Name],\n\nI am writing to acknowledge receipt of your call reporting sickness on [date].\nPlease complete the self\u2011certification form on your return, or forward a fit note if your absence exceeds seven days.\nKindly keep me informed of any changes to your expected return date.\nIf you need any support during your recovery, let me know.\n\nBest regards,\n[Manager Name]\n[Nursery Name]",
+  {id:'sickness',label:'Sickness & Absence',icon:'🤒',desc:'Reporting, return to work, trigger points, fit notes',escLevel:'informal',escLabel:'Informal first',
+    guide:'If a staff member calls in sick, log the absence on day one and ask them to keep in regular touch. A return-to-work conversation should happen on the first day back, even for short absences. If absence reaches four occasions in a rolling twelve months, move into the formal absence review process under the policy.',
+    policyQuote:'Employees must notify their manager of absence as early as possible and no later than one hour before their shift is due to start. Persistent short-term absence will be managed under the formal absence procedure once trigger points are reached.',
+    policySource:'Absence Management Policy PM-2-2 (Feb 2026)',
+    letterSubject:'Return to Work Discussion',
+    letterBody:`Dear [Employee Name],\n\nFollowing your recent period of absence from [start date] to [end date], I would like to invite you to an informal return to work discussion on [date] at [time].\n\nThis is a supportive conversation to check how you are and whether there is anything we can do to help.\n\nKind regards,\n[Your name]\n[Nursery Name]`,
     steps:[
-      {title:"Day 1 absence", detail:"Employee must call their line manager at least 30 minutes before their shift starts. Text or email is not acceptable for the initial call."},
-      {title:"Keep in touch", detail:"For absences beyond 3 days, agree a regular check-in cadence. Document all contact."},
-      {title:"Fit note (day 8+)", detail:"If absence extends beyond 7 calendar days, a GP fit note is required before return."},
-      {title:"Return to Work meeting", detail:"Hold a brief, supportive RTW conversation on the first day back — even for short absences. Complete the RTW form."},
-      {title:"Trigger point review", detail:"If a staff member hits 4+ occasions in a rolling 12 months, move to a formal absence review meeting under the policy."},
+      {title:'Day 1 — employee calls in',detail:'Employee must call their line manager at least 30 minutes before their shift starts. Text or email is not acceptable for the initial notification.'},
+      {title:'Keep in touch',detail:'For absences beyond 3 days, agree a regular check-in cadence. Document all contact in writing.'},
+      {title:'Fit note (day 8+)',detail:'If absence extends beyond 7 calendar days, a GP fit note is required before the employee returns to work.'},
+      {title:'Return to Work meeting',detail:'Hold a brief, supportive RTW conversation on the first day back — even for short absences. Use the RTW form from the document library.'},
+      {title:'Trigger point review',detail:'If a staff member hits 4+ occasions in a rolling 12 months, move to a formal absence review meeting under the policy.'},
     ],
-    links:[
-      {label:"ACAS — Absence policies", url:"https://www.acas.org.uk/creating-absence-policies"},
-      {label:"Gov.uk — Statutory sick pay", url:"https://www.gov.uk/statutory-sick-pay"},
-    ]
-  },
-  {
-    id:'conduct',
-    label:'Conduct & Lateness',
-    icon:'⚠️',
-    desc:'Informal chats, verbal warnings, formal disciplinary',
-    escLevel:'formal',
-    escLabel:'May become formal',
-    guide:"All staff must avoid gossip and any inappropriate communication, whether spoken, written or digital, even outside working hours if it relates to the nursery. Spreading rumours, sharing confidential information or making derogatory comments can harm colleagues and families and may lead to disciplinary action. Encourage open, respectful dialogue and use formal channels for concerns. Remind teams that the policy applies to all staff, volunteers and contractors.",
-    policyQuote:"Gossip and inappropriate communication ... can cause serious harm ... breaches may result in formal disciplinary action, up to and including dismissal.",
-    policySource:"Gossip and Inappropriate Communication Policy",
-    letterSubject:"Reminder on Professional Communication",
-    letterBody:"Dear Team,\n\nPlease be reminded that gossip or any inappropriate communication about colleagues, children or families is prohibited under our policy.\nSuch behaviour can lead to formal disciplinary action, up to dismissal.\nIf you have concerns, raise them through the proper channels rather than informal discussion.\nThank you for maintaining a respectful environment.\n\nKind regards,\n[Manager Name]\n[Nursery Name]",
+    links:[{label:'ACAS — Absence policies',url:'https://www.acas.org.uk/creating-absence-policies'},{label:'Gov.uk — Statutory sick pay',url:'https://www.gov.uk/statutory-sick-pay'}]},
+
+  {id:'conduct',label:'Conduct & Lateness',icon:'⚠️',desc:'Informal chats, verbal warnings, formal disciplinary',escLevel:'formal',escLabel:'May become formal',
+    guide:'Address minor conduct issues informally first — a private, documented conversation is often enough. If behaviour continues or is serious, move to the formal disciplinary process, following the ACAS Code of Practice at every stage. Always give the employee the right to be accompanied at formal meetings.',
+    policyQuote:'Gossip and inappropriate communication — whether spoken, written or digital — can cause serious harm to individuals and the organisation. Breaches may result in formal disciplinary action, up to and including dismissal.',
+    policySource:'Gossip & Inappropriate Communication Policy (HR Filing)',
+    letterSubject:'Invitation to Disciplinary Hearing',
+    letterBody:`Dear [Employee Name],\n\nI am writing to invite you to a formal disciplinary hearing on [date] at [time], [location].\n\nThe allegation(s) to be discussed are: [describe allegation(s)].\n\nYou have the right to be accompanied by a colleague or trade union representative.\n\nEvidence and any witness statements will be provided in advance.\n\nKind regards,\n[Your name]\n[Job Title]`,
     steps:[
-      {title:"Informal conversation", detail:"Address minor conduct issues informally first. Document the conversation and outcome."},
-      {title:"Verbal warning", detail:"If the behaviour continues, issue a verbal warning. Confirm in writing. This is the first formal step."},
-      {title:"Written warning", detail:"Repeat or more serious conduct warrants a first written warning following a formal hearing."},
-      {title:"Final written warning", detail:"For continued or serious misconduct. Employee must be given the right to be accompanied."},
-      {title:"Dismissal (gross misconduct)", detail:"Gross misconduct may result in summary dismissal. Always seek HR advice before this step."},
+      {title:'Informal conversation',detail:'Address minor issues privately. Document the conversation and agreed outcome.'},
+      {title:'Verbal warning',detail:'If behaviour continues, issue a verbal warning. Confirm in writing. This is the first formal step.'},
+      {title:'Investigation',detail:'For more serious matters, conduct an investigation first. Use the investigation meeting notes template.'},
+      {title:'Disciplinary hearing',detail:'Invite the employee formally. They have the right to be accompanied. Follow the ACAS Code throughout.'},
+      {title:'Outcome and appeal',detail:'Issue the outcome in writing. Inform the employee of their right of appeal. Document everything.'},
     ],
-    links:[
-      {label:"ACAS — Discipline & grievance", url:"https://www.acas.org.uk/discipline-and-grievance"},
-      {label:"ACAS Code of Practice", url:"https://www.acas.org.uk/acas-code-of-practice-on-disciplinary-and-grievance-procedures"},
-    ]
-  },
-  {
-    id:'performance',
-    label:'Performance',
-    icon:'📈',
-    desc:'Managing underperformance, PIPs, probation',
-    escLevel:'informal',
-    escLabel:'Supportive first',
-    guide:"Set clear, measurable objectives for each staff member and review progress regularly. Provide timely, constructive feedback and document any performance issues. If a flexible working request could affect performance, assess the impact against the eight statutory refusal reasons and explain any decision in writing. Support employees with training or adjustments where possible to sustain quality of care.",
-    policyQuote:"Detrimental impact on quality/performance",
-    policySource:"Manager Quick Reference Guide",
-    letterSubject:"Performance Review Invitation",
-    letterBody:"Dear [Employee Name],\n\nYou are invited to a performance review on [date] at [time].\nWe will discuss your recent achievements, set objectives for the next period, and identify any support you may need.\nPlease prepare any points you wish to raise.\nI look forward to our conversation.\n\nBest wishes,\n[Manager Name]\n[Nursery Name]",
+    links:[{label:'ACAS — Discipline & grievance',url:'https://www.acas.org.uk/discipline-and-grievance'},{label:'ACAS Code of Practice',url:'https://www.acas.org.uk/acas-code-of-practice-on-disciplinary-and-grievance-procedures'}]},
+
+  {id:'performance',label:'Performance',icon:'📈',desc:'Managing underperformance, PIPs, probation',escLevel:'informal',escLabel:'Supportive first',
+    guide:'Set clear, measurable objectives and review progress regularly. If underperformance persists after informal support, put a formal Performance Improvement Plan in place with SMART targets, a support plan, and a clear review timeline. Always involve HR before moving to capability dismissal.',
+    policyQuote:'A Performance Improvement Plan sets out specific, measurable targets the employee must meet within a defined timescale, together with the support the organisation will provide.',
+    policySource:'Nursery Staff PIP — Formal Notification (Knowledge Base)',
+    letterSubject:'Performance Review Meeting',
+    letterBody:`Dear [Employee Name],\n\nI would like to invite you to a performance review meeting on [date] at [time].\n\nThe purpose of this meeting is to discuss your performance against the objectives set on [date], and to agree a plan going forward.\n\nYou are welcome to bring notes or any supporting information.\n\nKind regards,\n[Your name]\n[Job Title]`,
     steps:[
-      {title:"Identify the concern", detail:"Be specific about what the performance gap is — and document examples with dates."},
-      {title:"Informal support meeting", detail:"Meet with the employee to discuss concerns. Agree clear, measurable improvement targets and a review date."},
-      {title:"Performance Improvement Plan", detail:"If informal support does not work, put a formal PIP in place with SMART targets, support measures, and consequences."},
-      {title:"Review meetings", detail:"Hold regular review meetings during the PIP period. Document progress (or lack of it)."},
-      {title:"Outcome", detail:"At the end of the PIP: confirm improvement, extend the plan, or move to capability dismissal. Always involve HR before dismissal."},
+      {title:'Identify the concern',detail:'Be specific about the performance gap. Document examples with dates and evidence.'},
+      {title:'Informal support meeting',detail:'Meet with the employee. Agree clear, measurable improvement targets and a review date.'},
+      {title:'Performance Improvement Plan',detail:'If informal support does not work, put a formal PIP in place. Use the PIP template from the document library.'},
+      {title:'Review meetings',detail:'Hold regular review meetings during the PIP period. Document progress carefully.'},
+      {title:'Outcome',detail:'At the end of the PIP: confirm improvement, extend the plan, or move to capability dismissal. Always involve HR before dismissal.'},
     ],
-    links:[
-      {label:"ACAS — Performance management", url:"https://www.acas.org.uk/performance-management"},
-    ]
-  },
-  {
-    id:'ratios',
-    label:'Ratios & Cover',
-    icon:'👶',
-    desc:'EYFS ratios, emergency cover, staffing shortfalls',
-    escLevel:'must',
-    escLabel:'Must escalate if breach',
-    guide:"Ensure staffing complies with EYFS ratios at all times: 1 adult to 3 children for under\u20112s, 1:4 for 2\u2011year\u2011olds, and 1:8 for children aged 3\u20115. Check the roster before each session and adjust for absences or emergencies. Keep a record of ratios on the staff room board and review it daily. Non\u2011compliance must be reported immediately to senior management.",
-    policyQuote:"EYFS statutory ratios: 1:3 for under\u20112s, 1:4 for 2\u2011year\u2011olds, 1:8 for 3\u20115 year\u2011olds.",
-    policySource:"Early Years Foundation Stage (EYFS) Statutory Guidance",
-    letterSubject:"Staffing Concern",
-    letterBody:"Dear [Area Manager],\n\nI am writing to flag a potential staffing issue at [Nursery] on [date].\n\nCurrent staffing: [X staff] covering [Y children] in [rooms].\nRequired ratio: [state ratio].\n\nI have taken the following steps to address this: [actions taken].\n\nPlease advise if further action is required.\n\nKind regards,\n[Your name]",
+    links:[{label:'ACAS — Performance management',url:'https://www.acas.org.uk/performance-management'}]},
+
+  {id:'ratios',label:'Ratios & Cover',icon:'👶',desc:'EYFS ratios, emergency cover, staffing shortfalls',escLevel:'must',escLabel:'Must escalate if ratio breach',
+    guide:'Ensure staffing complies with EYFS ratios at all times: 1 adult to 3 children for under-2s, 1:4 for 2-year-olds, and 1:8 for children aged 3–5. If you cannot maintain ratios, contact your area manager immediately. Never open or keep a room open below ratio.',
+    policyQuote:'EYFS statutory ratios: 1:3 for under-2s, 1:4 for 2-year-olds, 1:8 for 3–5 year-olds. These are statutory minimums and must never be breached.',
+    policySource:'EYFS Statutory Framework (Gov.uk)',
+    letterSubject:'Staffing Concern',
+    letterBody:`Dear [Area Manager],\n\nI am writing to flag a potential staffing issue at [Nursery] on [date].\n\nCurrent staffing: [X staff] covering [Y children] in [rooms].\nRequired ratio: [state ratio].\n\nI have taken the following steps: [actions taken].\n\nPlease advise if further action is required.\n\nKind regards,\n[Your name]`,
     steps:[
-      {title:"Know your ratios", detail:"Under 2s: 1 adult to 3 children. 2-year-olds: 1:4. 3-5 year olds: 1:8. These are statutory minimums — never breach them."},
-      {title:"Plan ahead", detail:"Check staffing levels at the start of each day against booked children. Flag shortfalls immediately."},
-      {title:"Emergency cover", detail:"Contact your bank staff list first. Then contact your area manager. Never open or keep a room open below ratio."},
-      {title:"Send children home", detail:"If cover cannot be found, contact parents to collect early. Explain there is a staffing issue."},
-      {title:"Report and document", detail:"Log any ratio concern or near-miss in writing to your area manager on the day it occurs."},
+      {title:'Know your ratios',detail:'Under 2s: 1:3. 2-year-olds: 1:4. 3–5 year olds: 1:8. These are statutory minimums — never breach them.'},
+      {title:'Plan ahead',detail:'Check staffing levels at the start of each day against booked children. Flag shortfalls immediately.'},
+      {title:'Emergency cover',detail:'Contact your bank staff list first. Then contact your area manager. Never open or keep a room open below ratio.'},
+      {title:'Send children home if needed',detail:'If cover cannot be found, contact parents to collect early. Explain there is a staffing issue.'},
+      {title:'Report and document',detail:'Log any ratio concern or near-miss in writing to your area manager on the day it occurs.'},
     ],
-    links:[
-      {label:"EYFS Statutory Framework", url:"https://www.gov.uk/government/publications/early-years-foundation-stage-framework--2"},
-    ]
-  },
-  {
-    id:'recruitment',
-    label:'Recruitment & Onboarding',
-    icon:'🧑‍💼',
-    desc:'Safer recruitment, DBS checks, probation, right to work',
-    escLevel:'must',
-    escLabel:'DBS/safeguarding: must escalate',
-    guide:"Advertise vacancies widely and ensure job descriptions reflect the essential duties and qualifications. Conduct DBS checks for all candidates and verify references before any offer is made. Involve at least two senior staff in interviews to ensure fairness and compliance with equality legislation. Offer a clear induction plan to new hires to integrate them smoothly.",
-    policyQuote:"All employees can request flexible working from DAY ONE and may make TWO requests per 12 months.",
-    policySource:"Manager Quick Reference Guide",
-    letterSubject:"Conditional Offer of Employment",
-    letterBody:"Dear [Candidate Name],\n\nWe are delighted to offer you the position of [Job Title] at [Nursery Name], subject to:\n\n• Enhanced DBS check (satisfactory)\n• Two satisfactory references\n• Proof of right to work in the UK\n• Proof of relevant qualifications\n\nYour start date will be confirmed once all pre-employment checks are complete.\n\nPlease contact us if you have any questions.\n\nKind regards,\n[Your name]\n[Nursery Name]",
+    links:[{label:'EYFS Statutory Framework',url:'https://www.gov.uk/government/publications/early-years-foundation-stage-framework--2'}]},
+
+  {id:'recruitment',label:'Recruitment & Onboarding',icon:'🧑‍💼',desc:'Safer recruitment, DBS, probation, right to work',escLevel:'must',escLabel:'DBS/safeguarding: must escalate',
+    guide:'All recruitment must follow safer recruitment principles. Every candidate requires an enhanced DBS check, two references, and proof of right to work before starting. Use the templates in the document library for every stage from application to contract.',
+    policyQuote:'All employees can request flexible working from day one and may make two requests per 12 months. DBS checks must be completed before any individual starts working with children.',
+    policySource:'Safer Recruitment Policy / Manager Quick Reference Guide',
+    letterSubject:'Conditional Offer of Employment',
+    letterBody:`Dear [Candidate Name],\n\nWe are delighted to offer you the position of [Job Title] at [Nursery Name], subject to:\n\n• Enhanced DBS check (satisfactory)\n• Two satisfactory references\n• Proof of right to work in the UK\n• Proof of relevant qualifications\n\nYour start date will be confirmed once all pre-employment checks are complete.\n\nKind regards,\n[Your name]\n[Nursery Name]`,
     steps:[
-      {title:"Advertise and shortlist", detail:"Use an objective shortlisting criteria based on the job description. Keep records of all decisions."},
-      {title:"Interview", detail:"At least two interviewers. Ask consistent questions including safeguarding-specific questions for all candidates."},
-      {title:"Conditional offer", detail:"Make offer conditional on DBS, references, right to work, and qualifications checks."},
-      {title:"Pre-employment checks", detail:"Enhanced DBS must be completed before start (or barred list check if registered with Update Service). Two references required — at least one from most recent employer."},
-      {title:"Induction & probation", detail:"Probation is typically 6 months. Set clear objectives, hold regular 1:1s, and document progress. Flexible working requests can be made from day 1."},
+      {title:'Advertise and shortlist',detail:'Use objective shortlisting criteria based on the job description. Keep records of all decisions. Use interview question templates from the library.'},
+      {title:'Interview',detail:'At least two interviewers. Ask consistent questions including safeguarding-specific questions for all candidates.'},
+      {title:'Conditional offer',detail:'Make offer conditional on DBS, references, right to work, and qualifications checks.'},
+      {title:'Pre-employment checks',detail:'Enhanced DBS must be completed before start. Two references required — at least one from most recent employer.'},
+      {title:'Induction & probation',detail:'Use the Intensive Induction programme from the document library. Probation is typically 6 months. Set clear objectives and hold regular 1:1s.'},
     ],
-    links:[
-      {label:"Gov.uk — DBS checks", url:"https://www.gov.uk/dbs-check-applicant-criminal-record"},
-      {label:"Gov.uk — Right to work checks", url:"https://www.gov.uk/check-job-applicant-right-to-work"},
-    ]
-  },
-  {
-    id:'leave',
-    label:'Leave',
-    icon:'📅',
-    desc:'Annual leave, flexible working, family leave, dependants',
-    escLevel:'informal',
-    escLabel:'Informal — apply policy',
-    guide:"Flexible working requests can be made from day one and must be submitted in writing. The nursery will consider the request within one month and give a decision within two months, unless a statutory refusal reason applies. Employees should give as much notice as possible for time off for dependants and inform the line manager of the reason and expected duration. Record all approved leave in the staff rota promptly.",
-    policyQuote:"Flexible working is the idea that your working life can, with agreement, be adapted to suit your needs and preferences.",
-    policySource:"Flexible Working & Predictable Working Pattern Policy",
-    letterSubject:"Flexible Working Request — Acknowledgement",
-    letterBody:"Dear [Employee Name],\n\nThank you for your flexible working request dated [date].\n\nWe will consider your request and respond within 2 months. We may ask to meet with you to discuss it further.\n\nWe will write to you with our decision, which will either accept your request, accept it with modifications, or decline it with reasons.\n\nKind regards,\n[Your name]",
+    links:[{label:'Gov.uk — DBS checks',url:'https://www.gov.uk/dbs-check-applicant-criminal-record'},{label:'Gov.uk — Right to work checks',url:'https://www.gov.uk/check-job-applicant-right-to-work'}]},
+
+  {id:'leave',label:'Leave',icon:'📅',desc:'Annual leave, flexible working, family leave, dependants',escLevel:'informal',escLabel:'Informal — apply policy',
+    guide:'Flexible working requests can be made from day one and must be submitted in writing. You must respond within 2 months. All employees have the right to reasonable unpaid time off to deal with dependant emergencies. For family leave, notify HR as early as possible.',
+    policyQuote:'Flexible working is the idea that your working life can, with agreement, be adapted to suit your needs and preferences. All employees may make two requests per 12 months from their first day of employment.',
+    policySource:'Flexible Working Policy PM-2-6 (Feb 2026)',
+    letterSubject:'Flexible Working Request — Acknowledgement',
+    letterBody:`Dear [Employee Name],\n\nThank you for your flexible working request dated [date].\n\nWe will consider your request and respond within 2 months. We may ask to meet with you to discuss it further.\n\nWe will write to you with our decision, which will either accept your request, accept it with modifications, or decline it with reasons.\n\nKind regards,\n[Your name]`,
     steps:[
-      {title:"Flexible working request", detail:"Must be in writing. Employee is entitled to make 2 requests per 12 months from day 1. You must respond within 2 months."},
-      {title:"Annual leave", detail:"Statutory minimum is 5.6 weeks (28 days for full-time). Check your contract for CCG entitlement. Requests should be made in advance per your local process."},
-      {title:"Time off for dependants", detail:"All employees have the right to reasonable unpaid time off to deal with emergencies involving dependants. No qualifying period required."},
-      {title:"Maternity/paternity/shared parental", detail:"Statutory entitlements apply from day 1. Notify HR as early as possible. Maternity leave can start from 11 weeks before due date."},
-      {title:"Carer's leave", detail:"Up to 5 days unpaid carer's leave per year from day 1. Can be taken in half-day increments."},
+      {title:'Flexible working request',detail:'Must be in writing. Employee is entitled to 2 requests per 12 months from day 1. You must respond within 2 months.'},
+      {title:'Annual leave',detail:'Statutory minimum is 5.6 weeks (28 days for full-time). Check your contract for CCG entitlement. Requests should be made in advance.'},
+      {title:'Time off for dependants',detail:'All employees have the right to reasonable unpaid time off to deal with emergencies involving dependants. No qualifying period required.'},
+      {title:'Maternity/paternity/shared parental',detail:'Statutory entitlements apply from day 1. Notify HR as early as possible. Maternity leave can start from 11 weeks before due date.'},
+      {title:"Carer's leave",detail:'Up to 5 days unpaid carer\'s leave per year from day 1. Can be taken in half-day increments.'},
     ],
-    links:[
-      {label:"ACAS — Flexible working", url:"https://www.acas.org.uk/flexible-working"},
-      {label:"ACAS — Time off for dependants", url:"https://www.acas.org.uk/time-off-for-dependants"},
-      {label:"Gov.uk — Carer's leave", url:"https://www.gov.uk/carers-leave"},
-      {label:"Gov.uk — Maternity pay and leave", url:"https://www.gov.uk/maternity-pay-leave"},
-    ]
-  },
-  {
-    id:'grievances',
-    label:'Grievances',
-    icon:'🤝',
-    desc:'Informal resolution, formal grievance, mediation',
-    escLevel:'formal',
-    escLabel:'Follow ACAS Code',
-    guide:"Staff should raise any grievance through the formal procedure, not via gossip or informal channels. The manager must acknowledge the complaint within two working days and arrange a confidential meeting to discuss the issue. Investigations are carried out promptly, fairly and with respect for all parties. Outcomes are communicated in writing and any necessary actions are implemented.",
-    policyQuote:"Breaches may result in formal disciplinary action, up to and including dismissal.",
-    policySource:"Gossip and Inappropriate Communication Policy",
-    letterSubject:"Grievance — Acknowledgement of Formal Complaint",
-    letterBody:"Dear [Employee Name],\n\nThank you for raising your grievance dated [date].\n\nWe take all grievances seriously and will investigate your concerns in line with our Grievance Policy.\n\nWe will invite you to a formal grievance hearing within [X] working days. You have the right to be accompanied by a colleague or trade union representative.\n\nKind regards,\n[Your name]",
+    links:[{label:"ACAS — Flexible working",url:'https://www.acas.org.uk/flexible-working'},{label:"ACAS — Time off for dependants",url:'https://www.acas.org.uk/time-off-for-dependants'},{label:"Gov.uk — Carer's leave",url:'https://www.gov.uk/carers-leave'}]},
+
+  {id:'grievances',label:'Grievances',icon:'🤝',desc:'Informal resolution, formal grievance, mediation',escLevel:'formal',escLabel:'Follow ACAS Code',
+    guide:'Most grievances can be resolved informally through a calm, private conversation. If a formal grievance is raised, acknowledge it within 5 working days, investigate thoroughly, and give the employee a fair hearing. They have the right to be accompanied at any formal meeting.',
+    policyQuote:'Breaches of expected conduct standards may result in formal disciplinary action, up to and including dismissal. All grievances must be taken seriously and investigated promptly and impartially.',
+    policySource:'Grievance Policy / ACAS Code of Practice',
+    letterSubject:'Grievance — Acknowledgement of Formal Complaint',
+    letterBody:`Dear [Employee Name],\n\nThank you for raising your grievance dated [date].\n\nWe take all grievances seriously and will investigate your concerns in line with our Grievance Policy.\n\nWe will invite you to a formal grievance hearing within [X] working days. You have the right to be accompanied by a colleague or trade union representative.\n\nKind regards,\n[Your name]`,
     steps:[
-      {title:"Encourage informal resolution", detail:"Most grievances can be resolved informally through a calm, private conversation. Document the outcome."},
-      {title:"Formal grievance raised", detail:"Employee submits grievance in writing. Acknowledge within 5 working days."},
-      {title:"Investigate", detail:"Gather evidence, speak to witnesses. Keep the process confidential. The investigating manager should not be the subject of the grievance."},
-      {title:"Grievance hearing", detail:"Invite the employee to a formal hearing. They have the right to be accompanied. Give them a fair opportunity to explain their concerns."},
-      {title:"Decision and appeal", detail:"Communicate the outcome in writing. Inform the employee of their right to appeal. Document everything."},
+      {title:'Encourage informal resolution',detail:'Most grievances can be resolved informally. Document the conversation and outcome.'},
+      {title:'Formal grievance raised',detail:'Employee submits grievance in writing. Acknowledge within 5 working days.'},
+      {title:'Investigate',detail:'Gather evidence, speak to witnesses. Keep the process confidential. The investigating manager should not be the subject of the grievance.'},
+      {title:'Grievance hearing',detail:'Invite the employee to a formal hearing. They have the right to be accompanied. Give them a fair opportunity to explain their concerns.'},
+      {title:'Decision and appeal',detail:'Communicate the outcome in writing. Inform the employee of their right to appeal. Document everything.'},
     ],
-    links:[
-      {label:"ACAS — Discipline & grievance", url:"https://www.acas.org.uk/discipline-and-grievance"},
-      {label:"ACAS — Mediation", url:"https://www.acas.org.uk/mediation"},
-    ]
-  },
-  {
-    id:'safeguarding',
-    label:'Safeguarding-Related HR',
-    icon:'🛡️',
-    desc:'Disclosures, DBS referrals, allegations, LADO',
-    escLevel:'must',
-    escLabel:'Must escalate immediately',
-    guide:"All contractors and external workers must sign the Contractor Code of Conduct and adhere to safeguarding, equality and health & safety standards. They must wear visible ID, sign in/out, and only access authorised areas. Any inappropriate behaviour, including sexual harassment, must be reported immediately and may lead to removal from the site. Keep a record of all contractor visits and ensure regular checks of their compliance.",
-    policyQuote:"All contractors must treat all staff, children and visitors with dignity and respect.",
-    policySource:"Contractor Code of Conduct \u2013 Sexual Harassment",
-    letterSubject:"Confidential — Safeguarding Concern",
-    letterBody:"CONFIDENTIAL\n\nTo: [Designated Safeguarding Lead / HR]\nFrom: [Your name]\nDate: [Date]\nNursery: [Nursery name]\n\nI am writing to report a safeguarding concern regarding a member of staff.\n\nNature of concern: [brief description — do not include unnecessary detail]\n\nDate/time of incident or disclosure: [date/time]\n\nWitnesses: [names if applicable]\n\nActions taken so far: [e.g. staff member stood down pending investigation]\n\nThis is being referred to the LADO: Yes / No / Under consideration\n\nPlease treat this as strictly confidential.",
+    links:[{label:'ACAS — Discipline & grievance',url:'https://www.acas.org.uk/discipline-and-grievance'},{label:'ACAS — Mediation',url:'https://www.acas.org.uk/mediation'}]},
+
+  {id:'safeguarding',label:'Safeguarding-Related HR',icon:'🛡️',desc:'Disclosures, DBS referrals, allegations, LADO',escLevel:'must',escLabel:'Must escalate immediately',
+    guide:'Any allegation or concern about a staff member\'s conduct towards a child must be reported to the Designated Safeguarding Lead immediately. Do not investigate yourself. The LADO must be contacted within one working day of any allegation. Stand the staff member down pending investigation — this is not a disciplinary sanction.',
+    policyQuote:'All contractors and staff must treat all children, staff, and visitors with dignity and respect. Any breach of safeguarding standards will be treated as a serious matter and may result in referral to the LADO and/or DBS.',
+    policySource:'Contractor Code of Conduct — Sexual Harassment (Feb 2026)',
+    letterSubject:'Confidential — Safeguarding Concern',
+    letterBody:`CONFIDENTIAL\n\nTo: [Designated Safeguarding Lead / HR]\nFrom: [Your name]\nDate: [Date]\nNursery: [Nursery name]\n\nI am writing to report a safeguarding concern regarding a member of staff.\n\nNature of concern: [brief description]\nDate/time of incident or disclosure: [date/time]\nWitnesses: [names if applicable]\nActions taken so far: [e.g. staff member stood down pending investigation]\n\nThis is being referred to the LADO: Yes / No / Under consideration\n\nPlease treat this as strictly confidential.`,
     steps:[
-      {title:"Do not delay — report immediately", detail:"Any allegation or concern about a staff member's conduct towards a child must be reported to the Designated Safeguarding Lead (DSL) immediately. Do not investigate yourself."},
-      {title:"Stand the staff member down", detail:"If the allegation is serious, the staff member should be stood down from working with children pending investigation. This is not a disciplinary sanction."},
-      {title:"Refer to LADO", detail:"The Local Authority Designated Officer (LADO) must be contacted within one working day of any allegation that a person who works with children has: behaved in a way that has harmed or may have harmed a child; possibly committed a criminal offence against a child; or behaved in a way that indicates they may not be suitable to work with children."},
-      {title:"Preserve evidence", detail:"Do not contact the subject of the allegation before speaking to the LADO. Do not interview the child. Preserve any evidence."},
-      {title:"HR and Ofsted notification", detail:"HR must be informed immediately. Ofsted must be notified within 14 days of any allegation against a registered person or member of staff."},
+      {title:'Report immediately',detail:'Any allegation about a staff member must be reported to the DSL immediately. Do not investigate yourself.'},
+      {title:'Stand the staff member down',detail:'If the allegation is serious, stand the staff member down from working with children. This is not a disciplinary sanction.'},
+      {title:'Refer to LADO',detail:'The LADO must be contacted within one working day of any allegation that a person who works with children may have harmed a child or committed a criminal offence against a child.'},
+      {title:'Preserve evidence',detail:'Do not contact the subject of the allegation before speaking to the LADO. Do not interview the child. Preserve any evidence.'},
+      {title:'Notify HR and Ofsted',detail:'HR must be informed immediately. Ofsted must be notified within 14 days of any allegation against a registered person or member of staff.'},
     ],
-    links:[
-      {label:"Gov.uk — DBS referrals", url:"https://www.gov.uk/dbs-check-applicant-criminal-record"},
-      {label:"NSPCC — LADO guidance", url:"https://www.nspcc.org.uk/keeping-children-safe/reporting-abuse/lado/"},
-    ]
-  },
+    links:[{label:'Gov.uk — DBS referrals',url:'https://www.gov.uk/dbs-check-applicant-criminal-record'},{label:'NSPCC — LADO guidance',url:'https://www.nspcc.org.uk/keeping-children-safe/reporting-abuse/lado/'}]},
 ];
 
 /* ================================================================
    BUILD CATEGORY PAGES
    ================================================================ */
+const TAG_COLORS = {
+  'Policy':         {bg:'#DCE8E4',color:'#1F4B49'},
+  'Letter Template':{bg:'#F3E6CC',color:'#7A5A1A'},
+  'Form':           {bg:'#E1EAE1',color:'#3D6040'},
+  'Guide':          {bg:'#EDE4D1',color:'#5A4A2A'},
+  'Contract':       {bg:'#F3DED8',color:'#7A2E22'},
+  'Job Description':{bg:'#DCE8F4',color:'#1A3A6A'},
+  'Interview Qs':   {bg:'#EDE4F4',color:'#4A2A7A'},
+  'Risk Assessment':{bg:'#F4E4DC',color:'#7A3A1A'},
+  'Checklist':      {bg:'#E4F4E4',color:'#2A6A2A'},
+  'Email Template': {bg:'#F4F4DC',color:'#6A6A1A'},
+  'Template':       {bg:'#F3E6CC',color:'#7A5A1A'},
+};
+
+function buildDocLibrary(catId) {
+  const docs = CAT_DOCS[catId] || [];
+  if (docs.length === 0) return '<p style="color:#888;font-size:13px;">No documents linked for this category yet.</p>';
+  const groups = {};
+  docs.forEach(d => { if (!groups[d.tag]) groups[d.tag] = []; groups[d.tag].push(d); });
+  const ORDER = ['Policy','Guide','Letter Template','Email Template','Form','Template','Contract','Job Description','Interview Qs','Checklist','Risk Assessment'];
+  return Object.keys(groups).sort((a,b) => (ORDER.indexOf(a)<0?99:ORDER.indexOf(a))-(ORDER.indexOf(b)<0?99:ORDER.indexOf(b))).map(tag => {
+    const tc = TAG_COLORS[tag] || {bg:'#EDE4D1',color:'#444'};
+    return `<div class="doc-group"><div class="doc-group-label">${tag}</div>` +
+      groups[tag].map(d => `<a href="${d.url}" target="_blank" class="doc-item"><span class="doc-icon">${d.icon}</span><span class="doc-name">${d.name}</span><span class="doc-tag" style="background:${tc.bg};color:${tc.color};">${d.tag}</span><span class="doc-source">${d.source}</span></a>`).join('') +
+      '</div>';
+  }).join('');
+}
+
 function buildCategoryPages() {
   CATEGORIES.forEach(cat => {
     const pg = document.getElementById('page-' + cat.id);
     if (!pg) return;
-    const escClass = {informal:'esc-informal', formal:'esc-formal', must:'esc-must'}[cat.escLevel];
-    const stepsHtml = cat.steps.map((s,i) => `
-      <li>
-        <div class="step-num">${i+1}</div>
-        <div class="step-content">
-          <h4>${s.title}</h4>
-          <p>${s.detail}</p>
-        </div>
-      </li>`).join('');
+    const escClass = {informal:'esc-informal',formal:'esc-formal',must:'esc-must'}[cat.escLevel];
+    const stepsHtml = cat.steps.map((s,i) => `<li><div class="step-num">${i+1}</div><div class="step-content"><h4>${s.title}</h4><p>${s.detail}</p></div></li>`).join('');
     const linksHtml = cat.links.map(l => `<a href="${l.url}" target="_blank" class="btn btn-secondary" style="font-size:12.5px;">${l.label}</a>`).join('');
     pg.innerHTML = `
       <button class="back-btn" onclick="showPage('overview')">← Back to topics</button>
       <div class="content-panel">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
           <span style="font-size:32px;">${cat.icon}</span>
-          <div>
-            <h2 style="margin-bottom:4px;">${cat.label}</h2>
-            <span class="esc-badge ${escClass}">${cat.escLabel}</span>
-          </div>
+          <div><h2 style="margin-bottom:4px;">${cat.label}</h2><span class="esc-badge ${escClass}">${cat.escLabel}</span></div>
         </div>
-
         <div class="section-label">Plain-English Guide</div>
         <div class="guide-text"><p>${cat.guide}</p></div>
-
         <hr class="divider">
         <div class="section-label">Step-by-Step Process</div>
         <ul class="step-list">${stepsHtml}</ul>
-
         <hr class="divider">
         <div class="section-label">Relevant Policy</div>
         <blockquote class="policy-quote">"${cat.policyQuote}"</blockquote>
         <div class="policy-source">Source: ${cat.policySource}</div>
-
         <hr class="divider">
-        <div class="section-label">Letter Template — ${cat.letterSubject}</div>
+        <div class="section-label">Quick-Start Letter Template — ${cat.letterSubject}</div>
         <div class="letter-box" id="letter-${cat.id}">${cat.letterBody}</div>
         <button class="copy-btn" onclick="copyLetter('${cat.id}')">📋 Copy letter</button>
-
+        <hr class="divider">
+        <div class="section-label">📁 Documents &amp; Templates from Knowledge Base (${(CAT_DOCS[cat.id]||[]).length} files)</div>
+        <div class="doc-library">${buildDocLibrary(cat.id)}</div>
         <hr class="divider">
         <div class="section-label">Useful Links</div>
         <div class="btn-row">${linksHtml}</div>
-
         <hr class="divider">
         <div class="btn-row">
-          <button class="btn btn-primary" onclick="openEscalate()">Escalate this to HR</button>
+          <button class="btn btn-primary" onclick="prefillAsk('${cat.label}')">🤖 Ask the AI about this</button>
+          <button class="btn btn-secondary" onclick="openEscalate()">Escalate to HR</button>
           <button class="btn btn-secondary" onclick="showPage('caselog')">Log this case</button>
         </div>
-      </div>
-    `;
+      </div>`;
   });
 }
 
@@ -799,49 +822,277 @@ function buildCategoryPages() {
    BUILD TILES
    ================================================================ */
 function buildTiles(containerId) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-  container.innerHTML = '';
+  const c = document.getElementById(containerId);
+  if (!c) return;
+  c.innerHTML = '';
   CATEGORIES.forEach(cat => {
     const div = document.createElement('div');
     div.className = 'tile';
     div.innerHTML = `<div class="tile-icon">${cat.icon}</div><h3>${cat.label}</h3><p>${cat.desc}</p>`;
     div.onclick = () => showPage(cat.id);
-    container.appendChild(div);
+    c.appendChild(div);
   });
 }
 
 /* ================================================================
-   SEARCH
+   AI COPILOT — RISK ENGINE
    ================================================================ */
-const SEARCH_INDEX = [];
-function buildSearchIndex() {
-  CATEGORIES.forEach(cat => {
-    SEARCH_INDEX.push({
-      id: cat.id,
-      label: cat.label,
-      text: (cat.guide + ' ' + cat.desc + ' ' + cat.policyQuote + ' ' + cat.steps.map(s=>s.title+' '+s.detail).join(' ')).toLowerCase()
-    });
-  });
+
+// Risk keyword scoring
+const RISK_HIGH = ['safeguarding','allegation','lado','dismissal','discrimination','harassment','whistleblowing','dbs referral','gross misconduct','pregnancy','disability','tribunal','criminal','abuse','assault','redundancy','tupe','settlement'];
+const RISK_MED  = ['formal warning','grievance','performance','absence trigger','pip','investigation','probation','flexible working','zero hours','fire and rehire','constructive','suspension','stood down','capability'];
+const RISK_LOW  = ['return to work','annual leave','rota','ratios','induction','supervision','reference','interview','contract','onboarding','sickness day one','fit note'];
+
+function scoreQuery(text) {
+  const t = text.toLowerCase();
+  for (const kw of RISK_HIGH) { if (t.includes(kw)) return {score:9, level:'high', reason:`This involves "${kw}" — a high-risk HR matter.`}; }
+  for (const kw of RISK_MED)  { if (t.includes(kw)) return {score:6, level:'medium', reason:`This involves "${kw}" — a moderately complex HR matter.`}; }
+  for (const kw of RISK_LOW)  { if (t.includes(kw)) return {score:2, level:'low', reason:'This is a routine HR query the AI can handle independently.'}; }
+  // Heuristic: longer, complex queries get medium by default
+  if (t.split(' ').length > 12) return {score:5, level:'medium', reason:'This query has some complexity — review the answer carefully.'};
+  return {score:3, level:'low', reason:'This appears to be a routine query.'};
 }
-function handleSearch(event) {
-  if (event.key !== 'Enter') return;
-  const q = document.getElementById('searchBox').value.toLowerCase().trim();
-  const results = document.getElementById('search-results');
-  if (!q) { results.innerHTML = ''; return; }
-  const matches = SEARCH_INDEX.filter(item => {
-    return item.text.includes(q) || item.label.toLowerCase().includes(q) ||
-      q.split(' ').some(word => item.text.includes(word));
-  });
-  if (matches.length === 0) {
-    results.innerHTML = `<div class="search-result-item"><h4>No exact match found</h4><p>Try browsing by topic, or <a href="#" onclick="openEscalate();return false;">escalate to HR</a> if you need immediate support.</p></div>`;
-  } else {
-    results.innerHTML = matches.map(m => `
-      <div class="search-result-item" onclick="showPage('${m.id}')">
-        <h4>${m.label}</h4>
-        <p>${CATEGORIES.find(c=>c.id===m.id).desc}</p>
-      </div>`).join('');
+
+function getThreshold() {
+  try { return parseInt(localStorage.getItem('hrRiskThreshold') || '6'); } catch(e) { return 6; }
+}
+
+// AI response knowledge base (grounded in CCG policies)
+const AI_KNOWLEDGE = {
+  sickness: {
+    keywords:['sick','absence','unwell','off work','fit note','return to work','rtw','bradford','trigger'],
+    response(q) {
+      return `<p><strong>Sickness & Absence</strong></p>
+<p>Here's what to do:</p>
+<ul>
+<li><strong>Day 1:</strong> The employee must call (not text) their line manager at least 30 minutes before their shift. Log the absence immediately.</li>
+<li><strong>Keeping in touch:</strong> For absences beyond 3 days, agree a regular check-in. Document all contact.</li>
+<li><strong>Fit note:</strong> Required from day 8 onwards (7 calendar days). SSP now applies from day 1 under the Employment Rights Act 2025.</li>
+<li><strong>Return to Work meeting:</strong> Hold a brief RTW conversation on the first day back — even for short absences. Use the Return to Work Interview Form from the document library.</li>
+<li><strong>Trigger points:</strong> 4+ occasions in a rolling 12 months triggers a formal absence review meeting under the Absence Management Policy PM-2-2.</li>
+</ul>
+<p>If the absence is long-term (4+ weeks) or linked to a disability, involve HR before taking any formal steps.</p>`;
+    }
+  },
+  conduct: {
+    keywords:['conduct','lateness','late','behaviour','warning','disciplinary','gossip','inappropriate','misconduct','gross'],
+    response(q) {
+      const isGross = q.toLowerCase().includes('gross');
+      return `<p><strong>Conduct & Lateness</strong></p>
+<p>${isGross ? '<strong>⚠ Gross misconduct</strong> — this is a high-risk situation. You should involve HR before taking any action.' : 'Here\'s the standard approach:'}</p>
+<ul>
+<li><strong>Informal first:</strong> For minor issues, have a private conversation. Document it.</li>
+<li><strong>Verbal warning:</strong> If behaviour continues, issue a verbal warning (confirmed in writing).</li>
+<li><strong>Formal hearing:</strong> For repeated or serious conduct, hold a disciplinary hearing. The employee has the right to be accompanied.</li>
+<li><strong>ACAS Code:</strong> Follow the ACAS Code of Practice at every stage — failure to do so can increase any tribunal award by up to 25%.</li>
+</ul>
+<p>Use the <em>Invite to Disciplinary Meeting Template</em> and <em>Disciplinary Meeting Notes</em> from the document library.</p>`;
+    }
+  },
+  performance: {
+    keywords:['performance','underperform','pip','improvement','capability','probation','objective','target','supervision'],
+    response(q) {
+      return `<p><strong>Performance Management</strong></p>
+<ul>
+<li><strong>Be specific:</strong> Document the performance gap with dates and examples — vague concerns are hard to manage fairly.</li>
+<li><strong>Informal support first:</strong> Meet with the employee, agree SMART targets, and set a review date.</li>
+<li><strong>Formal PIP:</strong> If informal support doesn't work, use the <em>Nursery Staff PIP</em> template from the document library. Include targets, support measures, timescale, and consequences.</li>
+<li><strong>Regular reviews:</strong> Hold documented review meetings throughout the PIP period.</li>
+<li><strong>Outcome:</strong> Confirm improvement, extend the plan, or — only with HR involvement — move to capability dismissal.</li>
+</ul>
+<p>Use the Supervision Form templates to maintain regular documented 1:1s.</p>`;
+    }
+  },
+  ratios: {
+    keywords:['ratio','cover','staffing','eyfs','short','room','children','1:3','1:4','1:8'],
+    response(q) {
+      return `<p><strong>Ratios & Cover</strong></p>
+<ul>
+<li><strong>Statutory ratios:</strong> Under 2s = 1:3. 2-year-olds = 1:4. 3–5 year olds = 1:8. These must never be breached.</li>
+<li><strong>If you're short:</strong> Contact bank staff immediately, then your area manager. Do not open or keep a room open below ratio.</li>
+<li><strong>Send children home if needed:</strong> If cover cannot be found, contact parents to collect early.</li>
+<li><strong>Document everything:</strong> Log any ratio concern or near-miss in writing to your area manager on the day.</li>
+<li><strong>Escalate:</strong> Any actual ratio breach must be reported to your area manager and logged. Repeated breaches are an Ofsted risk.</li>
+</ul>`;
+    }
+  },
+  recruitment: {
+    keywords:['recruit','hire','interview','offer','dbs','contract','onboard','induction','probation','reference','right to work','application','vacancy','job'],
+    response(q) {
+      return `<p><strong>Recruitment & Onboarding</strong></p>
+<ul>
+<li><strong>Safer recruitment:</strong> All candidates require an enhanced DBS check, two references, and proof of right to work before starting.</li>
+<li><strong>Interview:</strong> Use at least two interviewers and consistent questions including safeguarding questions. Interview question templates are in the document library.</li>
+<li><strong>Conditional offer:</strong> Make any offer conditional on DBS, references, right to work, and qualifications.</li>
+<li><strong>Contracts:</strong> Use the appropriate contract template from the document library (Practitioner, Deputy, Manager, etc.).</li>
+<li><strong>Induction:</strong> Use the Intensive Induction Programme (Oct 2025) from the document library. Probation is typically 6 months — set clear objectives and hold regular 1:1s.</li>
+</ul>`;
+    }
+  },
+  leave: {
+    keywords:['leave','holiday','annual','flexible','maternity','paternity','parental','dependant','carer','sick leave','compassionate','bereavement','neonatal'],
+    response(q) {
+      const q2 = q.toLowerCase();
+      let specific = '';
+      if (q2.includes('flexible')) specific = '<li><strong>Flexible working:</strong> Right from day 1. Must be in writing. You must respond within 2 months. Two requests per 12 months allowed.</li>';
+      if (q2.includes('maternity')) specific = '<li><strong>Maternity leave:</strong> Up to 52 weeks. SMP for 39 weeks. Must notify at least 15 weeks before due date. Notify HR immediately.</li>';
+      if (q2.includes('dependant')) specific = '<li><strong>Time off for dependants:</strong> Reasonable unpaid time off for emergencies involving dependants. No qualifying period. No fixed limit in law.</li>';
+      if (q2.includes("carer")) specific = '<li><strong>Carer\'s leave:</strong> Up to 5 days unpaid per year from day 1. Can be taken in half-day increments.</li>';
+      return `<p><strong>Leave</strong></p>
+<ul>
+${specific || '<li><strong>Annual leave:</strong> Statutory minimum 5.6 weeks (28 days FT). Check the contract for CCG entitlement.</li>'}
+<li>For all family leave (maternity, paternity, shared parental), notify HR as early as possible — statutory timescales apply.</li>
+<li>Use the <em>Flexible Working Policy PM-2-6</em> and <em>Time Off for Dependants Policy</em> from the document library for the full details.</li>
+</ul>`;
+    }
+  },
+  grievance: {
+    keywords:['grievance','complaint','raised','upset','unhappy','conflict','dispute','mediation'],
+    response(q) {
+      return `<p><strong>Grievances</strong></p>
+<ul>
+<li><strong>Informal first:</strong> Most grievances can be resolved through a calm, private conversation. Document the outcome.</li>
+<li><strong>Formal grievance:</strong> If raised in writing, acknowledge within 5 working days. Investigate thoroughly and impartially.</li>
+<li><strong>Hearing:</strong> The employee has the right to be accompanied at any formal grievance meeting.</li>
+<li><strong>Outcome:</strong> Communicate the decision in writing. Inform the employee of their right to appeal.</li>
+<li><strong>Mediation:</strong> Consider mediation for ongoing conflict between colleagues — ACAS offers a free early conciliation service.</li>
+</ul>
+<p>Use the Investigation Meeting Notes and Witness Statement Template from the document library.</p>`;
+    }
+  },
+  safeguarding: {
+    keywords:['safeguarding','allegation','lado','dbs','disclosure','abuse','child','concern','protect','ofsted'],
+    response(q) {
+      return `<p><strong>⚠ Safeguarding-Related HR</strong></p>
+<p>This is a <strong>high-risk area</strong>. Please follow these steps immediately:</p>
+<ul>
+<li><strong>Report immediately</strong> to your Designated Safeguarding Lead (DSL). Do not investigate yourself.</li>
+<li><strong>Stand the staff member down</strong> from working with children pending investigation. This is not a disciplinary sanction.</li>
+<li><strong>Contact the LADO</strong> within one working day of any allegation that a person who works with children may have harmed or could harm a child.</li>
+<li><strong>Preserve evidence.</strong> Do not contact the subject of the allegation before speaking to the LADO.</li>
+<li><strong>Notify HR and Ofsted</strong> — Ofsted must be informed within 14 days.</li>
+</ul>
+<p>Use the Confidential Safeguarding Concern letter template from the Safeguarding section.</p>`;
+    }
+  },
+};
+
+function matchKnowledge(query) {
+  const q = query.toLowerCase();
+  let best = null, bestScore = 0;
+  for (const [key, kb] of Object.entries(AI_KNOWLEDGE)) {
+    const matches = kb.keywords.filter(kw => q.includes(kw)).length;
+    if (matches > bestScore) { bestScore = matches; best = kb; }
   }
+  return best;
+}
+
+function generateAIResponse(query) {
+  const kb = matchKnowledge(query);
+  if (kb) return kb.response(query);
+  // Generic fallback
+  return `<p>I've reviewed your query against CCG policy and employment law guidance. Here's my initial assessment:</p>
+<p>Your question touches on an area where the right approach depends on the specific circumstances. As a starting point:</p>
+<ul>
+<li>Document everything in writing as the situation develops.</li>
+<li>Act promptly — delays can complicate HR matters.</li>
+<li>Browse the relevant topic section for step-by-step guidance and letter templates.</li>
+</ul>
+<p>If you're unsure, use the <strong>Escalate to HR</strong> button below — it's always better to ask than to get it wrong.</p>`;
+}
+
+/* ================================================================
+   COPILOT SEND / RENDER
+   ================================================================ */
+function prefillAsk(label) {
+  showPage('ask');
+  document.getElementById('copilotInput').value = 'Tell me about ' + label;
+  document.getElementById('copilotInput').focus();
+}
+
+function sendCopilot() {
+  const input = document.getElementById('copilotInput');
+  const query = input.value.trim();
+  if (!query) return;
+  input.value = '';
+
+  const thread = document.getElementById('chatThread');
+  const nursery = SESSION ? (SESSION.nursery || SESSION.name) : 'your nursery';
+
+  // Add user message
+  thread.innerHTML += `<div class="chat-msg user"><div class="chat-avatar user">👤</div><div class="chat-bubble user"><p>${escHtml(query)}</p></div></div>`;
+
+  // Add typing indicator
+  const typingId = 'typing-' + Date.now();
+  thread.innerHTML += `<div class="chat-msg" id="${typingId}"><div class="chat-avatar ai">🤖</div><div class="chat-bubble ai"><div class="typing-dots"><span></span><span></span><span></span></div></div></div>`;
+  thread.scrollTop = thread.scrollHeight;
+
+  // Score the query
+  const risk = scoreQuery(query);
+  const threshold = getThreshold();
+  const shouldEscalate = risk.score >= threshold;
+
+  setTimeout(() => {
+    const typingEl = document.getElementById(typingId);
+    if (typingEl) typingEl.remove();
+
+    const aiResponse = generateAIResponse(query);
+    const riskClass = risk.level;
+    const riskLabels = {low:'Low risk',medium:'Medium risk',high:'High risk'};
+    const riskColors = {low:'var(--risk-low)',medium:'var(--risk-med)',high:'var(--risk-high)'};
+
+    let riskHtml = `<div class="risk-bar ${riskClass}">
+      <div class="risk-dot ${riskClass}"></div>
+      <div>
+        <div class="risk-label ${riskClass}">${riskLabels[riskClass]} (${risk.score}/10)</div>
+        <div class="risk-detail">${risk.reason}</div>
+      </div>
+      ${shouldEscalate ? `<button class="risk-escalate-btn" onclick="openEscalate()">Escalate to HR →</button>` : ''}
+    </div>`;
+
+    if (shouldEscalate) {
+      riskHtml += `<div style="margin-top:10px;padding:10px 14px;background:var(--coral-tint);border-radius:8px;font-size:13px;color:var(--coral);font-weight:600;">⚠ This query meets the escalation threshold (score ${risk.score} ≥ threshold ${threshold}). HR involvement is recommended before proceeding.</div>`;
+    }
+
+    thread.innerHTML += `<div class="chat-msg"><div class="chat-avatar ai">🤖</div><div class="chat-bubble ai">${aiResponse}${riskHtml}</div></div>`;
+    thread.scrollTop = thread.scrollHeight;
+  }, 900 + Math.random()*600);
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ================================================================
+   RISK SETTINGS
+   ================================================================ */
+function initThresholdSlider() {
+  const t = getThreshold();
+  document.getElementById('thresholdSlider').value = t;
+  updateThresholdPreview();
+}
+function updateThresholdPreview() {
+  const val = parseInt(document.getElementById('thresholdSlider').value);
+  const preview = document.getElementById('thresholdPreview');
+  let desc, bg, color;
+  if (val <= 3) { desc = `<strong>Very cautious (${val}):</strong> Almost all queries will prompt escalation. Best for nurseries with limited HR experience or high-risk periods.`; bg='var(--risk-high-bg)'; color='var(--risk-high)'; }
+  else if (val <= 5) { desc = `<strong>Cautious (${val}):</strong> Medium and high-risk queries will prompt escalation. Routine queries are self-served.`; bg='var(--risk-med-bg)'; color='var(--risk-med)'; }
+  else if (val <= 7) { desc = `<strong>Balanced (${val}):</strong> Only genuinely complex or high-risk queries prompt escalation. Good default for experienced managers.`; bg='#F0F4F0'; color:'var(--sage)'; }
+  else { desc = `<strong>Self-serve (${val}):</strong> Only the highest-risk queries (safeguarding, discrimination, dismissal) prompt escalation. Managers handle most queries independently.`; bg='var(--risk-low-bg)'; color='var(--risk-low)'; }
+  preview.style.background = bg;
+  preview.style.color = color;
+  preview.style.border = `1px solid ${color}`;
+  preview.innerHTML = desc;
+}
+function saveThreshold() {
+  const val = document.getElementById('thresholdSlider').value;
+  try { localStorage.setItem('hrRiskThreshold', val); } catch(e) {}
+  alert(`Risk threshold saved: ${val}/10. The AI Copilot will now prompt escalation for any query scoring ${val} or above.`);
+}
+function resetThreshold() {
+  document.getElementById('thresholdSlider').value = 6;
+  updateThresholdPreview();
+  try { localStorage.setItem('hrRiskThreshold','6'); } catch(e) {}
 }
 
 /* ================================================================
@@ -849,8 +1100,7 @@ function handleSearch(event) {
    ================================================================ */
 function copyLetter(id) {
   const el = document.getElementById('letter-' + id);
-  const text = el.innerText;
-  navigator.clipboard.writeText(text).then(() => {
+  navigator.clipboard.writeText(el.innerText).then(() => {
     const btn = el.nextElementSibling;
     btn.textContent = '✓ Copied!';
     setTimeout(() => btn.textContent = '📋 Copy letter', 2000);
@@ -860,138 +1110,68 @@ function copyLetter(id) {
 /* ================================================================
    CASE LOG
    ================================================================ */
-function getCases() {
-  try { return JSON.parse(localStorage.getItem('hrCompanionCases2') || '[]'); } catch(e) { return []; }
-}
-function saveCaseData(cases) {
-  try { localStorage.setItem('hrCompanionCases2', JSON.stringify(cases)); } catch(e) {}
-}
-function saveCase() {
-  const emp = document.getElementById('caseEmployee').value.trim();
-  const cat = document.getElementById('caseCat').value;
-  const level = document.getElementById('caseLevel').value;
-  const notes = document.getElementById('caseNotes').value.trim();
-  if (!emp || !notes) { alert('Please fill in employee reference and notes.'); return; }
-  const cases = getCases();
-  cases.unshift({
-    id: Date.now(),
-    employee: emp,
-    category: cat,
-    level: level,
-    notes: notes,
-    nursery: SESSION ? (SESSION.nursery || SESSION.name) : 'Unknown',
-    manager: SESSION ? (SESSION.name || SESSION.nursery) : 'Unknown',
-    date: new Date().toLocaleDateString('en-GB')
-  });
+function getCases(){try{return JSON.parse(localStorage.getItem('hrCompanionCases3')||'[]');}catch(e){return[];}}
+function saveCaseData(c){try{localStorage.setItem('hrCompanionCases3',JSON.stringify(c));}catch(e){}}
+function saveCase(){
+  const emp=document.getElementById('caseEmployee').value.trim();
+  const notes=document.getElementById('caseNotes').value.trim();
+  if(!emp||!notes){alert('Please fill in employee reference and notes.');return;}
+  const cases=getCases();
+  cases.unshift({id:Date.now(),employee:emp,category:document.getElementById('caseCat').value,level:document.getElementById('caseLevel').value,notes,nursery:SESSION?(SESSION.nursery||SESSION.name):'Unknown',manager:SESSION?(SESSION.name||SESSION.nursery):'Unknown',date:new Date().toLocaleDateString('en-GB')});
   saveCaseData(cases);
-  document.getElementById('caseEmployee').value = '';
-  document.getElementById('caseNotes').value = '';
+  document.getElementById('caseEmployee').value='';
+  document.getElementById('caseNotes').value='';
   renderCaseLog();
 }
-function renderCaseLog() {
-  const cases = getCases();
-  const el = document.getElementById('caseList');
-  if (cases.length === 0) {
-    el.innerHTML = '<p style="color:#888;font-size:13.5px;">No cases logged yet.</p>';
-    return;
-  }
-  el.innerHTML = cases.map(c => `
-    <div class="case-entry ${c.level === 'formal' ? 'entry-formal' : c.level === 'urgent' ? 'entry-urgent' : ''}">
-      <h4>${c.employee} — ${c.category}</h4>
-      <div class="meta">${c.date} · ${c.nursery} · <span class="badge badge-${c.level === 'informal' ? 'informal' : c.level === 'formal' ? 'formal' : 'urgent'}">${c.level}</span></div>
-      <div class="notes">${c.notes}</div>
-    </div>`).join('');
+function renderCaseLog(){
+  const cases=getCases();const el=document.getElementById('caseList');
+  if(cases.length===0){el.innerHTML='<p style="color:#888;font-size:13.5px;">No cases logged yet.</p>';return;}
+  el.innerHTML=cases.map(c=>`<div class="case-entry ${c.level==='formal'?'entry-formal':c.level==='urgent'?'entry-urgent':''}"><h4>${c.employee} — ${c.category}</h4><div class="meta">${c.date} · ${c.nursery} · <span class="badge badge-${c.level==='informal'?'informal':c.level==='formal'?'formal':'urgent'}">${c.level}</span></div><div class="notes">${c.notes}</div></div>`).join('');
 }
-function exportCases() {
-  const cases = getCases();
-  if (cases.length === 0) { alert('No cases to export.'); return; }
-  const header = 'Date,Manager,Nursery,Employee,Category,Level,Notes';
-  const rows = cases.map(c => [c.date, c.manager, c.nursery, c.employee, c.category, c.level, '"' + (c.notes||'').replace(/"/g,'""') + '"'].join(','));
-  const csv = [header, ...rows].join('\n');
-  const blob = new Blob([csv], {type:'text/csv'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'hr-case-log-' + new Date().toISOString().slice(0,10) + '.csv';
-  a.click();
+function exportCases(){
+  const cases=getCases();if(cases.length===0){alert('No cases to export.');return;}
+  const csv=['Date,Manager,Nursery,Employee,Category,Level,Notes',...cases.map(c=>[c.date,c.manager,c.nursery,c.employee,c.category,c.level,'"'+(c.notes||'').replace(/"/g,'""')+'"'].join(','))].join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='hr-case-log-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
 }
-function clearCases() {
-  if (!confirm('Clear all case log entries? This cannot be undone.')) return;
-  try { localStorage.removeItem('hrCompanionCases2'); } catch(e) {}
-  renderCaseLog();
-}
+function clearCases(){if(!confirm('Clear all case log entries?'))return;try{localStorage.removeItem('hrCompanionCases3');}catch(e){}renderCaseLog();}
 
 /* ================================================================
    HR DASHBOARD
    ================================================================ */
-function renderHRDash() {
-  if (!SESSION || !SESSION.isHR) {
-    document.getElementById('hrDashContent').innerHTML = '<p style="color:#B5533E;">Access restricted to HR and management.</p>';
-    return;
-  }
-  const cases = getCases();
-  if (cases.length === 0) {
-    document.getElementById('hrDashContent').innerHTML = '<p style="color:#888;">No case log entries on this device.</p>';
-    return;
-  }
-  const rows = cases.map(c => `
-    <tr>
-      <td>${c.date}</td>
-      <td>${c.manager}</td>
-      <td>${c.nursery}</td>
-      <td>${c.category}</td>
-      <td><span class="badge badge-${c.level === 'informal' ? 'informal' : c.level === 'formal' ? 'formal' : 'urgent'}">${c.level}</span></td>
-      <td>${c.employee}</td>
-    </tr>`).join('');
-  document.getElementById('hrDashContent').innerHTML = `
-    <table class="hr-dash-table">
-      <thead><tr><th>Date</th><th>Manager</th><th>Nursery</th><th>Category</th><th>Level</th><th>Employee Ref</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-    <div class="btn-row" style="margin-top:14px;">
-      <button class="btn btn-secondary" onclick="exportCases()">Export CSV</button>
-    </div>`;
+function renderHRDash(){
+  if(!SESSION||!SESSION.isHR){document.getElementById('hrDashContent').innerHTML='<p style="color:#B5533E;">Access restricted to HR and management.</p>';return;}
+  const cases=getCases();
+  if(cases.length===0){document.getElementById('hrDashContent').innerHTML='<p style="color:#888;">No case log entries on this device.</p>';return;}
+  document.getElementById('hrDashContent').innerHTML=`<table class="hr-dash-table"><thead><tr><th>Date</th><th>Manager</th><th>Nursery</th><th>Category</th><th>Level</th><th>Employee Ref</th></tr></thead><tbody>${cases.map(c=>`<tr><td>${c.date}</td><td>${c.manager}</td><td>${c.nursery}</td><td>${c.category}</td><td><span class="badge badge-${c.level==='informal'?'informal':c.level==='formal'?'formal':'urgent'}">${c.level}</span></td><td>${c.employee}</td></tr>`).join('')}</tbody></table><div class="btn-row" style="margin-top:14px;"><button class="btn btn-secondary" onclick="exportCases()">Export CSV</button></div>`;
 }
 
 /* ================================================================
-   PANIC / ESCALATE MODALS
+   PANIC / ESCALATE
    ================================================================ */
-function openPanic() { document.getElementById('panicModal').classList.add('active'); }
-function closePanic() { document.getElementById('panicModal').classList.remove('active'); }
-function submitPanic() {
-  const text = document.getElementById('panicText').value.trim();
-  if (!text) { alert('Please describe the issue before sending.'); return; }
-  alert('Urgent alert sent. In the live deployment, this would immediately notify the HR Manager via Teams with your name, nursery, and this description — flagged as high priority. You will receive a confirmation message.');
-  closePanic();
-  document.getElementById('panicText').value = '';
+function openPanic(){document.getElementById('panicModal').classList.add('active');}
+function closePanic(){document.getElementById('panicModal').classList.remove('active');}
+function submitPanic(){
+  const t=document.getElementById('panicText').value.trim();
+  if(!t){alert('Please describe the issue before sending.');return;}
+  alert('Urgent alert sent. In the live deployment, this would immediately notify the HR Manager via Teams — flagged as high priority.');
+  closePanic();document.getElementById('panicText').value='';
 }
-function openEscalate() { document.getElementById('escalateModal').classList.add('active'); }
-function closeEscalate() { document.getElementById('escalateModal').classList.remove('active'); }
-function submitEscalate() {
-  const cat = document.getElementById('escCategory').value;
-  const text = document.getElementById('escText').value.trim();
-  if (!text) { alert('Please describe your query before submitting.'); return; }
-  alert('Escalation submitted. In the live deployment, this would notify the HR team via Teams with your category, nursery, and query. They will respond within one working day.');
-  closeEscalate();
-  document.getElementById('escText').value = '';
+function openEscalate(){document.getElementById('escalateModal').classList.add('active');}
+function closeEscalate(){document.getElementById('escalateModal').classList.remove('active');}
+function submitEscalate(){
+  const t=document.getElementById('escText').value.trim();
+  if(!t){alert('Please describe your query before submitting.');return;}
+  alert('Escalation submitted. In the live deployment, this would notify the HR team via Teams. They will respond within one working day.');
+  closeEscalate();document.getElementById('escText').value='';
 }
 
 /* ================================================================
    INIT
    ================================================================ */
 populateIdentitySelect();
-buildSearchIndex();
-
-const stored = getStoredSession();
-if (stored) {
-  SESSION = stored;
-  document.getElementById('identityModal').classList.remove('active');
-  applySession();
-} else {
-  buildNav(false);
-  buildCategoryPages();
-  buildTiles('overviewTiles');
-  buildTiles('searchTiles');
-}
+const stored=getStoredSession();
+if(stored){SESSION=stored;document.getElementById('identityModal').classList.remove('active');applySession();}
+else{buildNav(false);buildCategoryPages();buildTiles('overviewTiles');buildTiles('askTiles');}
 </script>
 </body>
 </html>
