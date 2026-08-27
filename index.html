@@ -333,7 +333,12 @@ hr.divider{border:none;border-top:1px solid var(--line);margin:20px 0;}
           <button class="copilot-send" onclick="sendCopilot()">Ask →</button>
         </div>
         <div class="copilot-hint">Press Enter or click Ask. The AI scores every response for risk — if it crosses your threshold, escalation is suggested automatically.</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;margin-bottom:4px;">
+          <span id="archiveCount" style="font-size:12px;color:#aaa;"></span>
+          <button onclick="clearCopilotView()" id="clearViewBtn" style="display:none;all:unset;cursor:pointer;font-size:12.5px;color:#888;border:1px solid #D8CDB5;padding:5px 12px;border-radius:6px;background:var(--paper-2);" title="Hides this session's questions from view — your full history is kept in your archive">Clear view</button>
+        </div>
         <div class="chat-thread" id="chatThread"></div>
+        <div id="archivedNotice" style="display:none;text-align:center;padding:20px 0;font-size:13px;color:#aaa;">View cleared. Your query history is saved — <button onclick="restoreCopilotView()" style="all:unset;cursor:pointer;color:var(--teal);text-decoration:underline;font-size:13px;">show archive</button></div>
       </div>
       <div class="tiles" id="askTiles"></div>
     </div>
@@ -491,6 +496,7 @@ function showPage(id) {
   if (id === 'caselog') renderCaseLog();
   if (id === 'hrdash') renderHRDash();
   if (id === 'risksettings') initThresholdSlider();
+  if (id === 'ask') updateArchiveUI();
 }
 
 /* ================================================================
@@ -559,6 +565,7 @@ function applySession(){
   buildCategoryPages();
   buildTiles('overviewTiles');
   buildTiles('askTiles');
+  restoreThreadFromArchive();
 }
 
 /* ================================================================
@@ -1010,6 +1017,64 @@ function prefillAsk(label) {
   document.getElementById('copilotInput').focus();
 }
 
+/* ================================================================
+   COPILOT ARCHIVE — per-user localStorage persistence
+   ================================================================ */
+function copilotArchiveKey() {
+  // Key is scoped to the signed-in user so each person has their own history
+  const id = SESSION ? (SESSION.name || SESSION.nursery || 'anon') : 'anon';
+  return 'hrCopilotArchive_' + id.replace(/\s+/g,'_');
+}
+function loadArchive() {
+  try { return JSON.parse(localStorage.getItem(copilotArchiveKey()) || '[]'); } catch(e) { return []; }
+}
+function saveArchive(entries) {
+  try { localStorage.setItem(copilotArchiveKey(), JSON.stringify(entries)); } catch(e) {}
+}
+function appendToArchive(userHtml, aiHtml) {
+  const entries = loadArchive();
+  entries.push({ ts: Date.now(), userHtml, aiHtml });
+  saveArchive(entries);
+  updateArchiveUI();
+}
+function updateArchiveUI() {
+  const entries = loadArchive();
+  const count = document.getElementById('archiveCount');
+  const btn   = document.getElementById('clearViewBtn');
+  const thread = document.getElementById('chatThread');
+  if (count) count.textContent = entries.length > 0 ? entries.length + ' question' + (entries.length === 1 ? '' : 's') + ' in your archive' : '';
+  if (btn) btn.style.display = (thread && thread.children.length > 0) ? 'block' : 'none';
+}
+function clearCopilotView() {
+  const thread = document.getElementById('chatThread');
+  const notice = document.getElementById('archivedNotice');
+  const btn    = document.getElementById('clearViewBtn');
+  if (thread) thread.style.display = 'none';
+  if (notice) notice.style.display = 'block';
+  if (btn)    btn.style.display    = 'none';
+}
+function restoreCopilotView() {
+  const thread = document.getElementById('chatThread');
+  const notice = document.getElementById('archivedNotice');
+  if (thread) thread.style.display = '';
+  if (notice) notice.style.display = 'none';
+  updateArchiveUI();
+}
+function restoreThreadFromArchive() {
+  // Rebuild the visible thread from stored archive on page load / identity change
+  const entries = loadArchive();
+  const thread  = document.getElementById('chatThread');
+  if (!thread) return;
+  thread.innerHTML = '';
+  entries.forEach(e => {
+    thread.innerHTML += e.userHtml + e.aiHtml;
+  });
+  updateArchiveUI();
+}
+
+/* ================================================================
+   COPILOT SEND / RENDER
+   ================================================================ */
 function sendCopilot() {
   const input = document.getElementById('copilotInput');
   const query = input.value.trim();
@@ -1017,17 +1082,18 @@ function sendCopilot() {
   input.value = '';
 
   const thread = document.getElementById('chatThread');
-  const nursery = SESSION ? (SESSION.nursery || SESSION.name) : 'your nursery';
+  // Make sure thread is visible (in case it was cleared)
+  thread.style.display = '';
+  document.getElementById('archivedNotice').style.display = 'none';
 
-  // Add user message
-  thread.innerHTML += `<div class="chat-msg user"><div class="chat-avatar user">👤</div><div class="chat-bubble user"><p>${escHtml(query)}</p></div></div>`;
+  const userMsgHtml = `<div class="chat-msg user"><div class="chat-avatar user">👤</div><div class="chat-bubble user"><p>${escHtml(query)}</p></div></div>`;
+  thread.innerHTML += userMsgHtml;
 
-  // Add typing indicator
+  // Typing indicator (not archived)
   const typingId = 'typing-' + Date.now();
   thread.innerHTML += `<div class="chat-msg" id="${typingId}"><div class="chat-avatar ai">🤖</div><div class="chat-bubble ai"><div class="typing-dots"><span></span><span></span><span></span></div></div></div>`;
   thread.scrollTop = thread.scrollHeight;
 
-  // Score the query
   const risk = scoreQuery(query);
   const threshold = getThreshold();
   const shouldEscalate = risk.score >= threshold;
@@ -1037,9 +1103,8 @@ function sendCopilot() {
     if (typingEl) typingEl.remove();
 
     const aiResponse = generateAIResponse(query);
-    const riskClass = risk.level;
-    const riskLabels = {low:'Low risk',medium:'Medium risk',high:'High risk'};
-    const riskColors = {low:'var(--risk-low)',medium:'var(--risk-med)',high:'var(--risk-high)'};
+    const riskClass  = risk.level;
+    const riskLabels = {low:'Low risk', medium:'Medium risk', high:'High risk'};
 
     let riskHtml = `<div class="risk-bar ${riskClass}">
       <div class="risk-dot ${riskClass}"></div>
@@ -1047,16 +1112,20 @@ function sendCopilot() {
         <div class="risk-label ${riskClass}">${riskLabels[riskClass]} (${risk.score}/10)</div>
         <div class="risk-detail">${risk.reason}</div>
       </div>
-      ${shouldEscalate ? `<button class="risk-escalate-btn" onclick="openEscalate()">Escalate to HR →</button>` : ''}
+      ${shouldEscalate ? `<button class="risk-escalate-btn" onclick="openEscalate()">Escalate to HR \u2192</button>` : ''}
     </div>`;
 
     if (shouldEscalate) {
-      riskHtml += `<div style="margin-top:10px;padding:10px 14px;background:var(--coral-tint);border-radius:8px;font-size:13px;color:var(--coral);font-weight:600;">⚠ This query meets the escalation threshold (score ${risk.score} ≥ threshold ${threshold}). HR involvement is recommended before proceeding.</div>`;
+      riskHtml += `<div style="margin-top:10px;padding:10px 14px;background:var(--coral-tint);border-radius:8px;font-size:13px;color:var(--coral);font-weight:600;">\u26a0 This query meets the escalation threshold (score ${risk.score} \u2265 threshold ${threshold}). HR involvement is recommended before proceeding.</div>`;
     }
 
-    thread.innerHTML += `<div class="chat-msg"><div class="chat-avatar ai">🤖</div><div class="chat-bubble ai">${aiResponse}${riskHtml}</div></div>`;
+    const aiMsgHtml = `<div class="chat-msg"><div class="chat-avatar ai">\ud83e\udd16</div><div class="chat-bubble ai">${aiResponse}${riskHtml}</div></div>`;
+    thread.innerHTML += aiMsgHtml;
     thread.scrollTop = thread.scrollHeight;
-  }, 900 + Math.random()*600);
+
+    // Persist to per-user archive
+    appendToArchive(userMsgHtml, aiMsgHtml);
+  }, 900 + Math.random() * 600);
 }
 
 function escHtml(s) {
@@ -1171,7 +1240,7 @@ function submitEscalate(){
 populateIdentitySelect();
 const stored=getStoredSession();
 if(stored){SESSION=stored;document.getElementById('identityModal').classList.remove('active');applySession();}
-else{buildNav(false);buildCategoryPages();buildTiles('overviewTiles');buildTiles('askTiles');}
+else{buildNav(false);buildCategoryPages();buildTiles('overviewTiles');buildTiles('askTiles');updateArchiveUI();}
 </script>
 </body>
 </html>
