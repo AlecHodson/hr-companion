@@ -875,7 +875,37 @@ function getThreshold() {
   try { return parseInt(localStorage.getItem('hrRiskThreshold') || '6'); } catch(e) { return 6; }
 }
 
-// AI response knowledge base (grounded in CCG policies)
+
+// ─── SOURCE CITATION HELPER ──────────────────────────────────────────────────
+function sourcesPanel(sources) {
+  const icons = { ccg:'📄', acas:'⚖️', gov:'🏛️' };
+  const colours = { ccg:'var(--teal-tint)', acas:'var(--amber-tint)', gov:'#EAF0FB' };
+  const textCol = { ccg:'var(--teal-deep)', acas:'#7A5A1A', gov:'#1a3a6a' };
+  let rows = sources.map(s => {
+    const ic2 = icons[s.type] || '🔗';
+    const bg = colours[s.type] || '#f5f5f5';
+    const tc = textCol[s.type] || '#333';
+    return `<a href="${s.url}" target="_blank" rel="noopener"
+      style="display:flex;align-items:center;gap:8px;padding:7px 10px;
+             background:${bg};border-radius:6px;text-decoration:none;
+             color:${tc};font-size:12px;font-weight:600;border:1px solid rgba(0,0,0,0.07);
+             transition:opacity .15s;" onmouseover="this.style.opacity='.75'"
+             onmouseout="this.style.opacity='1'">
+      <span>${ic2}</span>
+      <span style="flex:1;">${s.label}</span>
+      <span style="font-size:10px;opacity:.6;">↗</span>
+    </a>`;
+  }).join('');
+  return `<div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line);">
+    <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+                color:#888;margin-bottom:8px;font-family:'IBM Plex Mono',monospace;">
+      Sources consulted
+    </div>
+    <div style="display:flex;flex-direction:column;gap:5px;">${rows}</div>
+  </div>`;
+}
+
+// AI response knowledge base (grounded in CCG policies, ACAS and Gov.uk)
 const AI_KNOWLEDGE = {
   sickness: {
     keywords:['sick','absence','unwell','off work','fit note','return to work','rtw','bradford','trigger'],
@@ -889,7 +919,13 @@ const AI_KNOWLEDGE = {
 <li><strong>Return to Work meeting:</strong> Hold a brief RTW conversation on the first day back — even for short absences. Use the Return to Work Interview Form from the document library.</li>
 <li><strong>Trigger points:</strong> 4+ occasions in a rolling 12 months triggers a formal absence review meeting under the Absence Management Policy PM-2-2.</li>
 </ul>
-<p>If the absence is long-term (4+ weeks) or linked to a disability, involve HR before taking any formal steps.</p>`;
+<p>If the absence is long-term (4+ weeks) or linked to a disability, involve HR before taking any formal steps.</p>
+` + sourcesPanel([
+  {label:'CCG Absence Management Policy (PM-2-2)', url:'https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BEB8FAA88-B5C0-401F-9235-C230195A9139%7D&file=PM_2_2_Absence_Management_Policy%20Feb26.docx&action=default&mobileredirect=true', type:'ccg'},
+  {label:'CCG Employee Handbook', url:'https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7B...%7D&file=Employment+Law+Employee+Handbook+v7+Mar26.docx&action=default&mobileredirect=true', type:'ccg'},
+  {label:'ACAS: Absence policies', url:'https://www.acas.org.uk/creating-absence-policies', type:'acas'},
+  {label:'Gov.uk: Statutory sick pay', url:'https://www.gov.uk/statutory-sick-pay', type:'gov'},
+]);
     }
   },
   conduct: {
@@ -904,7 +940,13 @@ const AI_KNOWLEDGE = {
 <li><strong>Formal hearing:</strong> For repeated or serious conduct, hold a disciplinary hearing. The employee has the right to be accompanied.</li>
 <li><strong>ACAS Code:</strong> Follow the ACAS Code of Practice at every stage — failure to do so can increase any tribunal award by up to 25%.</li>
 </ul>
-<p>Use the <em>Invite to Disciplinary Meeting Template</em> and <em>Disciplinary Meeting Notes</em> from the document library.</p>`;
+<p>Use the <em>Invite to Disciplinary Meeting Template</em> and <em>Disciplinary Meeting Notes</em> from the document library.</p>
+` + sourcesPanel([
+  {label:'CCG Gossip & Inappropriate Communication Policy', url:'https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BA2EE67BF-F631-4F57-BA94-88C7D8CC44E8%7D&file=Gossip%20Policy.docx&action=default&mobileredirect=true', type:'ccg'},
+  {label:'CCG Employee Handbook', url:'https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BEB8FAA88-B5C0-401F-9235-C230195A9139%7D&file=Employment+Law+Employee+Handbook+v7+Mar26.docx&action=default&mobileredirect=true', type:'ccg'},
+  {label:'ACAS: Code of Practice — Disciplinary & Grievance', url:'https://www.acas.org.uk/acas-code-of-practice-on-disciplinary-and-grievance-procedures', type:'acas'},
+  {label:'ACAS: Discipline & grievance hub', url:'https://www.acas.org.uk/discipline-and-grievance', type:'acas'},
+]);
     }
   },
   performance: {
@@ -918,7 +960,12 @@ const AI_KNOWLEDGE = {
 <li><strong>Regular reviews:</strong> Hold documented review meetings throughout the PIP period.</li>
 <li><strong>Outcome:</strong> Confirm improvement, extend the plan, or — only with HR involvement — move to capability dismissal.</li>
 </ul>
-<p>Use the Supervision Form templates to maintain regular documented 1:1s.</p>`;
+<p>Use the Supervision Form templates to maintain regular documented 1:1s.</p>
+` + sourcesPanel([
+  {label:'CCG Employee Handbook', url:'https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BEB8FAA88-B5C0-401F-9235-C230195A9139%7D&file=Employment+Law+Employee+Handbook+v7+Mar26.docx&action=default&mobileredirect=true', type:'ccg'},
+  {label:'ACAS: Performance management', url:'https://www.acas.org.uk/performance-management', type:'acas'},
+  {label:'ACAS: Code of Practice — Disciplinary & Grievance', url:'https://www.acas.org.uk/acas-code-of-practice-on-disciplinary-and-grievance-procedures', type:'acas'},
+]);
     }
   },
   ratios: {
@@ -931,7 +978,11 @@ const AI_KNOWLEDGE = {
 <li><strong>Send children home if needed:</strong> If cover cannot be found, contact parents to collect early.</li>
 <li><strong>Document everything:</strong> Log any ratio concern or near-miss in writing to your area manager on the day.</li>
 <li><strong>Escalate:</strong> Any actual ratio breach must be reported to your area manager and logged. Repeated breaches are an Ofsted risk.</li>
-</ul>`;
+</ul>
+` + sourcesPanel([
+  {label:'CCG Employee Handbook', url:'https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BEB8FAA88-B5C0-401F-9235-C230195A9139%7D&file=Employment+Law+Employee+Handbook+v7+Mar26.docx&action=default&mobileredirect=true', type:'ccg'},
+  {label:'Gov.uk: EYFS Statutory Framework', url:'https://www.gov.uk/government/publications/early-years-foundation-stage-framework--2', type:'gov'},
+]);
     }
   },
   recruitment: {
@@ -944,7 +995,13 @@ const AI_KNOWLEDGE = {
 <li><strong>Conditional offer:</strong> Make any offer conditional on DBS, references, right to work, and qualifications.</li>
 <li><strong>Contracts:</strong> Use the appropriate contract template from the document library (Practitioner, Deputy, Manager, etc.).</li>
 <li><strong>Induction:</strong> Use the Intensive Induction Programme (Oct 2025) from the document library. Probation is typically 6 months — set clear objectives and hold regular 1:1s.</li>
-</ul>`;
+</ul>
+` + sourcesPanel([
+  {label:'CCG Interviewing Applicants Guide', url:'https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7B0D6143C5-5E88-4230-84E5-36A2DFD3A776%7D&file=Interviewing%20Applicants.docx&action=default&mobileredirect=true', type:'ccg'},
+  {label:'CCG Employee Handbook', url:'https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BEB8FAA88-B5C0-401F-9235-C230195A9139%7D&file=Employment+Law+Employee+Handbook+v7+Mar26.docx&action=default&mobileredirect=true', type:'ccg'},
+  {label:'Gov.uk: DBS checks', url:'https://www.gov.uk/dbs-check-applicant-criminal-record', type:'gov'},
+  {label:'Gov.uk: Right to work checks', url:'https://www.gov.uk/check-job-applicant-right-to-work', type:'gov'},
+]);
     }
   },
   leave: {
@@ -961,7 +1018,29 @@ const AI_KNOWLEDGE = {
 ${specific || '<li><strong>Annual leave:</strong> Statutory minimum 5.6 weeks (28 days FT). Check the contract for CCG entitlement.</li>'}
 <li>For all family leave (maternity, paternity, shared parental), notify HR as early as possible — statutory timescales apply.</li>
 <li>Use the <em>Flexible Working Policy PM-2-6</em> and <em>Time Off for Dependants Policy</em> from the document library for the full details.</li>
-</ul>`;
+</ul>
+` + (q2.includes('flexible') ? sourcesPanel([
+  {label:'CCG Flexible Working Policy (PM-2-6)', url:'https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BAA0862BD-3CCC-4595-8BC1-07A7DA263DCA%7D&file=PM_2_6_Flexible_Working%20Feb26.docx&action=default&mobileredirect=true', type:'ccg'},
+  {label:'ACAS: Flexible working', url:'https://www.acas.org.uk/flexible-working', type:'acas'},
+  {label:'Gov.uk: Flexible working', url:'https://www.gov.uk/flexible-working', type:'gov'},
+]) : q2.includes('maternity') ? sourcesPanel([
+  {label:'CCG Employee Handbook', url:'https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BEB8FAA88-B5C0-401F-9235-C230195A9139%7D&file=Employment+Law+Employee+Handbook+v7+Mar26.docx&action=default&mobileredirect=true', type:'ccg'},
+  {label:'ACAS: Time off for care and support', url:'https://www.acas.org.uk/time-off-for-care-and-support', type:'acas'},
+  {label:'Gov.uk: Maternity pay and leave', url:'https://www.gov.uk/maternity-pay-leave', type:'gov'},
+]) : q2.includes('dependant') ? sourcesPanel([
+  {label:'CCG Time Off for Dependants Policy', url:'https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BED6F36DE-6F0A-4CF8-929B-972C0A4D047D%7D&file=Time%20Off%20for%20Dependents%20Policy%20-%20Copy.docx&action=default&mobileredirect=true', type:'ccg'},
+  {label:'ACAS: Time off for dependants', url:'https://www.acas.org.uk/time-off-for-dependants', type:'acas'},
+  {label:'Gov.uk: Time off for dependants', url:'https://www.gov.uk/time-off-for-dependants', type:'gov'},
+]) : q2.includes('carer') ? sourcesPanel([
+  {label:'CCG Employee Handbook', url:'https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BEB8FAA88-B5C0-401F-9235-C230195A9139%7D&file=Employment+Law+Employee+Handbook+v7+Mar26.docx&action=default&mobileredirect=true', type:'ccg'},
+  {label:'ACAS: Carer\'s leave', url:'https://www.acas.org.uk/carers-leave', type:'acas'},
+  {label:'Gov.uk: Carer\'s leave', url:'https://www.gov.uk/carers-leave', type:'gov'},
+]) : sourcesPanel([
+  {label:'CCG Flexible Working Policy (PM-2-6)', url:'https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BAA0862BD-3CCC-4595-8BC1-07A7DA263DCA%7D&file=PM_2_6_Flexible_Working%20Feb26.docx&action=default&mobileredirect=true', type:'ccg'},
+  {label:'CCG Time Off for Dependants Policy', url:'https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BED6F36DE-6F0A-4CF8-929B-972C0A4D047D%7D&file=Time%20Off%20for%20Dependents%20Policy%20-%20Copy.docx&action=default&mobileredirect=true', type:'ccg'},
+  {label:'ACAS: Holiday guidance', url:'https://www.acas.org.uk/holiday', type:'acas'},
+  {label:'Gov.uk: Holiday entitlement', url:'https://www.gov.uk/holiday-entitlement-rights', type:'gov'},
+]));
     }
   },
   grievance: {
@@ -975,7 +1054,14 @@ ${specific || '<li><strong>Annual leave:</strong> Statutory minimum 5.6 weeks (2
 <li><strong>Outcome:</strong> Communicate the decision in writing. Inform the employee of their right to appeal.</li>
 <li><strong>Mediation:</strong> Consider mediation for ongoing conflict between colleagues — ACAS offers a free early conciliation service.</li>
 </ul>
-<p>Use the Investigation Meeting Notes and Witness Statement Template from the document library.</p>`;
+<p>Use the Investigation Meeting Notes and Witness Statement Template from the document library.</p>
+` + sourcesPanel([
+  {label:'CCG Employee Handbook', url:'https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BEB8FAA88-B5C0-401F-9235-C230195A9139%7D&file=Employment+Law+Employee+Handbook+v7+Mar26.docx&action=default&mobileredirect=true', type:'ccg'},
+  {label:'ACAS: Discipline & grievance hub', url:'https://www.acas.org.uk/discipline-and-grievance', type:'acas'},
+  {label:'ACAS: Code of Practice — Disciplinary & Grievance', url:'https://www.acas.org.uk/acas-code-of-practice-on-disciplinary-and-grievance-procedures', type:'acas'},
+  {label:'ACAS: Mediation', url:'https://www.acas.org.uk/mediation', type:'acas'},
+  {label:'ACAS: Early conciliation', url:'https://www.acas.org.uk/early-conciliation', type:'acas'},
+]);
     }
   },
   safeguarding: {
@@ -990,7 +1076,12 @@ ${specific || '<li><strong>Annual leave:</strong> Statutory minimum 5.6 weeks (2
 <li><strong>Preserve evidence.</strong> Do not contact the subject of the allegation before speaking to the LADO.</li>
 <li><strong>Notify HR and Ofsted</strong> — Ofsted must be informed within 14 days.</li>
 </ul>
-<p>Use the Confidential Safeguarding Concern letter template from the Safeguarding section.</p>`;
+<p>Use the Confidential Safeguarding Concern letter template from the Safeguarding section.</p>
+` + sourcesPanel([
+  {label:'CCG Employee Handbook', url:'https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BEB8FAA88-B5C0-401F-9235-C230195A9139%7D&file=Employment+Law+Employee+Handbook+v7+Mar26.docx&action=default&mobileredirect=true', type:'ccg'},
+  {label:'Gov.uk: DBS checks', url:'https://www.gov.uk/dbs-check-applicant-criminal-record', type:'gov'},
+  {label:'Gov.uk: EYFS Statutory Framework', url:'https://www.gov.uk/government/publications/early-years-foundation-stage-framework--2', type:'gov'},
+]);
     }
   },
 };
@@ -1016,7 +1107,12 @@ function generateAIResponse(query) {
 <li>Act promptly — delays can complicate HR matters.</li>
 <li>Browse the relevant topic section for step-by-step guidance and letter templates.</li>
 </ul>
-<p>If you're unsure, use the <strong>Escalate to HR</strong> button below — it's always better to ask than to get it wrong.</p>`;
+<p>If you're unsure, use the <strong>Escalate to HR</strong> button below — it's always better to ask than to get it wrong.</p>
+` + sourcesPanel([
+  {label:'CCG Employee Handbook', url:'https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BEB8FAA88-B5C0-401F-9235-C230195A9139%7D&file=Employment+Law+Employee+Handbook+v7+Mar26.docx&action=default&mobileredirect=true', type:'ccg'},
+  {label:'ACAS: Discipline & grievance hub', url:'https://www.acas.org.uk/discipline-and-grievance', type:'acas'},
+  {label:'Gov.uk: Employment rights', url:'https://www.gov.uk/browse/working/rights-trade-unions', type:'gov'},
+]);
 }
 
 /* ================================================================
