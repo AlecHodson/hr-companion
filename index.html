@@ -5,6 +5,7 @@
 <title>HR Companion — Complete Childcare Group</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow, noarchive">
+<script src="https://res.cdn.office.net/teams-js/2.22.0/js/MicrosoftTeams.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -516,32 +517,32 @@ function showPage(id) {
    IDENTITY
    ================================================================ */
 const NURSERY_LIST = [
-  {name:"Abacus Day Nursery",nursery:"Abacus Day Nursery",title:"Nursery Manager",isHR:false},
-  {name:"Bees Knees Day Nursery",nursery:"Bees Knees Day Nursery",title:"Nursery Manager",isHR:false},
-  {name:"Bramley Wood Day Nursery",nursery:"Bramley Wood Day Nursery",title:"Nursery Manager",isHR:false},
-  {name:"Cedars @ Boot Farm",nursery:"Cedars @ Boot Farm",title:"Nursery Manager",isHR:false},
-  {name:"Cedars Day Nursery",nursery:"Cedars Day Nursery",title:"Nursery Manager",isHR:false},
-  {name:"Finchampstead Day Nursery",nursery:"Finchampstead Day Nursery",title:"Nursery Manager",isHR:false},
-  {name:"Happitots Day Nursery",nursery:"Happitots Day Nursery",title:"Nursery Manager",isHR:false},
-  {name:"Hazebrouck Day Nursery",nursery:"Hazebrouck Day Nursery",title:"Nursery Manager",isHR:false},
-  {name:"Kingsclere Day Nursery",nursery:"Kingsclere Day Nursery",title:"Nursery Manager",isHR:false},
-  {name:"Lower Earley Day Nursery",nursery:"Lower Earley Day Nursery",title:"Nursery Manager",isHR:false},
-  {name:"Merrydale Day Nursery",nursery:"Merrydale Day Nursery",title:"Nursery Manager",isHR:false},
-  {name:"Northumberland Day Nursery",nursery:"Northumberland Day Nursery",title:"Nursery Manager",isHR:false},
-  {name:"Our Den @ Hillside",nursery:"Our Den @ Hillside",title:"Nursery Manager",isHR:false},
-  {name:"Saltway Day Nursery",nursery:"Saltway Day Nursery",title:"Nursery Manager",isHR:false},
-  {name:"Smart Tots Day Nursery",nursery:"Smart Tots Day Nursery",title:"Nursery Manager",isHR:false},
-  {name:"Stepping Stones Day Nursery",nursery:"Stepping Stones Day Nursery",title:"Nursery Manager",isHR:false},
-  {name:"Woosehill Day Nursery",nursery:"Woosehill Day Nursery",title:"Nursery Manager",isHR:false},
+  {name:"Abacus Day Nursery",nursery:"Abacus Day Nursery",title:"Nursery Manager",isHR:false,email:"abacus@completechildcare.co.uk"},
+  {name:"Bees Knees Day Nursery",nursery:"Bees Knees Day Nursery",title:"Nursery Manager",isHR:false,email:"beesknees@completechildcare.co.uk"},
+  {name:"Bramley Wood Day Nursery",nursery:"Bramley Wood Day Nursery",title:"Nursery Manager",isHR:false,email:"bramleywood@completechildcare.co.uk"},
+  {name:"Cedars @ Boot Farm",nursery:"Cedars @ Boot Farm",title:"Nursery Manager",isHR:false,email:"bootfarm@completechildcare.co.uk"},
+  {name:"Cedars Day Nursery",nursery:"Cedars Day Nursery",title:"Nursery Manager",isHR:false,email:"cedars@completechildcare.co.uk"},
+  {name:"Finchampstead Day Nursery",nursery:"Finchampstead Day Nursery",title:"Nursery Manager",isHR:false,email:"finchampstead@completechildcare.co.uk"},
+  {name:"Happitots Day Nursery",nursery:"Happitots Day Nursery",title:"Nursery Manager",isHR:false,email:"happitots@completechildcare.co.uk"},
+  {name:"Hazebrouck Day Nursery",nursery:"Hazebrouck Day Nursery",title:"Nursery Manager",isHR:false,email:"hazebrouck@completechildcare.co.uk"},
+  {name:"Kingsclere Day Nursery",nursery:"Kingsclere Day Nursery",title:"Nursery Manager",isHR:false,email:"kingsclere@completechildcare.co.uk"},
+  {name:"Lower Earley Day Nursery",nursery:"Lower Earley Day Nursery",title:"Nursery Manager",isHR:false,email:"lowerearley@completechildcare.co.uk"},
+  {name:"Merrydale Day Nursery",nursery:"Merrydale Day Nursery",title:"Nursery Manager",isHR:false,email:"merrydale@completechildcare.co.uk"},
+  {name:"Northumberland Day Nursery",nursery:"Northumberland Day Nursery",title:"Nursery Manager",isHR:false,email:"northumberland@completechildcare.co.uk"},
+  {name:"Our Den @ Hillside",nursery:"Our Den @ Hillside",title:"Nursery Manager",isHR:false,email:"ourden@completechildcare.co.uk"},
+  {name:"Saltway Day Nursery",nursery:"Saltway Day Nursery",title:"Nursery Manager",isHR:false,email:"saltway@completechildcare.co.uk"},
+  {name:"Smart Tots Day Nursery",nursery:"Smart Tots Day Nursery",title:"Nursery Manager",isHR:false,email:"smarttots@completechildcare.co.uk"},
+  {name:"Stepping Stones Day Nursery",nursery:"Stepping Stones Day Nursery",title:"Nursery Manager",isHR:false,email:"steppingstones@completechildcare.co.uk"},
+  {name:"Woosehill Day Nursery",nursery:"Woosehill Day Nursery",title:"Nursery Manager",isHR:false,email:"woosehill@completechildcare.co.uk"},
 ];
 const HR_LIST = [
-  {name:"Ellie Richards",nursery:"Head Office",title:"HR",isHR:true},
-  {name:"Leanne Maynard",nursery:"Greenwood Area",title:"Area Manager",isHR:true},
-  {name:"Pav Bilkhu",nursery:"BlueWater Area",title:"Area Manager",isHR:true},
-  {name:"Emma McIntyre",nursery:"Head Office",title:"Director",isHR:true},
-  {name:"Karen Tate",nursery:"Head Office",title:"HR Business Partner",isHR:true},
-  {name:"Alec Hodson",nursery:"Head Office",title:"Group Chief Executive",isHR:true},
-  {name:"Louise Medley",nursery:"Head Office",title:"PA to MD",isHR:true},
+  {name:"Ellie Richards",nursery:"Head Office",title:"HR",isHR:true,email:"Ellie.Richards@completechildcare.co.uk"},
+  {name:"Leanne Maynard",nursery:"Greenwood Area",title:"Area Manager",isHR:true,email:"Leanne.Maynard@completechildcare.co.uk"},
+  {name:"Pav Bilkhu",nursery:"BlueWater Area",title:"Area Manager",isHR:true,email:"pav.bilkhu@completechildcare.co.uk"},
+  {name:"Emma McIntyre",nursery:"Head Office",title:"Chief Commercial Officer",isHR:true,email:"Emma.McIntyre@completechildcare.co.uk"},
+  {name:"Karen Tate",nursery:"Head Office",title:"HR Business Partner",isHR:true,email:"karen.tate@completechildcare.co.uk"},
+  {name:"Alec Hodson",nursery:"Head Office",title:"Group Chief Executive",isHR:true,email:"alec.hodson@completechildcare.co.uk"},
+  {name:"Louise Medley",nursery:"Head Office",title:"EA to Group CEO",isHR:true,email:"louise.medley@completechildcare.co.uk"},
 ];
 var SESSION = null;
 
@@ -1297,18 +1298,36 @@ function submitEscalate(){
    ================================================================ */
 populateIdentitySelect();
 
-// Restore stored session silently — show modal only if nothing stored
+// ── Identity resolution: Teams SDK → stored session → manual picker ──────────
 (function(){
-  const stored=getStoredSession();
-  if(stored){
-    SESSION=stored;
+  function matchUserByEmail(upn){
+    if(!upn) return null;
+    const u = upn.toLowerCase();
+    for(let i=0;i<NURSERY_LIST.length;i++){if((NURSERY_LIST[i].email||'').toLowerCase()===u) return JSON.parse(JSON.stringify(NURSERY_LIST[i]));}
+    for(let i=0;i<HR_LIST.length;i++){if((HR_LIST[i].email||'').toLowerCase()===u) return JSON.parse(JSON.stringify(HR_LIST[i]));}
+    return null;
+  }
+  function signInAs(user){
+    SESSION=user; storeSession(SESSION);
     document.getElementById('identityModal').classList.remove('active');
     applySession();
-    return;
   }
-  // No stored session — show the picker
-  document.getElementById('identityModal').classList.add('active');
-  buildNav(false);buildCategoryPages();buildTiles('overviewTiles');buildTiles('askTiles');updateArchiveUI();
+  function fallback(){
+    const stored=getStoredSession();
+    if(stored){ signInAs(stored); return; }
+    document.getElementById('identityModal').classList.add('active');
+    buildNav(false);buildCategoryPages();buildTiles('overviewTiles');buildTiles('askTiles');updateArchiveUI();
+  }
+  // Try Teams SDK first
+  if(typeof microsoftTeams !== 'undefined'){
+    microsoftTeams.app.initialize().then(()=>{
+      microsoftTeams.app.getContext().then(ctx=>{
+        const upn = ctx && ctx.user && ctx.user.loginHint;
+        const matched = matchUserByEmail(upn);
+        if(matched){ signInAs(matched); } else { fallback(); }
+      }).catch(()=>{ fallback(); });
+    }).catch(()=>{ fallback(); });
+  } else { fallback(); }
 })();
 </script>
 </body>
