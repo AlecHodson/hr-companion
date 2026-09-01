@@ -1300,43 +1300,21 @@ function submitEscalate(){
    ================================================================ */
 populateIdentitySelect();
 
-// ── Identity resolution: Teams SDK → stored session → manual picker ──────────
+// ── Identity: restore stored session silently, or show picker ────────────────
 (function(){
-  function matchUserByEmail(upn){
-    if(!upn) return null;
-    const u = upn.toLowerCase();
-    for(let i=0;i<NURSERY_LIST.length;i++){if((NURSERY_LIST[i].email||'').toLowerCase()===u) return JSON.parse(JSON.stringify(NURSERY_LIST[i]));}
-    for(let i=0;i<HR_LIST.length;i++){if((HR_LIST[i].email||'').toLowerCase()===u) return JSON.parse(JSON.stringify(HR_LIST[i]));}
-    return null;
-  }
-  function signInAs(user){
-    SESSION=user; storeSession(SESSION);
+  const stored = getStoredSession();
+  if(stored){
+    SESSION = stored;
     document.getElementById('identityModal').classList.remove('active');
     applySession();
-  }
-  function fallback(){
-    const stored=getStoredSession();
-    if(stored){ signInAs(stored); return; }
+  } else {
     document.getElementById('identityModal').classList.add('active');
-    buildNav(false);buildCategoryPages();buildTiles('overviewTiles');buildTiles('askTiles');updateArchiveUI();
+    buildNav(false);
+    buildCategoryPages();
+    buildTiles('overviewTiles');
+    buildTiles('askTiles');
+    updateArchiveUI();
   }
-  // Try Teams SDK — with 2s timeout guard for browser context
-  // (microsoftTeams is defined even in browser via CDN, but app.initialize()
-  //  hangs indefinitely outside Teams — timeout forces the fallback)
-  var teamsResolved = false;
-  function runTeamsInit(){
-    microsoftTeams.app.initialize().then(()=>{
-      microsoftTeams.app.getContext().then(ctx=>{
-        teamsResolved = true;
-        const upn = ctx && ctx.user && ctx.user.loginHint;
-        const matched = matchUserByEmail(upn);
-        if(matched){ signInAs(matched); } else { fallback(); }
-      }).catch(()=>{ teamsResolved = true; fallback(); });
-    }).catch(()=>{ teamsResolved = true; fallback(); });
-    // Timeout: if Teams SDK hasn't resolved in 2s, we're in a browser
-    setTimeout(()=>{ if(!teamsResolved){ teamsResolved = true; fallback(); } }, 2000);
-  }
-  if(typeof microsoftTeams !== 'undefined'){ runTeamsInit(); } else { fallback(); }
 })();
 </script>
 </body>
