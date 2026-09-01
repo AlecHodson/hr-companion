@@ -233,7 +233,7 @@ hr.divider{border:none;border-top:1px solid var(--line);margin:20px 0;}
 <body>
 
 <!-- IDENTITY MODAL -->
-<div class="modal-overlay active" id="identityModal">
+<div class="modal-overlay" id="identityModal">
   <div class="modal-box">
     <div style="margin-bottom:16px;"><img src="https://www.completechildcare.co.uk/img/logo.png" alt="Complete Childcare Group" style="width:160px;height:auto;" /></div>
     <h2>Welcome to HR Companion</h2>
@@ -555,18 +555,19 @@ function clearIdentity(){
 }
 function populateIdentitySelect(){
   const sel=document.getElementById('idSelect');
-  sel.innerHTML='<option value="">— Select —</option>';
-  NURSERY_LIST.forEach((u,i)=>{const o=document.createElement('option');o.value='n:'+i;o.textContent=u.nursery;sel.appendChild(o);});
-  const og=document.createElement('optgroup');og.label='HR & Management';
-  HR_LIST.forEach((u,i)=>{const o=document.createElement('option');o.value='h:'+i;o.textContent=u.name+' — '+u.title;og.appendChild(o);});
-  sel.appendChild(og);
+  sel.innerHTML='<option value="">— Select your nursery or name —</option>';
+  const ng=document.createElement('optgroup');ng.label='Nurseries';
+  NURSERY_LIST.forEach((u,i)=>{const o=document.createElement('option');o.value='n:'+i;o.textContent=u.nursery;ng.appendChild(o);});
+  sel.appendChild(ng);
+  const hg=document.createElement('optgroup');hg.label='HR & Management';
+  HR_LIST.forEach((u,i)=>{const o=document.createElement('option');o.value='h:'+i;o.textContent=u.name+' — '+u.title;hg.appendChild(o);});
+  sel.appendChild(hg);
 }
 function confirmIdentity(){
   const sel=document.getElementById('idSelect');const val=sel.value;
   if(!val){document.getElementById('idError').style.display='block';return;}
   document.getElementById('idError').style.display='none';
-  SESSION=JSON.parse(JSON.stringify(val.startsWith('n:')?NURSERY_LIST[parseInt(val.slice(2))]:HR_LIST[parseInt(val.slice(2))]));
-  storeSession(SESSION);
+  if(val.startsWith('n:')){SESSION=JSON.parse(JSON.stringify(NURSERY_LIST[parseInt(val.slice(2))]));}  else{SESSION=JSON.parse(JSON.stringify(HR_LIST[parseInt(val.slice(2))]));}  storeSession(SESSION);
   document.getElementById('identityModal').classList.remove('active');
   applySession();
 }
@@ -1295,9 +1296,20 @@ function submitEscalate(){
    INIT
    ================================================================ */
 populateIdentitySelect();
-const stored=getStoredSession();
-if(stored){SESSION=stored;document.getElementById('identityModal').classList.remove('active');applySession();}
-else{buildNav(false);buildCategoryPages();buildTiles('overviewTiles');buildTiles('askTiles');updateArchiveUI();}
+
+// Restore stored session silently — show modal only if nothing stored
+(function(){
+  const stored=getStoredSession();
+  if(stored){
+    SESSION=stored;
+    document.getElementById('identityModal').classList.remove('active');
+    applySession();
+    return;
+  }
+  // No stored session — show the picker
+  document.getElementById('identityModal').classList.add('active');
+  buildNav(false);buildCategoryPages();buildTiles('overviewTiles');buildTiles('askTiles');updateArchiveUI();
+})();
 </script>
 </body>
 </html>
