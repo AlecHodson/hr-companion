@@ -500,11 +500,14 @@ function buildNav(isHR) {
   });
 }
 
-function showPage(id) {
+function showPage(id, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const pg = document.getElementById('page-' + id);
   if (pg) pg.classList.add('active');
-  document.querySelectorAll('#navlist button').forEach(b => b.classList.toggle('active', b.dataset.id === id));
+  // Update active state — support both data-page and data-id attributes
+  document.querySelectorAll('#navlist button').forEach(b => {
+    b.classList.toggle('active', (b.dataset.page === id || b.dataset.id === id));
+  });
   document.getElementById('main').scrollTop = 0;
   window.scrollTo(0,0);
   if (id === 'caselog') renderCaseLog();
@@ -1318,16 +1321,23 @@ populateIdentitySelect();
     document.getElementById('identityModal').classList.add('active');
     buildNav(false);buildCategoryPages();buildTiles('overviewTiles');buildTiles('askTiles');updateArchiveUI();
   }
-  // Try Teams SDK first
-  if(typeof microsoftTeams !== 'undefined'){
+  // Try Teams SDK — with 2s timeout guard for browser context
+  // (microsoftTeams is defined even in browser via CDN, but app.initialize()
+  //  hangs indefinitely outside Teams — timeout forces the fallback)
+  var teamsResolved = false;
+  function runTeamsInit(){
     microsoftTeams.app.initialize().then(()=>{
       microsoftTeams.app.getContext().then(ctx=>{
+        teamsResolved = true;
         const upn = ctx && ctx.user && ctx.user.loginHint;
         const matched = matchUserByEmail(upn);
         if(matched){ signInAs(matched); } else { fallback(); }
-      }).catch(()=>{ fallback(); });
-    }).catch(()=>{ fallback(); });
-  } else { fallback(); }
+      }).catch(()=>{ teamsResolved = true; fallback(); });
+    }).catch(()=>{ teamsResolved = true; fallback(); });
+    // Timeout: if Teams SDK hasn't resolved in 2s, we're in a browser
+    setTimeout(()=>{ if(!teamsResolved){ teamsResolved = true; fallback(); } }, 2000);
+  }
+  if(typeof microsoftTeams !== 'undefined'){ runTeamsInit(); } else { fallback(); }
 })();
 </script>
 </body>
