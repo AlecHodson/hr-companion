@@ -236,13 +236,14 @@ hr.divider{border:none;border-top:1px solid var(--line);margin:20px 0;}
 <div class="modal-overlay" id="identityModal">
   <div class="modal-box">
     <div style="margin-bottom:16px;"><img src="https://www.completechildcare.co.uk/img/logo.png" alt="Complete Childcare Group" style="width:160px;height:auto;" /></div>
-    <h2>Welcome to HR Companion</h2>
-    <p>Select your nursery or name to personalise your session. Stored locally on this device.</p>
+    <h2>Who are you?</h2>
+    <p style="font-size:13px;color:#666;">Select your nursery or name to personalise your case log and session history.</p>
     <label for="idSelect">Your nursery / name</label>
     <select id="idSelect"><option value="">— Select —</option></select>
     <div id="idError" style="display:none;color:#B5533E;font-size:12px;margin-top:6px;">Please select to continue.</div>
     <div class="btn-row" style="margin-top:16px;">
       <button class="btn btn-primary" onclick="confirmIdentity()">Continue</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('identityModal').classList.remove('active')" style="margin-left:8px;">Skip</button>
     </div>
   </div>
 </div>
@@ -287,9 +288,9 @@ hr.divider{border:none;border-top:1px solid var(--line);margin:20px 0;}
     <div class="brand"><img src="https://www.completechildcare.co.uk/img/logo.png" alt="Complete Childcare Group" /></div>
     <div class="brand-sub">HR Companion</div>
     <div class="who-box">
-      <strong id="sessionUserName">Loading...</strong>
-      <span id="sessionNursery"></span>
-      <button onclick="clearIdentity()" style="all:unset;cursor:pointer;font-size:11px;color:#BFE1DA;text-decoration:underline;display:block;margin-top:4px;">Change</button>
+      <strong id="sessionUserName">HR Companion</strong>
+      <span id="sessionNursery" style="font-size:11px;"></span>
+      <button onclick="openIdentityPicker()" style="all:unset;cursor:pointer;font-size:11px;color:#BFE1DA;text-decoration:underline;display:block;margin-top:4px;">Set your name</button>
     </div>
     <div class="sidebar-section-label">Topics</div>
     <nav class="navlist" id="navlist"></nav>
@@ -550,11 +551,14 @@ var SESSION = null;
 
 function getStoredSession(){try{return JSON.parse(localStorage.getItem('hrCompanionSession3')||'null');}catch(e){return null;}}
 function storeSession(s){try{localStorage.setItem('hrCompanionSession3',JSON.stringify(s));}catch(e){}}
+function openIdentityPicker(){
+  populateIdentitySelect();
+  document.getElementById('identityModal').classList.add('active');
+}
 function clearIdentity(){
   try{localStorage.removeItem('hrCompanionSession3');}catch(e){}
-  SESSION=null;
-  document.getElementById('identityModal').classList.add('active');
-  populateIdentitySelect();
+  SESSION={name:'', nursery:'Complete Childcare Group', title:'', isHR:false};
+  applySession();
 }
 function populateIdentitySelect(){
   const sel=document.getElementById('idSelect');
@@ -576,8 +580,12 @@ function confirmIdentity(){
 }
 function applySession(){
   if(!SESSION)return;
-  document.getElementById('sessionUserName').textContent=SESSION.name||SESSION.nursery;
-  document.getElementById('sessionNursery').textContent=SESSION.isHR?SESSION.title+' — '+SESSION.nursery:SESSION.nursery;
+  const nameEl = document.getElementById('sessionUserName');
+  const subEl  = document.getElementById('sessionNursery');
+  const setBtn = nameEl ? nameEl.parentElement.querySelector('button') : null;
+  nameEl.textContent = SESSION.name || 'HR Companion';
+  subEl.textContent  = SESSION.name ? (SESSION.isHR ? SESSION.title+' — '+SESSION.nursery : SESSION.nursery) : '';
+  if(setBtn) setBtn.textContent = SESSION.name ? 'Change' : 'Set your name';
   buildNav(SESSION.isHR);
   buildCategoryPages();
   buildTiles('overviewTiles');
@@ -1300,21 +1308,16 @@ function submitEscalate(){
    ================================================================ */
 populateIdentitySelect();
 
-// ── Identity: restore stored session silently, or show picker ────────────────
+// ── Load immediately — no blocking sign-in ───────────────────────────────────
 (function(){
   const stored = getStoredSession();
   if(stored){
     SESSION = stored;
-    document.getElementById('identityModal').classList.remove('active');
-    applySession();
   } else {
-    document.getElementById('identityModal').classList.add('active');
-    buildNav(false);
-    buildCategoryPages();
-    buildTiles('overviewTiles');
-    buildTiles('askTiles');
-    updateArchiveUI();
+    // Default guest session — full access, no name set
+    SESSION = {name:'', nursery:'Complete Childcare Group', title:'', isHR:false};
   }
+  applySession();
 })();
 </script>
 </body>
