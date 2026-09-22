@@ -538,7 +538,7 @@ async function initAuth() {
   applySession();
 }
 
-async function doSignIn() {
+async async function doSignIn() {
   document.getElementById('authStatus').textContent = 'Signing in...';
   try {
     const resp = await msalInstance.loginPopup({ scopes: SCOPES });
