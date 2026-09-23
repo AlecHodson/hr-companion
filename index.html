@@ -504,10 +504,11 @@ function resolveUserByUPN(upn) {
 })();
 
 async function initAuth() {
-  // Wait for msalInstance to be ready (set by tryInitMSAL above)
-  let waited = 0;
-  while(!msalInstance && waited < 5000){ await new Promise(r=>setTimeout(r,100)); waited+=100; }
-  if(!msalInstance){ console.warn('[AUTH] MSAL not ready'); return; }
+  if(!msalInstance){
+    if(typeof msal === 'undefined'){ console.warn('[AUTH] MSAL library not loaded'); return; }
+    msalInstance = new msal.PublicClientApplication(MSAL_CONFIG);
+    await msalInstance.initialize();
+  }
 
   // Handle redirect response
   try {
