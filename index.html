@@ -676,7 +676,7 @@ async function graphCall(method, path, body) {
   if (body !== undefined) opts.body = typeof body === 'string' ? body : JSON.stringify(body);
   const r = await fetch('https://graph.microsoft.com/v1.0' + path, opts);
   if (!r.ok) { const t = await r.text(); throw new Error(`Graph ${method} ${path} → ${r.status}: ${t}`); }
-  if (r.status === 204 || r.status === 202) return null;
+  if (r.status === 204) return null;
   return r.json();
 }
 
@@ -1162,13 +1162,14 @@ async function sendEscalationEmail(type, category, message) {
   const areaManager = getAreaManager(nursery);
   const isUrgent = type === 'urgent';
   const toAddresses = isUrgent
-    ? [{emailAddress:{address:'Ellie.Richards@completechildcare.co.uk',name:'Ellie Richards'}}]
+    ? [
+        {emailAddress:{address:'HR@completechildcare.co.uk',name:'HR Team'}},
+        {emailAddress:{address:'alec.hodson@completechildcare.co.uk',name:'Alec Hodson'}},
+        {emailAddress:{address:'louise.medley@completechildcare.co.uk',name:'Louise Medley'}}
+      ]
     : [{emailAddress:{address:'Ellie.Richards@completechildcare.co.uk',name:'Ellie Richards'}}];
   const ccAddresses = [];
-  if (isUrgent) {
-    ccAddresses.push({emailAddress:{address:'alec.hodson@completechildcare.co.uk',name:'Alec Hodson'}});
-    ccAddresses.push({emailAddress:{address:'louise.medley@completechildcare.co.uk',name:'Louise Medley'}});
-  } else if (areaManager) {
+  if (!isUrgent && areaManager) {
     ccAddresses.push({emailAddress:{address:areaManager}});
   }
   const subject = isUrgent
