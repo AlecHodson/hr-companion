@@ -1865,7 +1865,7 @@ function calcNotice() {
   if (isNaN(years) || years < 0) { res.style.display = 'none'; return; }
 
   let weeks, label;
-  if (years < 1)       { weeks = 0; label = 'No statutory entitlement (under 1 month's service = none; under 2 years = 1 week)'; }
+  if (years < 1)       { weeks = 0; label = 'No statutory entitlement (under 1 month\u2019s service = none; under 2 years = 1 week)'; }
   else if (years < 2)  { weeks = 1; label = '1 week'; }
   else if (years <= 12){ weeks = years; label = years + ' weeks'; }
   else                  { weeks = 12; label = '12 weeks (maximum)'; }
