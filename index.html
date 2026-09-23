@@ -194,6 +194,31 @@ hr.divider{border:none;border-top:1px solid var(--line);margin:20px 0;}
   #main{padding:20px 16px;}
   .tiles{grid-template-columns:1fr 1fr;}
 }
+
+.calc-tab{all:unset;cursor:pointer;padding:10px 18px;font-size:13.5px;font-weight:600;color:#888;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all 0.15s;}
+.calc-tab:hover{color:var(--teal-deep);}
+.calc-tab.active{color:var(--teal-deep);border-bottom-color:var(--teal-deep);}
+.calc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:20px;}
+.calc-field{display:flex;flex-direction:column;gap:5px;}
+.calc-field label{font-size:12.5px;font-weight:600;color:#555;}
+.calc-field input,.calc-field select{padding:10px 12px;border:1.5px solid var(--line);border-radius:7px;font-size:14px;font-family:'Inter',sans-serif;background:var(--white);outline:none;}
+.calc-field input:focus,.calc-field select:focus{border-color:var(--teal);}
+.calc-hint{font-size:11.5px;color:#aaa;line-height:1.4;}
+.calc-result{background:var(--paper-2);border-radius:10px;padding:18px 20px;margin-top:4px;}
+.calc-result-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px;}
+.calc-result-row:last-of-type{border-bottom:none;}
+.calc-result-row.total{padding-top:12px;font-weight:700;font-size:15px;color:var(--teal-deep);}
+.calc-result-row strong{color:var(--teal-deep);font-size:15px;}
+.calc-result-row.total strong{font-size:18px;}
+.calc-result-divider{border-top:2px solid var(--teal-tint);margin:8px 0;}
+.calc-breakdown{margin-top:12px;font-size:13px;color:#555;background:var(--white);border-radius:8px;padding:12px 16px;border:1px solid var(--line);}
+.calc-breakdown table{width:100%;border-collapse:collapse;}
+.calc-breakdown th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:#888;padding:4px 8px;font-family:'IBM Plex Mono',monospace;}
+.calc-breakdown td{padding:5px 8px;font-size:13px;border-bottom:1px solid var(--line);}
+.calc-breakdown tr:last-child td{border-bottom:none;}
+.qual-yes{color:var(--risk-low);font-weight:700;}
+.qual-no{color:var(--risk-high);font-weight:700;}
+
 </style>
 </head>
 <body>
@@ -285,6 +310,7 @@ hr.divider{border:none;border-top:1px solid var(--line);margin:20px 0;}
           <div class="quick-link" onclick="showPage('ask')"><div class="ql-icon">🤖</div><p>Ask the AI</p></div>
           <div class="quick-link" onclick="showPage('caselog')"><div class="ql-icon">📋</div><p>My Case Log</p></div>
           <div class="quick-link" onclick="showPage('lawwatch')"><div class="ql-icon">⚖️</div><p>Law Watch</p></div>
+          <div class="quick-link" onclick="showPage('calculators')"><div class="ql-icon">🧮</div><p>Calculators</p></div>
           <div class="quick-link" onclick="openEscalate()"><div class="ql-icon">📩</div><p>Escalate to HR</p></div>
           <a class="quick-link" href="https://alechodson.github.io/ccg-dashboard/" target="_blank"><div class="ql-icon">📊</div><p>Operations Dashboard</p></a>
         </div>
@@ -330,6 +356,218 @@ hr.divider{border:none;border-top:1px solid var(--line);margin:20px 0;}
     <div class="page" id="page-leave"></div>
     <div class="page" id="page-grievances"></div>
     <div class="page" id="page-safeguarding"></div>
+
+    <!-- CALCULATORS -->
+    <div class="page" id="page-calculators">
+      <h2 style="margin-bottom:6px;">Calculators</h2>
+      <p style="font-size:13.5px;color:#666;margin-bottom:24px;">Quick reference calculators for common HR scenarios. Figures are indicative — always confirm with HR before communicating to employees.</p>
+
+      <div id="calcTabs" style="display:flex;gap:0;margin-bottom:24px;border-bottom:2px solid var(--line);flex-wrap:wrap;">
+        <button class="calc-tab active" onclick="switchCalc(this,'redundancy')">Redundancy Pay</button>
+        <button class="calc-tab" onclick="switchCalc(this,'maternity')">Maternity Pay</button>
+        <button class="calc-tab" onclick="switchCalc(this,'notice')">Notice Pay</button>
+        <button class="calc-tab" onclick="switchCalc(this,'holiday')">Holiday Entitlement</button>
+        <button class="calc-tab" onclick="switchCalc(this,'bradford')">Bradford Factor</button>
+      </div>
+
+      <!-- REDUNDANCY -->
+      <div class="calc-panel" id="calc-redundancy">
+        <div class="content-panel">
+          <h3 style="margin-bottom:4px;">Statutory Redundancy Pay</h3>
+          <p style="font-size:13px;color:#888;margin-bottom:16px;">Based on age, length of service and weekly pay. Weekly pay cap: <strong>£751</strong> (from 6 April 2026). Maximum 20 years service counts.</p>
+          <div class="notice" style="margin-bottom:20px;">An employee must have <strong>2 or more complete years</strong> of service to qualify for statutory redundancy pay.</div>
+          <div class="calc-grid">
+            <div class="calc-field">
+              <label>Gross weekly pay (£)</label>
+              <input type="number" id="rdWeeklyPay" min="0" max="10000" step="1" placeholder="e.g. 480" oninput="calcRedundancy()">
+              <span class="calc-hint">Capped at £751/week for statutory purposes</span>
+            </div>
+            <div class="calc-field">
+              <label>Employee age (complete years)</label>
+              <input type="number" id="rdAge" min="16" max="80" step="1" placeholder="e.g. 35" oninput="calcRedundancy()">
+            </div>
+            <div class="calc-field">
+              <label>Complete years of service</label>
+              <input type="number" id="rdYears" min="0" max="50" step="1" placeholder="e.g. 6" oninput="calcRedundancy()">
+              <span class="calc-hint">Only complete years count. Maximum 20 years used.</span>
+            </div>
+          </div>
+          <div id="rdResult" class="calc-result" style="display:none;">
+            <div class="calc-result-row"><span>Weeks of redundancy pay due</span><strong id="rdWeeks">—</strong></div>
+            <div class="calc-result-row"><span>Effective weekly pay used</span><strong id="rdEffPay">—</strong></div>
+            <div class="calc-result-divider"></div>
+            <div class="calc-result-row total"><span>Statutory Redundancy Payment</span><strong id="rdTotal">—</strong></div>
+            <p style="font-size:12px;color:#888;margin:12px 0 0;">This amount can be paid tax-free up to £30,000. Confirm with HR before communicating to the employee.</p>
+          </div>
+          <div id="rdBreakdown" class="calc-breakdown" style="display:none;margin-top:16px;"></div>
+          <div class="btn-row" style="margin-top:20px;">
+            <a href="https://www.gov.uk/calculate-your-redundancy-pay" target="_blank" class="btn btn-secondary" style="font-size:12.5px;">Gov.uk Redundancy Calculator</a>
+            <a href="https://www.acas.org.uk/redundancy" target="_blank" class="btn btn-secondary" style="font-size:12.5px;">ACAS: Redundancy guidance</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- MATERNITY -->
+      <div class="calc-panel" id="calc-maternity" style="display:none;">
+        <div class="content-panel">
+          <h3 style="margin-bottom:4px;">Statutory Maternity Pay &amp; Key Dates</h3>
+          <p style="font-size:13px;color:#888;margin-bottom:20px;">SMP rate: <strong>£194.32/week</strong> (from 6 April 2026). Payable for up to 39 weeks.</p>
+          <div class="calc-grid">
+            <div class="calc-field">
+              <label>Baby due date</label>
+              <input type="date" id="matDueDate" oninput="calcMaternity()">
+              <span class="calc-hint">Enter the expected week of childbirth (EWC)</span>
+            </div>
+            <div class="calc-field">
+              <label>Employment start date</label>
+              <input type="date" id="matStartDate" oninput="calcMaternity()">
+              <span class="calc-hint">Date employee began working for CCG</span>
+            </div>
+            <div class="calc-field">
+              <label>Average weekly earnings (£)</label>
+              <input type="number" id="matAWE" min="0" step="0.01" placeholder="e.g. 320.00" oninput="calcMaternity()">
+              <span class="calc-hint">Average over the 8 weeks up to and including the qualifying week</span>
+            </div>
+          </div>
+          <div id="matResult" class="calc-result" style="display:none;">
+            <div class="calc-result-row"><span>Expected Week of Childbirth (EWC) starts</span><strong id="matEWC">—</strong></div>
+            <div class="calc-result-row"><span>Qualifying week (15 weeks before EWC)</span><strong id="matQW">—</strong></div>
+            <div class="calc-result-row"><span>Earliest date maternity leave can start</span><strong id="matEarliest">—</strong></div>
+            <div class="calc-result-row"><span>Employee must notify employer by</span><strong id="matNotify">—</strong></div>
+            <div class="calc-result-row"><span>Service at qualifying week</span><strong id="matService">—</strong></div>
+            <div class="calc-result-row"><span>Qualifies for SMP?</span><strong id="matQualifies">—</strong></div>
+            <div class="calc-result-divider"></div>
+            <div class="calc-result-row"><span>Weeks 1–6: 90% of average weekly earnings</span><strong id="mat6weeks">—</strong></div>
+            <div class="calc-result-row"><span>Weeks 7–39: lower of 90% AWE or £194.32/week</span><strong id="mat33weeks">—</strong></div>
+            <div class="calc-result-row total"><span>Total estimated SMP (39 weeks)</span><strong id="matTotal">—</strong></div>
+            <div id="matWarning" style="display:none;margin-top:12px;" class="notice"></div>
+          </div>
+          <div style="margin-top:16px;padding:12px 14px;background:var(--amber-tint);border-radius:8px;font-size:12.5px;color:#7A5A1A;">
+            <strong>Important:</strong> SMP rates usually change each April. Adjust if leave spans an April rate change. Employees whose AWE is below the Lower Earnings Limit (£125/week) do not qualify for SMP — check eligibility for Maternity Allowance instead.
+          </div>
+          <div class="btn-row" style="margin-top:16px;">
+            <a href="https://www.gov.uk/maternity-pay-leave" target="_blank" class="btn btn-secondary" style="font-size:12.5px;">Gov.uk: Maternity pay</a>
+            <a href="https://www.acas.org.uk/time-off-for-care-and-support" target="_blank" class="btn btn-secondary" style="font-size:12.5px;">ACAS: Maternity guidance</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOTICE -->
+      <div class="calc-panel" id="calc-notice" style="display:none;">
+        <div class="content-panel">
+          <h3 style="margin-bottom:4px;">Statutory Notice Pay</h3>
+          <p style="font-size:13px;color:#888;margin-bottom:20px;">Minimum statutory notice an employer must give. Contractual notice (if longer) always applies — check the contract first.</p>
+          <div class="calc-grid">
+            <div class="calc-field">
+              <label>Complete years of service</label>
+              <input type="number" id="ntYears" min="0" max="50" step="1" placeholder="e.g. 4" oninput="calcNotice()">
+              <span class="calc-hint">Only complete years count</span>
+            </div>
+            <div class="calc-field">
+              <label>Weekly gross pay (£)</label>
+              <input type="number" id="ntPay" min="0" step="0.01" placeholder="e.g. 380" oninput="calcNotice()">
+            </div>
+          </div>
+          <div id="ntResult" class="calc-result" style="display:none;">
+            <div class="calc-result-row"><span>Statutory minimum notice</span><strong id="ntWeeks">—</strong></div>
+            <div class="calc-result-row total"><span>Notice pay (statutory minimum)</span><strong id="ntTotal">—</strong></div>
+            <p style="font-size:12px;color:#888;margin:12px 0 0;">Always check the employee's contract — contractual notice may be longer. Employees with under 1 month's service have no statutory notice entitlement.</p>
+          </div>
+          <hr class="divider">
+          <div style="font-size:13px;color:#555;">
+            <div style="font-weight:600;margin-bottom:8px;color:var(--teal-deep);">Statutory notice scale</div>
+            <div style="display:grid;grid-template-columns:auto 1fr;gap:5px 16px;font-size:12.5px;">
+              <span style="font-weight:600;">Under 1 month</span><span>No statutory entitlement</span>
+              <span style="font-weight:600;">1 month – 2 years</span><span>1 week</span>
+              <span style="font-weight:600;">2–12 years</span><span>1 week per complete year</span>
+              <span style="font-weight:600;">12+ years</span><span>12 weeks (maximum)</span>
+            </div>
+          </div>
+          <div class="btn-row" style="margin-top:16px;">
+            <a href="https://www.gov.uk/employee-rights-when-business-closes/notice-pay" target="_blank" class="btn btn-secondary" style="font-size:12.5px;">Gov.uk: Notice pay</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- HOLIDAY -->
+      <div class="calc-panel" id="calc-holiday" style="display:none;">
+        <div class="content-panel">
+          <h3 style="margin-bottom:4px;">Holiday Entitlement</h3>
+          <p style="font-size:13px;color:#888;margin-bottom:20px;">Statutory minimum is 5.6 weeks per year. For part-time or irregular hours workers, entitlement is pro-rated.</p>
+          <div class="calc-grid">
+            <div class="calc-field">
+              <label>Contract type</label>
+              <select id="holType" onchange="toggleHolFields();calcHoliday();">
+                <option value="fulltime">Full-time (5 days/week)</option>
+                <option value="parttime">Part-time (fixed days/week)</option>
+                <option value="hours">Hours-based / irregular</option>
+              </select>
+            </div>
+            <div class="calc-field" id="holDaysField">
+              <label>Days worked per week</label>
+              <input type="number" id="holDays" min="0.5" max="5" step="0.5" placeholder="e.g. 3" oninput="calcHoliday()">
+            </div>
+            <div class="calc-field" id="holHoursField" style="display:none;">
+              <label>Hours worked per week</label>
+              <input type="number" id="holHours" min="1" max="48" step="0.5" placeholder="e.g. 20" oninput="calcHoliday()">
+            </div>
+            <div class="calc-field">
+              <label>Weeks worked per year</label>
+              <input type="number" id="holWeeks" min="1" max="52" step="1" value="52" oninput="calcHoliday()">
+              <span class="calc-hint">Use 52 for year-round. Term-time only: enter actual weeks worked.</span>
+            </div>
+          </div>
+          <div id="holResult" class="calc-result" style="display:none;">
+            <div class="calc-result-row"><span>Annual leave entitlement (days)</span><strong id="holDaysResult">—</strong></div>
+            <div class="calc-result-row total"><span>Annual leave entitlement (hours, based on 7.5h day)</span><strong id="holHoursResult">—</strong></div>
+            <p style="font-size:12px;color:#888;margin:12px 0 0;">CCG contracts may provide more than the statutory minimum — always check the employee's contract.</p>
+          </div>
+          <div class="btn-row" style="margin-top:16px;">
+            <a href="https://www.gov.uk/holiday-entitlement-rights" target="_blank" class="btn btn-secondary" style="font-size:12.5px;">Gov.uk: Holiday entitlement</a>
+            <a href="https://www.acas.org.uk/checking-holiday-entitlement" target="_blank" class="btn btn-secondary" style="font-size:12.5px;">ACAS: Checking entitlement</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- BRADFORD -->
+      <div class="calc-panel" id="calc-bradford" style="display:none;">
+        <div class="content-panel">
+          <h3 style="margin-bottom:4px;">Bradford Factor</h3>
+          <p style="font-size:13px;color:#888;margin-bottom:20px;">Measures the impact of short-term absences. Formula: <strong>S&sup2; &times; D</strong> — where S = number of separate absence spells and D = total days absent in a rolling 52-week period.</p>
+          <div class="calc-grid">
+            <div class="calc-field">
+              <label>Number of separate absence spells (S)</label>
+              <input type="number" id="bfSpells" min="0" max="100" step="1" placeholder="e.g. 5" oninput="calcBradford()">
+              <span class="calc-hint">Each distinct period of absence counts as one spell, regardless of length</span>
+            </div>
+            <div class="calc-field">
+              <label>Total days absent (D)</label>
+              <input type="number" id="bfDays" min="0" max="365" step="1" placeholder="e.g. 12" oninput="calcBradford()">
+              <span class="calc-hint">Total days absent across all spells in the last 52 weeks</span>
+            </div>
+          </div>
+          <div id="bfResult" class="calc-result" style="display:none;">
+            <div class="calc-result-row total"><span>Bradford Factor score</span><strong id="bfScore">—</strong></div>
+            <div id="bfBand" style="margin-top:12px;padding:12px 14px;border-radius:8px;font-size:13.5px;font-weight:600;"></div>
+            <div id="bfAction" style="margin-top:10px;font-size:13.5px;color:var(--ink);"></div>
+          </div>
+          <hr class="divider">
+          <div style="font-size:13px;color:#555;">
+            <div style="font-weight:600;margin-bottom:8px;color:var(--teal-deep);">CCG Bradford Factor trigger points</div>
+            <div style="display:grid;grid-template-columns:80px 1fr;gap:6px 16px;font-size:12.5px;">
+              <span style="color:var(--risk-low);font-weight:700;">0 – 99</span><span>Low — monitor informally, no formal action required</span>
+              <span style="color:var(--risk-med);font-weight:700;">100 – 199</span><span>Medium — arrange an informal absence review meeting</span>
+              <span style="color:var(--risk-high);font-weight:700;">200 – 399</span><span>High — formal absence review, consider written warning</span>
+              <span style="color:#a80000;font-weight:700;">400+</span><span>Critical — formal process, HR involvement required before action</span>
+            </div>
+          </div>
+          <div class="btn-row" style="margin-top:16px;">
+            <a href="https://www.acas.org.uk/creating-absence-policies" target="_blank" class="btn btn-secondary" style="font-size:12.5px;">ACAS: Absence policies</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
 
     <!-- LAW WATCH -->
     <div class="page" id="page-lawwatch">
@@ -655,6 +893,7 @@ const NAV_ITEMS = [
   {id:'safeguarding',label:'Safeguarding-Related HR',icon:'🛡️',tag:''},
   {id:'lawwatch',label:'Law Watch',icon:'⚖️',tag:'9 updates'},
   {id:'caselog',label:'Case Log',icon:'📋',tag:'my records'},
+  {id:'calculators',label:'Calculators',icon:'🧮',tag:''},
 ];
 const HR_EXTRA = [
   {id:'hrdash',label:'HR Dashboard',icon:'📊',tag:'HR only'},
@@ -681,6 +920,7 @@ function showPage(id) {
   if(id==='hrdash') loadHRDash();
   if(id==='risksettings') initThresholdSlider();
   if(id==='ask') updateArchiveUI();
+  if(id==='calculators') initCalculators();
 }
 
 /* ================================================================
@@ -1463,6 +1703,261 @@ function escHtml(s) {
     await Promise.all([loadThreshold(), loadCopilotArchive(), loadCaseLog()]);
   }
 })();
+
+/* ================================================================
+   CALCULATORS
+   ================================================================ */
+function initCalculators() {
+  // ensure redundancy tab is active on first load
+  switchCalc(document.querySelector('.calc-tab.active') || document.querySelector('.calc-tab'), 'redundancy');
+}
+
+function switchCalc(btn, id) {
+  document.querySelectorAll('.calc-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.calc-panel').forEach(p => p.style.display = 'none');
+  const panel = document.getElementById('calc-' + id);
+  if (panel) panel.style.display = '';
+}
+
+/* -- REDUNDANCY ---------------------------------------------------------- */
+function calcRedundancy() {
+  const pay   = parseFloat(document.getElementById('rdWeeklyPay').value);
+  const age   = parseInt(document.getElementById('rdAge').value);
+  const years = parseInt(document.getElementById('rdYears').value);
+  const res   = document.getElementById('rdResult');
+  const bkd   = document.getElementById('rdBreakdown');
+
+  if (isNaN(pay) || isNaN(age) || isNaN(years) || pay <= 0 || age < 16 || years < 0) {
+    res.style.display = 'none'; bkd.style.display = 'none'; return;
+  }
+  if (years < 2) {
+    res.style.display = 'none'; bkd.style.display = 'none';
+    bkd.style.display = 'block';
+    bkd.innerHTML = '<p style="color:var(--coral);font-weight:600;margin:0;">Employee has fewer than 2 complete years of service — not entitled to statutory redundancy pay.</p>';
+    return;
+  }
+
+  const CAP = 751;
+  const effPay = Math.min(pay, CAP);
+  const maxYears = Math.min(years, 20);
+
+  // Work backwards from current age through each year of service
+  // For each year, determine which age band applied
+  let totalWeeks = 0;
+  const rows = [];
+  for (let y = 0; y < maxYears; y++) {
+    const ageInYear = age - y; // age at that year of service (working backwards)
+    let mult, band;
+    if (ageInYear < 22)       { mult = 0.5; band = 'Under 22'; }
+    else if (ageInYear <= 41) { mult = 1.0; band = '22–41'; }
+    else                       { mult = 1.5; band = '41+'; }
+    totalWeeks += mult;
+    rows.push({ year: maxYears - y, age: ageInYear, band, mult });
+  }
+  rows.reverse();
+
+  const total = totalWeeks * effPay;
+
+  document.getElementById('rdWeeks').textContent   = totalWeeks.toFixed(1) + ' weeks';
+  document.getElementById('rdEffPay').textContent  = '£' + effPay.toFixed(2) + (pay > CAP ? ' (capped from £' + pay.toFixed(2) + ')' : '');
+  document.getElementById('rdTotal').textContent   = '£' + total.toLocaleString('en-GB', {minimumFractionDigits:2, maximumFractionDigits:2});
+  res.style.display = '';
+
+  // Breakdown table
+  bkd.style.display = '';
+  bkd.innerHTML = '<table><thead><tr><th>Year</th><th>Age in that year</th><th>Band</th><th>Multiplier</th><th>Weeks</th></tr></thead><tbody>' +
+    rows.map(r => `<tr><td>${r.year}</td><td>${r.age}</td><td>${r.band}</td><td>${r.mult}x</td><td>${r.mult}</td></tr>`).join('') +
+    `<tr style="font-weight:700;background:var(--teal-tint);"><td colspan="4">Total</td><td>${totalWeeks.toFixed(1)}</td></tr>` +
+    '</tbody></table>';
+}
+
+/* -- MATERNITY ----------------------------------------------------------- */
+function fmtDate(d) {
+  return d.toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
+}
+function prevSunday(d) {
+  const dt = new Date(d);
+  dt.setDate(dt.getDate() - dt.getDay()); // go back to Sunday
+  return dt;
+}
+function addWeeks(d, w) {
+  const dt = new Date(d);
+  dt.setDate(dt.getDate() + w * 7);
+  return dt;
+}
+function addDays(d, n) {
+  const dt = new Date(d);
+  dt.setDate(dt.getDate() + n);
+  return dt;
+}
+
+function calcMaternity() {
+  const dueVal   = document.getElementById('matDueDate').value;
+  const startVal = document.getElementById('matStartDate').value;
+  const awe      = parseFloat(document.getElementById('matAWE').value);
+  const res      = document.getElementById('matResult');
+  const warn     = document.getElementById('matWarning');
+
+  if (!dueVal) { res.style.display = 'none'; return; }
+
+  const dueDate  = new Date(dueVal);
+  // EWC = the Sunday of the week containing the due date
+  const ewcStart = prevSunday(dueDate);
+
+  // Qualifying week = 15th week before EWC
+  const qualWeek = addWeeks(ewcStart, -15);
+
+  // Earliest leave start = 11 weeks before EWC
+  const earliestLeave = addWeeks(ewcStart, -11);
+
+  // Notification deadline = end of qualifying week (Saturday = qualWeek + 6 days)
+  const notifyBy = addDays(qualWeek, 6);
+
+  document.getElementById('matEWC').textContent      = fmtDate(ewcStart);
+  document.getElementById('matQW').textContent       = 'w/c ' + fmtDate(qualWeek);
+  document.getElementById('matEarliest').textContent = fmtDate(earliestLeave);
+  document.getElementById('matNotify').textContent   = fmtDate(notifyBy);
+
+  // Service eligibility: must have been employed for 26 weeks by end of qualifying week
+  let serviceText = '—'; let qualifies = false;
+  if (startVal) {
+    const startDate = new Date(startVal);
+    const qualWeekEnd = addDays(qualWeek, 6);
+    const weeksService = Math.floor((qualWeekEnd - startDate) / (7 * 24 * 60 * 60 * 1000));
+    const months = Math.floor(weeksService / 4.33);
+    serviceText = weeksService + ' weeks (' + months + ' months) at qualifying week';
+    qualifies = weeksService >= 26;
+  }
+  document.getElementById('matService').textContent = serviceText;
+
+  const LEL = 125; // Lower Earnings Limit 2026
+  const SMP_RATE = 194.32;
+
+  if (!isNaN(awe) && awe > 0) {
+    qualifies = qualifies && awe >= LEL;
+    const week1to6 = awe * 0.9;
+    const week7to39Rate = Math.min(awe * 0.9, SMP_RATE);
+    const total = (week1to6 * 6) + (week7to39Rate * 33);
+
+    document.getElementById('matQualifies').innerHTML = qualifies
+      ? '<span class="qual-yes">Yes — qualifies for SMP</span>'
+      : '<span class="qual-no">No — does not qualify for SMP</span>';
+    document.getElementById('mat6weeks').textContent   = '£' + week1to6.toFixed(2) + '/week × 6 = £' + (week1to6*6).toFixed(2);
+    document.getElementById('mat33weeks').textContent  = '£' + week7to39Rate.toFixed(2) + '/week × 33 = £' + (week7to39Rate*33).toFixed(2);
+    document.getElementById('matTotal').textContent    = '£' + total.toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+    if (!qualifies && awe < LEL) {
+      warn.style.display = '';
+      warn.textContent = 'AWE of £' + awe.toFixed(2) + '/week is below the Lower Earnings Limit (£' + LEL + '/week). Employee does not qualify for SMP — they may be eligible for Maternity Allowance instead. Refer to HR.';
+    } else { warn.style.display = 'none'; }
+  } else {
+    document.getElementById('matQualifies').innerHTML = startVal
+      ? (qualifies ? '<span class="qual-yes">Likely yes (enter AWE to confirm)</span>' : '<span class="qual-no">No — insufficient service</span>')
+      : '—';
+    document.getElementById('mat6weeks').textContent  = 'Enter AWE to calculate';
+    document.getElementById('mat33weeks').textContent = 'Enter AWE to calculate';
+    document.getElementById('matTotal').textContent   = 'Enter AWE to calculate';
+    warn.style.display = 'none';
+  }
+
+  res.style.display = '';
+}
+
+/* -- NOTICE -------------------------------------------------------------- */
+function calcNotice() {
+  const years = parseInt(document.getElementById('ntYears').value);
+  const pay   = parseFloat(document.getElementById('ntPay').value);
+  const res   = document.getElementById('ntResult');
+  if (isNaN(years) || years < 0) { res.style.display = 'none'; return; }
+
+  let weeks, label;
+  if (years < 1)       { weeks = 0; label = 'No statutory entitlement (under 1 month's service = none; under 2 years = 1 week)'; }
+  else if (years < 2)  { weeks = 1; label = '1 week'; }
+  else if (years <= 12){ weeks = years; label = years + ' weeks'; }
+  else                  { weeks = 12; label = '12 weeks (maximum)'; }
+
+  document.getElementById('ntWeeks').textContent = label;
+  if (!isNaN(pay) && pay > 0 && weeks > 0) {
+    document.getElementById('ntTotal').textContent = '£' + (weeks * pay).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
+  } else if (weeks === 0) {
+    document.getElementById('ntTotal').textContent = '£0.00';
+  } else {
+    document.getElementById('ntTotal').textContent = 'Enter weekly pay to calculate';
+  }
+  res.style.display = '';
+}
+
+/* -- HOLIDAY ------------------------------------------------------------- */
+function toggleHolFields() {
+  const type = document.getElementById('holType').value;
+  document.getElementById('holDaysField').style.display  = (type === 'hours') ? 'none' : '';
+  document.getElementById('holHoursField').style.display = (type === 'hours') ? '' : 'none';
+}
+
+function calcHoliday() {
+  const type  = document.getElementById('holType').value;
+  const weeks = parseFloat(document.getElementById('holWeeks').value) || 52;
+  const res   = document.getElementById('holResult');
+
+  let entitlementDays, hoursPerDay = 7.5;
+
+  if (type === 'fulltime') {
+    entitlementDays = 5.6 * 5; // 28 days
+  } else if (type === 'parttime') {
+    const days = parseFloat(document.getElementById('holDays').value);
+    if (isNaN(days) || days <= 0) { res.style.display = 'none'; return; }
+    entitlementDays = 5.6 * days * (weeks / 52);
+  } else {
+    const hours = parseFloat(document.getElementById('holHours').value);
+    if (isNaN(hours) || hours <= 0) { res.style.display = 'none'; return; }
+    // 12.07% of hours worked = holiday entitlement in hours
+    const entitlementHours = hours * weeks * 0.1207;
+    document.getElementById('holDaysResult').textContent  = (entitlementHours / hoursPerDay).toFixed(1) + ' days';
+    document.getElementById('holHoursResult').textContent = entitlementHours.toFixed(1) + ' hours';
+    res.style.display = '';
+    return;
+  }
+
+  document.getElementById('holDaysResult').textContent  = entitlementDays.toFixed(1) + ' days';
+  document.getElementById('holHoursResult').textContent = (entitlementDays * hoursPerDay).toFixed(1) + ' hours';
+  res.style.display = '';
+}
+
+/* -- BRADFORD FACTOR ----------------------------------------------------- */
+function calcBradford() {
+  const s   = parseInt(document.getElementById('bfSpells').value);
+  const d   = parseInt(document.getElementById('bfDays').value);
+  const res = document.getElementById('bfResult');
+  if (isNaN(s) || isNaN(d) || s < 0 || d < 0) { res.style.display = 'none'; return; }
+
+  const score = s * s * d;
+  document.getElementById('bfScore').textContent = score.toLocaleString();
+
+  const band = document.getElementById('bfBand');
+  const action = document.getElementById('bfAction');
+
+  if (score < 100) {
+    band.style.cssText = 'background:var(--risk-low-bg);border:1px solid #A5D6A7;border-radius:8px;padding:12px 14px;color:var(--risk-low);font-weight:700;';
+    band.textContent = 'Low (0–99) — Monitor informally';
+    action.textContent = 'No formal action required at this stage. Continue to monitor attendance and hold a supportive conversation if patterns persist.';
+  } else if (score < 200) {
+    band.style.cssText = 'background:var(--risk-med-bg);border:1px solid #FFCC80;border-radius:8px;padding:12px 14px;color:var(--risk-med);font-weight:700;';
+    band.textContent = 'Medium (100–199) — Informal absence review';
+    action.textContent = 'Arrange an informal absence review meeting. Discuss the pattern of absence, explore any underlying issues, and agree a support plan. Document the meeting.';
+  } else if (score < 400) {
+    band.style.cssText = 'background:var(--risk-high-bg);border:1px solid #EF9A9A;border-radius:8px;padding:12px 14px;color:var(--risk-high);font-weight:700;';
+    band.textContent = 'High (200–399) — Formal absence review';
+    action.textContent = 'Move to a formal absence review meeting. The employee has the right to be accompanied. Consider issuing a written warning if no improvement following previous support. Consult the Absence Management Policy PM-2-2.';
+  } else {
+    band.style.cssText = 'background:#FFEBEE;border:1px solid #EF9A9A;border-radius:8px;padding:12px 14px;color:#a80000;font-weight:700;';
+    band.textContent = 'Critical (400+) — HR involvement required';
+    action.textContent = 'Contact HR before taking any further action. A formal process is required. This level of absence may ultimately lead to capability dismissal if no improvement is demonstrated following a supported formal process.';
+  }
+
+  res.style.display = '';
+}
+
 </script>
 </body>
 </html>
