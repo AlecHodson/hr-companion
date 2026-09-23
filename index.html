@@ -565,10 +565,24 @@ async function initAuth() {
   applySession();
 }
 
+
+// Detect Teams and use appropriate sign-in method
+async function msalLoginWithTeamsFallback(scopes, loginHint) {
+  const inTeams = typeof microsoftTeams !== 'undefined' && window.parent !== window;
+  if (inTeams) {
+    // Teams blocks popups — use redirect instead
+    await msalInstance.loginRedirect({ scopes, loginHint, prompt: 'select_account' });
+    return null; // page will redirect, no return value
+  } else {
+    return await msalInstance.loginPopup({ scopes, loginHint });
+  }
+}
+
 async function doSignIn() {
   document.getElementById('authStatus').textContent = 'Signing in...';
   try {
-    const resp = await msalInstance.loginPopup({ scopes: SCOPES });
+    const resp = await msalLoginWithTeamsFallback(SCOPES, SESSION && SESSION.email ? SESSION.email : undefined);
+    if(!resp) return; // redirect flow — page is navigating
     graphToken = resp.accessToken;
     const user = resolveUserByUPN(resp.account.username);
     SESSION = user || {name: resp.account.name, nursery:'Complete Childcare Group', title:'', isHR:false, email: resp.account.username};
