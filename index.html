@@ -170,7 +170,9 @@ hr.divider{border:none;border-top:1px solid var(--line);margin:20px 0;}
 .law-item{background:var(--amber-tint);border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:10px;}
 .law-item h4{margin:0 0 4px;font-size:14px;color:var(--amber);}
 .law-item p{margin:0;font-size:13px;color:var(--ink);}
-.panic-btn{position:fixed;bottom:24px;right:24px;background:#a80000;color:white;border:none;border-radius:50px;padding:14px 22px;font-size:13.5px;font-weight:700;box-shadow:0 4px 14px rgba(168,0,0,0.4);cursor:pointer;z-index:999;display:flex;align-items:center;gap:8px;transition:all 0.15s;}
+.panic-btn{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#a80000;color:white;border:none;border-radius:50px;padding:14px 32px;font-size:15px;font-weight:700;box-shadow:0 4px 20px rgba(168,0,0,0.5);cursor:pointer;z-index:9999;display:flex;align-items:center;gap:10px;transition:all 0.15s;animation:panic-pulse 2s infinite;}
+@keyframes panic-pulse{0%,100%{box-shadow:0 4px 20px rgba(168,0,0,0.5);}50%{box-shadow:0 4px 32px rgba(168,0,0,0.85);}}
+.panic-btn:hover{background:#c00000;transform:translateX(-50%) scale(1.05);}
 .panic-btn:hover{background:#8a0000;transform:scale(1.03);}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;}
 .modal-overlay.active{display:flex;}
