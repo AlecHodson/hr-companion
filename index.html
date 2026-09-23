@@ -742,27 +742,7 @@ function resolveUserByUPN(upn) {
 /* ================================================================
    MSAL + TEAMS AUTH
    ================================================================ */
-// Self-initialising MSAL (same pattern as Issue Companion)
-(function tryInitMSAL(){
-  if(typeof msal === 'undefined' || !msal.PublicClientApplication){
-    setTimeout(tryInitMSAL, 100);
-    return;
-  }
-  try {
-    msalInstance = new msal.PublicClientApplication(MSAL_CONFIG);
-    msalInstance.initialize().then(async function(){
-      try { await msalInstance.handleRedirectPromise(); } catch(e){}
-      const accounts = msalInstance.getAllAccounts();
-      if(accounts.length > 0 && !graphToken){
-        try {
-          const silent = await msalInstance.acquireTokenSilent({ scopes: SCOPES, account: accounts[0] });
-          graphToken = silent.accessToken;
-          console.log('[MSAL] Silent token acquired for', accounts[0].username);
-        } catch(e){ console.warn('[MSAL] Silent failed:', e.message); }
-      }
-    }).catch(function(e){ console.error('MSAL init failed:', e); });
-  } catch(e){ console.error('MSAL init failed:', e); }
-})();
+
 
 async function initAuth() {
   if(!msalInstance){
