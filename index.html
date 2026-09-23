@@ -481,33 +481,9 @@ function resolveUserByUPN(upn) {
 /* ================================================================
    MSAL + TEAMS AUTH
    ================================================================ */
-// Self-initialising MSAL (same pattern as Issue Companion)
-(function tryInitMSAL(){
-  if(typeof msal === 'undefined' || !msal.PublicClientApplication){
-    setTimeout(tryInitMSAL, 100);
-    return;
-  }
-  try {
-    msalInstance = new msal.PublicClientApplication(MSAL_CONFIG);
-    msalInstance.initialize().then(async function(){
-      try { await msalInstance.handleRedirectPromise(); } catch(e){}
-      const accounts = msalInstance.getAllAccounts();
-      if(accounts.length > 0 && !graphToken){
-        try {
-          const silent = await msalInstance.acquireTokenSilent({ scopes: SCOPES, account: accounts[0] });
-          graphToken = silent.accessToken;
-          console.log('[MSAL] Silent token acquired for', accounts[0].username);
-        } catch(e){ console.warn('[MSAL] Silent failed:', e.message); }
-      }
-    }).catch(function(e){ console.error('MSAL init failed:', e); });
-  } catch(e){ console.error('MSAL init failed:', e); }
-})();
-
 async function initAuth() {
-  // Wait for msalInstance to be ready (set by tryInitMSAL above)
-  let waited = 0;
-  while(!msalInstance && waited < 5000){ await new Promise(r=>setTimeout(r,100)); waited+=100; }
-  if(!msalInstance){ console.warn('[AUTH] MSAL not ready'); return; }
+  msalInstance = new msal.PublicClientApplication(MSAL_CONFIG);
+  await msalInstance.initialize();
 
   // Handle redirect response
   try {
@@ -526,7 +502,7 @@ async function initAuth() {
     try {
       await microsoftTeams.app.initialize();
       const ctx = await microsoftTeams.app.getContext();
-      const loginHint = (ctx.user && ctx.user.loginHint) || (SESSION && SESSION.email);
+      const loginHint = ctx.user && ctx.user.loginHint;
       if (loginHint) {
         try {
           const silentReq = { scopes: SCOPES, loginHint };
@@ -569,7 +545,6 @@ async function doSignIn() {
     graphToken = resp.accessToken;
     const user = resolveUserByUPN(resp.account.username);
     SESSION = user || {name: resp.account.name, nursery:'Complete Childcare Group', title:'', isHR:false, email: resp.account.username};
-    try { sessionStorage.setItem('hrSession', JSON.stringify(SESSION)); } catch(e){}
     document.getElementById('authModal').classList.remove('active');
     applySession();
     loadCopilotArchive();
@@ -1425,22 +1400,12 @@ function escHtml(s) {
    INIT
    ================================================================ */
 (async function(){
-  // 1. Check stored session
-  try {
-    const stored = JSON.parse(sessionStorage.getItem('hrSession') || 'null');
-    if(stored && (stored.name || stored.nursery)){
-      SESSION = stored;
-    }
-  } catch(e){}
-
-  // 2. Render app immediately (guest mode if no session yet)
-  if(!SESSION) SESSION = {name:'',nursery:'Complete Childcare Group',title:'',isHR:false,email:''};
+  // Render app immediately in guest mode (no blank screen)
+  SESSION={name:'',nursery:'Complete Childcare Group',title:'',isHR:false,email:''};
   applySession();
-
-  // 3. Run auth (gets token silently if possible, shows modal if not)
+  // Then run auth (may update session)
   await initAuth();
-
-  // 4. Load SharePoint data if authenticated
+  // Load SharePoint data
   if(graphToken){
     await Promise.all([loadThreshold(), loadCopilotArchive(), loadCaseLog()]);
   }
