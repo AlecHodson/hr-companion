@@ -690,7 +690,7 @@ const MSAL_CONFIG = {
     redirectUri: 'https://alechodson.github.io/hr-companion/',
     navigateToLoginRequestUrl: false
   },
-  cache: { cacheLocation: 'sessionStorage', storeAuthStateInCookie: false }
+  cache: { cacheLocation: 'localStorage', storeAuthStateInCookie: true }
 };
 const SCOPES = ['User.Read','Files.ReadWrite','Mail.Send'];
 let msalInstance, graphToken, SESSION = null;
@@ -743,44 +743,25 @@ function resolveUserByUPN(upn) {
 
 async function initAuth() {
   if(!msalInstance){
-    if(typeof msal === 'undefined'){ console.warn('[AUTH] MSAL library not loaded'); return; }
+    if(typeof msal === 'undefined'){ console.warn('[AUTH] MSAL not loaded'); return; }
     msalInstance = new msal.PublicClientApplication(MSAL_CONFIG);
     await msalInstance.initialize();
   }
 
-  // Handle redirect response
+  // Step 1: Handle post-redirect token (loginRedirect flow)
   try {
     const resp = await msalInstance.handleRedirectPromise();
     if (resp && resp.account) {
       graphToken = resp.accessToken;
       const user = resolveUserByUPN(resp.account.username);
       SESSION = user || {name: resp.account.name, nursery:'Complete Childcare Group', title:'', isHR:false, email: resp.account.username};
+      localStorage.setItem('hrSession', JSON.stringify(SESSION));
       applySession();
       return;
     }
-  } catch(e) { console.warn('Redirect handle:', e); }
+  } catch(e) { console.warn('[AUTH] Redirect handle error:', e.message); }
 
-  // Try Teams SSO first
-  if (typeof microsoftTeams !== 'undefined') {
-    try {
-      await microsoftTeams.app.initialize();
-      const ctx = await microsoftTeams.app.getContext();
-      const loginHint = (ctx.user && ctx.user.loginHint) || (SESSION && SESSION.email);
-      if (loginHint) {
-        try {
-          const silentReq = { scopes: SCOPES, loginHint };
-          const silentResp = await msalInstance.ssoSilent(silentReq);
-          graphToken = silentResp.accessToken;
-          const user = resolveUserByUPN(loginHint);
-          SESSION = user || {name: loginHint, nursery:'Complete Childcare Group', title:'', isHR:false, email: loginHint};
-          applySession();
-          return;
-        } catch(e) { console.warn('Teams SSO silent failed:', e); }
-      }
-    } catch(e) { console.warn('Teams init:', e); }
-  }
-
-  // Try silent from cached account
+  // Step 2: Try silent token from any cached localStorage account (works in Edge, Chrome on return visits)
   const accounts = msalInstance.getAllAccounts();
   if (accounts.length > 0) {
     try {
@@ -788,17 +769,65 @@ async function initAuth() {
       graphToken = silentResp.accessToken;
       const user = resolveUserByUPN(accounts[0].username);
       SESSION = user || {name: accounts[0].name, nursery:'Complete Childcare Group', title:'', isHR:false, email: accounts[0].username};
+      localStorage.setItem('hrSession', JSON.stringify(SESSION));
       applySession();
       return;
-    } catch(e) { console.warn('Silent failed:', e); }
+    } catch(e) { console.warn('[AUTH] Silent token failed:', e.message); }
   }
 
-  // Show auth modal
+  // Step 3: Teams context — get loginHint from Teams SDK and try SSO
+  if (typeof microsoftTeams !== 'undefined') {
+    try {
+      await microsoftTeams.app.initialize();
+      const ctx = await microsoftTeams.app.getContext();
+      const loginHint = ctx.user && (ctx.user.loginHint || ctx.user.userPrincipalName);
+      if (loginHint) {
+        // Try ssoSilent first (works if user has consented before)
+        try {
+          const ssoResp = await msalInstance.ssoSilent({ scopes: SCOPES, loginHint });
+          graphToken = ssoResp.accessToken;
+          const user = resolveUserByUPN(loginHint);
+          SESSION = user || {name: loginHint, nursery:'Complete Childcare Group', title:'', isHR:false, email: loginHint};
+          localStorage.setItem('hrSession', JSON.stringify(SESSION));
+          applySession();
+          return;
+        } catch(e) { console.warn('[AUTH] Teams ssoSilent failed:', e.message); }
+
+        // ssoSilent failed — try redirect (Teams blocks popups)
+        try {
+          await msalInstance.loginRedirect({ scopes: SCOPES, loginHint, prompt: 'none' });
+          return; // page navigates
+        } catch(e) { console.warn('[AUTH] Teams redirect (prompt:none) failed:', e.message); }
+
+        // Last Teams attempt — redirect with interaction allowed
+        try {
+          await msalInstance.loginRedirect({ scopes: SCOPES, loginHint });
+          return;
+        } catch(e) { console.warn('[AUTH] Teams redirect failed:', e.message); }
+      }
+    } catch(e) { console.warn('[AUTH] Teams init failed:', e.message); }
+  }
+
+  // Step 4: Non-Teams browser — if we have a stored session identity, try popup silently
+  const storedRaw = localStorage.getItem('hrSession');
+  const stored = storedRaw ? JSON.parse(storedRaw) : null;
+  const hint = stored && stored.email ? stored.email : null;
+  if (hint) {
+    try {
+      const silentResp = await msalInstance.ssoSilent({ scopes: SCOPES, loginHint: hint });
+      graphToken = silentResp.accessToken;
+      const user = resolveUserByUPN(hint);
+      SESSION = user || {name: hint, nursery:'Complete Childcare Group', title:'', isHR:false, email: hint};
+      applySession();
+      return;
+    } catch(e) { console.warn('[AUTH] ssoSilent with stored hint failed:', e.message); }
+  }
+
+  // Step 5: Nothing worked — show sign-in modal
   populateManualSelect();
-  document.getElementById('authModal').classList.add('active');
-  // But still render the app in guest mode so it's not a blank page
-  SESSION = {name:'', nursery:'Complete Childcare Group', title:'', isHR:false, email:''};
-  applySession();
+  if (!SESSION || !SESSION.name) {
+    document.getElementById('authModal').classList.add('active');
+  }
 }
 
 
@@ -822,7 +851,7 @@ async function doSignIn() {
     graphToken = resp.accessToken;
     const user = resolveUserByUPN(resp.account.username);
     SESSION = user || {name: resp.account.name, nursery:'Complete Childcare Group', title:'', isHR:false, email: resp.account.username};
-    try { sessionStorage.setItem('hrSession', JSON.stringify(SESSION)); } catch(e){}
+    try { localStorage.setItem('hrSession', JSON.stringify(SESSION)); } catch(e){}
     document.getElementById('authModal').classList.remove('active');
     applySession();
     loadCopilotArchive();
@@ -1868,7 +1897,7 @@ function escHtml(s) {
 (async function(){
   // 1. Check stored session
   try {
-    const stored = JSON.parse(sessionStorage.getItem('hrSession') || 'null');
+    const stored = JSON.parse(localStorage.getItem('hrSession') || 'null');
     if(stored && (stored.name || stored.nursery)){
       SESSION = stored;
     }
