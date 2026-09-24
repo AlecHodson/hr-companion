@@ -1256,37 +1256,277 @@ function generateLocalResponse(query) {
 sourcesPanel([{label:'CCG Employee Handbook',url:'https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BEB8FAA88-B5C0-401F-9235-C230195A9139%7D&file=Employment%20Law%20Employee%20Handbook%20PDF%20Jan26.pdf&action=default&mobileredirect=true',type:'ccg'},{label:'ACAS: Discipline & grievance hub',url:'https://www.acas.org.uk/discipline-and-grievance',type:'acas'},{label:'Gov.uk: Employment rights',url:'https://www.gov.uk/browse/working/rights-trade-unions',type:'gov'}]);
 }
 
+
 /* ================================================================
-   COPILOT SEND
+   TRIAGE ENGINE
+   ================================================================ */
+
+// Conversation state per session
+let TRIAGE_STATE = null;
+// {
+//   topic: 'sickness',
+//   originalQuery: '...',
+//   questions: [...],        // array of {q, key} objects
+//   questionIndex: 0,        // which question we just asked
+//   answers: {},             // key -> answer string
+//   awaitingAnswer: true
+// }
+
+const TRIAGE_QUESTIONS = {
+  sickness: [
+    { key: 'duration',   q: 'How long has the employee been absent — and is this a single continuous absence or multiple separate occasions?' },
+    { key: 'fit_note',   q: 'Have they provided a fit note, and do you know the reason given for the absence?' },
+    { key: 'history',    q: 'Is there any relevant background — for example, a known health condition, disability, or previous absence pattern?' }
+  ],
+  conduct: [
+    { key: 'nature',     q: 'Can you describe what happened — is this a one-off incident or a pattern of behaviour?' },
+    { key: 'severity',   q: 'How serious is the conduct? For example, is there any suggestion of gross misconduct such as violence, theft, or serious policy breach?' },
+    { key: 'history',    q: 'Has this employee had any previous warnings or informal conversations about their conduct?' }
+  ],
+  performance: [
+    { key: 'specifics',  q: 'What are the specific performance concerns — and how long have they been evident?' },
+    { key: 'support',    q: 'What support or feedback has already been given to the employee?' },
+    { key: 'probation',  q: 'Is the employee still within their probationary period, or are they a confirmed member of staff?' }
+  ],
+  ratios: [
+    { key: 'rooms',      q: 'Which room or age group is affected, and what are the current staffing and child numbers?' },
+    { key: 'cause',      q: 'What is the reason for the shortfall — planned absence, sickness, or something else?' },
+    { key: 'steps',      q: 'What steps have you already taken to find cover?' }
+  ],
+  recruitment: [
+    { key: 'stage',      q: 'What stage of the recruitment process are you at — advertising, interviewing, offer, or onboarding?' },
+    { key: 'role',       q: 'What role is this for, and is it a new position or replacing someone?' },
+    { key: 'issue',      q: 'Is there a specific concern — for example, a DBS issue, right to work question, or offer complication?' }
+  ],
+  leave: [
+    { key: 'type',       q: 'What type of leave is this — annual leave, maternity/paternity, flexible working, carer\'s leave, or something else?' },
+    { key: 'context',    q: 'Has the employee made a formal request, or is this an informal conversation at this stage?' },
+    { key: 'service',    q: 'How long has the employee been with CCG, and are there any relevant circumstances such as pregnancy or a caring responsibility?' }
+  ],
+  grievances: [
+    { key: 'nature',     q: 'What is the grievance about — and has it been raised verbally, in writing, or informally?' },
+    { key: 'parties',    q: 'Who is involved — is this between two employees, or is it directed at management?' },
+    { key: 'steps',      q: 'Has any attempt been made to resolve it informally, and if so what happened?' }
+  ],
+  safeguarding: [
+    { key: 'nature',     q: 'What is the nature of the concern — an allegation against a staff member, a disclosure by a child, or something else?' },
+    { key: 'reported',   q: 'Has this been reported to your Designated Safeguarding Lead (DSL) yet?' },
+    { key: 'immediate',  q: 'Is the staff member currently in contact with children, and does any immediate action need to happen right now?' }
+  ],
+  generic: [
+    { key: 'context',    q: 'Can you tell me a bit more about the situation — who is involved and what has happened so far?' },
+    { key: 'urgency',    q: 'How urgent is this — do you need to take action today, or is there time to plan a response?' }
+  ]
+};
+
+function detectTopic(query) {
+  const q = query.toLowerCase();
+  if (['sick','absence','unwell','off work','fit note','return to work','rtw','bradford','ssp'].some(k=>q.includes(k))) return 'sickness';
+  if (['disciplin','misconduct','gross misconduct','warning','gossip','conduct','lateness','unauthorised','suspension'].some(k=>q.includes(k))) return 'conduct';
+  if (['performance','pip','improvement','capability','underperform','appraisal','probation','target'].some(k=>q.includes(k))) return 'performance';
+  if (['ratio','cover','staffing','eyfs','1:3','1:4','1:5','1:8','1:13','room','short staff'].some(k=>q.includes(k))) return 'ratios';
+  if (['recruit','hire','interview','offer','dbs','contract','onboard','induction','right to work','vacancy','job'].some(k=>q.includes(k))) return 'recruitment';
+  if (['leave','holiday','maternity','paternity','parental','flexible working','carer','dependant','neonatal','bereavement'].some(k=>q.includes(k))) return 'leave';
+  if (['grievance','complaint','raised','upset','conflict','dispute','mediation'].some(k=>q.includes(k))) return 'grievances';
+  if (['safeguarding','allegation','lado','abuse','child','disclosure','concern','ofsted'].some(k=>q.includes(k))) return 'safeguarding';
+  return 'generic';
+}
+
+// High-risk topics that skip triage and escalate immediately
+function isImmediateEscalate(query) {
+  const q = query.toLowerCase();
+  return ['allegation','lado','abuse','assault','criminal','tribunal','discrimination','pregnancy','disability','harassment','whistleblowing','gross misconduct','dismissal'].some(k=>q.includes(k));
+}
+
+function triageQuestionHtml(questionText, questionNum, totalQuestions) {
+  return `<p style="margin:0 0 10px;font-size:13.5px;color:#555;"><em>To give you the most accurate guidance, I have a couple of questions first.</em></p>
+<p style="margin:0;"><strong>Question ${questionNum} of ${totalQuestions}:</strong> ${escHtml(questionText)}</p>`;
+}
+
+function buildTailoredResponse(topic, originalQuery, answers) {
+  const kb = AI_KNOWLEDGE[topic] || AI_KNOWLEDGE[topic === 'grievances' ? 'grievance' : topic];
+  const allContext = originalQuery + ' ' + Object.values(answers).join(' ');
+
+  // Augment the risk score with the answers
+  const combinedRisk = scoreQuery(allContext);
+
+  // Build a tailored preamble based on answers
+  let preamble = '';
+  if (topic === 'sickness') {
+    const dur = (answers.duration||'').toLowerCase();
+    const fn = (answers.fit_note||'').toLowerCase();
+    const hist = (answers.history||'').toLowerCase();
+    const isLongTerm = /week|month|long/.test(dur);
+    const hasDisability = /disab|condition|mental|chronic/.test(hist);
+    const noFitNote = /no|haven|don't|not/.test(fn);
+    if (hasDisability) preamble = '<div style="margin-bottom:12px;padding:10px 14px;background:var(--coral-tint);border-radius:8px;font-size:13px;color:var(--coral);font-weight:600;">⚠ A known health condition or disability may be involved. Involve HR before taking any formal steps — the Equality Act 2010 requires reasonable adjustments to be considered.</div>';
+    else if (isLongTerm) preamble = '<div style="margin-bottom:12px;padding:10px 14px;background:var(--amber-tint);border-radius:8px;font-size:13px;color:var(--amber);">This appears to be a long-term absence situation. The guidance below applies — but involve HR if absence reaches or exceeds 4 weeks.</div>';
+    if (noFitNote && isLongTerm) preamble += '<div style="margin-bottom:12px;padding:10px 14px;background:var(--paper-2);border-radius:8px;font-size:13px;">No fit note has been provided. A fit note is required from day 8 of absence — you should request one in writing.</div>';
+  } else if (topic === 'conduct') {
+    const sev = (answers.severity||'').toLowerCase();
+    const hist = (answers.history||'').toLowerCase();
+    const isGross = /gross|violence|theft|assault|serious|major/.test(sev);
+    const hasWarnings = /yes|previous|warning|before/.test(hist);
+    if (isGross) preamble = '<div style="margin-bottom:12px;padding:10px 14px;background:var(--coral-tint);border-radius:8px;font-size:13px;color:var(--coral);font-weight:600;">⚠ This may constitute gross misconduct. Do not proceed without involving HR first. Consider suspension on full pay pending investigation.</div>';
+    else if (hasWarnings) preamble = '<div style="margin-bottom:12px;padding:10px 14px;background:var(--amber-tint);border-radius:8px;font-size:13px;color:var(--amber);">The employee has a previous conduct history. This strengthens the case for moving to a formal stage sooner rather than repeating informal steps.</div>';
+  } else if (topic === 'performance') {
+    const prob = (answers.probation||'').toLowerCase();
+    const sup = (answers.support||'').toLowerCase();
+    const onProbation = /yes|probat|still|within/.test(prob);
+    const noSupport = /no|nothing|haven|not/.test(sup);
+    if (onProbation) preamble = '<div style="margin-bottom:12px;padding:10px 14px;background:var(--teal-tint);border-radius:8px;font-size:13px;color:var(--teal-deep);">The employee is still on probation. You have more flexibility to extend or end probation — but still document everything carefully and give clear feedback.</div>';
+    if (noSupport) preamble += '<div style="margin-bottom:12px;padding:10px 14px;background:var(--amber-tint);border-radius:8px;font-size:13px;color:var(--amber);">No formal support has been given yet. Start with an informal meeting, document the concerns clearly, and agree measurable targets before moving to a PIP.</div>';
+  } else if (topic === 'ratios') {
+    const steps = (answers.steps||'').toLowerCase();
+    const noSteps = /no|nothing|haven|not/.test(steps);
+    if (noSteps) preamble = '<div style="margin-bottom:12px;padding:10px 14px;background:var(--coral-tint);border-radius:8px;font-size:13px;color:var(--coral);font-weight:600;">⚠ If no cover steps have been taken yet, act immediately. Contact bank staff now, then your area manager. Do not open or keep a room below ratio.</div>';
+  } else if (topic === 'grievances') {
+    const parties = (answers.parties||'').toLowerCase();
+    const isManagement = /manager|management|me|myself/.test(parties);
+    if (isManagement) preamble = '<div style="margin-bottom:12px;padding:10px 14px;background:var(--amber-tint);border-radius:8px;font-size:13px;color:var(--amber);">The grievance is directed at management. You should not investigate a grievance about yourself — escalate to HR or your area manager to appoint an independent investigator.</div>';
+  } else if (topic === 'safeguarding') {
+    const reported = (answers.reported||'').toLowerCase();
+    const immediate = (answers.immediate||'').toLowerCase();
+    const notReported = /no|not yet|haven/.test(reported);
+    const stillWorking = /yes|still|working|contact/.test(immediate);
+    if (notReported) preamble = '<div style="margin-bottom:12px;padding:10px 14px;background:var(--coral-tint);border-radius:8px;font-size:13px;color:var(--coral);font-weight:600;">⚠ This must be reported to your DSL immediately — do not delay. If your DSL is unavailable, contact Ellie Richards at Head Office.</div>';
+    if (stillWorking) preamble += '<div style="margin-bottom:12px;padding:10px 14px;background:var(--coral-tint);border-radius:8px;font-size:13px;color:var(--coral);font-weight:600;">⚠ The staff member must be stood down from working with children right now, pending investigation. This is not a disciplinary sanction — explain this to them.</div>';
+  }
+
+  const baseResponse = kb ? kb.response(allContext) : generateLocalResponse(allContext);
+  return { html: preamble + baseResponse, risk: combinedRisk };
+}
+
+/* ================================================================
+   COPILOT SEND — with triage flow
    ================================================================ */
 async function sendCopilot() {
-  const input=document.getElementById('copilotInput');
-  const query=input.value.trim(); if(!query) return;
-  input.value='';
-  const thread=document.getElementById('chatThread');
-  thread.style.display=''; document.getElementById('archivedNotice').style.display='none';
-  const userMsgHtml=`<div class="chat-msg user"><div class="chat-avatar user">👤</div><div class="chat-bubble user"><p>${escHtml(query)}</p></div></div>`;
-  const typingId='typing-'+Date.now();
-  const typingHtml=`<div class="chat-msg" id="${typingId}"><div class="chat-avatar ai">🤖</div><div class="chat-bubble ai"><div class="typing-dots"><span></span><span></span><span></span></div><div class="ai-searching">Searching CCG policy documents...</div></div></div>`;
-  thread.innerHTML=userMsgHtml+typingHtml+thread.innerHTML;
-  thread.scrollTop=0;
-  const risk=scoreQuery(query);
-  const threshold=currentThreshold;
-  const shouldEscalate=risk.score>=threshold;
-  // Search SharePoint in parallel with local response generation
-  const [spResults] = await Promise.all([searchHRDocuments(query)]);
-  const typingEl=document.getElementById(typingId); if(typingEl) typingEl.remove();
-  const aiResponse=generateLocalResponse(query);
-  const spPanel=spResultsPanel(spResults);
-  const mentorPanel=mentorDocsPanel(query);
-  const riskClass=risk.level;
-  const riskLabels={low:'Low risk',medium:'Medium risk',high:'High risk'};
-  let riskHtml=`<div class="risk-bar ${riskClass}"><div class="risk-dot ${riskClass}"></div><div><div class="risk-label ${riskClass}">${riskLabels[riskClass]} (${risk.score}/10)</div><div class="risk-detail">${risk.reason}</div></div>${shouldEscalate?`<button class="risk-escalate-btn" onclick="openEscalate()">Escalate to HR →</button>`:''}</div>`;
-  if(shouldEscalate) riskHtml+=`<div style="margin-top:10px;padding:10px 14px;background:var(--coral-tint);border-radius:8px;font-size:13px;color:var(--coral);font-weight:600;">⚠ This query meets the escalation threshold (score ${risk.score} ≥ threshold ${threshold}). HR involvement is recommended before proceeding.</div>`;
-  const aiMsgHtml=`<div class="chat-msg"><div class="chat-avatar ai">🤖</div><div class="chat-bubble ai">${aiResponse}${spPanel}${mentorPanel}${riskHtml}</div></div>`;
-  thread.innerHTML=userMsgHtml+aiMsgHtml+thread.innerHTML;
-  thread.scrollTop=0;
+  const input = document.getElementById('copilotInput');
+  const query = input.value.trim();
+  if (!query) return;
+  input.value = '';
+
+  const thread = document.getElementById('chatThread');
+  thread.style.display = '';
+  document.getElementById('archivedNotice').style.display = 'none';
+
+  const userMsgHtml = `<div class="chat-msg user"><div class="chat-avatar user">👤</div><div class="chat-bubble user"><p>${escHtml(query)}</p></div></div>`;
+
+  // ── CASE 1: We are mid-triage, waiting for an answer ──────────────────────
+  if (TRIAGE_STATE && TRIAGE_STATE.awaitingAnswer) {
+    const state = TRIAGE_STATE;
+    const currentQ = state.questions[state.questionIndex];
+    state.answers[currentQ.key] = query;
+    state.questionIndex++;
+    state.awaitingAnswer = false;
+
+    thread.innerHTML = userMsgHtml + thread.innerHTML;
+    thread.scrollTop = 0;
+
+    // Are there more questions?
+    if (state.questionIndex < state.questions.length) {
+      const nextQ = state.questions[state.questionIndex];
+      const total = state.questions.length;
+      const qHtml = triageQuestionHtml(nextQ.q, state.questionIndex + 1, total);
+      const aiMsgHtml = `<div class="chat-msg"><div class="chat-avatar ai">🤖</div><div class="chat-bubble ai">${qHtml}</div></div>`;
+      thread.innerHTML = aiMsgHtml + thread.innerHTML;
+      thread.scrollTop = 0;
+      state.awaitingAnswer = true;
+      appendToArchive(userMsgHtml, aiMsgHtml);
+      return;
+    }
+
+    // All questions answered — generate tailored response
+    showTyping(thread);
+    await new Promise(r => setTimeout(r, 600));
+    removeTyping(thread);
+
+    const { html: tailoredHtml, risk } = buildTailoredResponse(state.topic, state.originalQuery, state.answers);
+    const mentorPanel = mentorDocsPanel(state.originalQuery + ' ' + Object.values(state.answers).join(' '));
+    const riskHtml = buildRiskHtml(risk);
+    const summaryNote = `<div style="margin-bottom:14px;padding:10px 14px;background:var(--teal-tint);border-radius:8px;font-size:13px;color:var(--teal-deep);">Based on what you've told me, here is my guidance:</div>`;
+    const aiMsgHtml = `<div class="chat-msg"><div class="chat-avatar ai">🤖</div><div class="chat-bubble ai">${summaryNote}${tailoredHtml}${mentorPanel}${riskHtml}</div></div>`;
+    thread.innerHTML = aiMsgHtml + thread.innerHTML;
+    thread.scrollTop = 0;
+    appendToArchive(userMsgHtml, aiMsgHtml);
+    TRIAGE_STATE = null;
+    return;
+  }
+
+  // ── CASE 2: New query — start triage or immediate response ────────────────
+  thread.innerHTML = userMsgHtml + thread.innerHTML;
+  thread.scrollTop = 0;
+
+  const topic = detectTopic(query);
+  const immediateRisk = scoreQuery(query);
+
+  // High-risk keywords or very short queries (< 4 words) skip triage
+  const wordCount = query.trim().split(/\s+/).length;
+  const skipTriage = isImmediateEscalate(query) || wordCount < 4;
+
+  if (skipTriage) {
+    showTyping(thread);
+    await new Promise(r => setTimeout(r, 500));
+    removeTyping(thread);
+    const aiResponse = generateLocalResponse(query);
+    const mentorPanel = mentorDocsPanel(query);
+    const riskHtml = buildRiskHtml(immediateRisk);
+    const aiMsgHtml = `<div class="chat-msg"><div class="chat-avatar ai">🤖</div><div class="chat-bubble ai">${aiResponse}${mentorPanel}${riskHtml}</div></div>`;
+    thread.innerHTML = aiMsgHtml + thread.innerHTML;
+    thread.scrollTop = 0;
+    appendToArchive(userMsgHtml, aiMsgHtml);
+    return;
+  }
+
+  // Start triage
+  const questions = TRIAGE_QUESTIONS[topic] || TRIAGE_QUESTIONS.generic;
+  TRIAGE_STATE = {
+    topic,
+    originalQuery: query,
+    questions,
+    questionIndex: 0,
+    answers: {},
+    awaitingAnswer: true
+  };
+
+  const firstQ = questions[0];
+  const total = questions.length;
+  const qHtml = triageQuestionHtml(firstQ.q, 1, total);
+  const aiMsgHtml = `<div class="chat-msg"><div class="chat-avatar ai">🤖</div><div class="chat-bubble ai">${qHtml}</div></div>`;
+  thread.innerHTML = aiMsgHtml + thread.innerHTML;
+  thread.scrollTop = 0;
   appendToArchive(userMsgHtml, aiMsgHtml);
+}
+
+/* ── Helpers ── */
+function showTyping(thread) {
+  const id = 'typing-' + Date.now();
+  thread._typingId = id;
+  const html = `<div class="chat-msg" id="${id}"><div class="chat-avatar ai">🤖</div><div class="chat-bubble ai"><div class="typing-dots"><span></span><span></span><span></span></div></div></div>`;
+  thread.innerHTML = html + thread.innerHTML;
+}
+function removeTyping(thread) {
+  if (thread._typingId) {
+    const el = document.getElementById(thread._typingId);
+    if (el) el.remove();
+    thread._typingId = null;
+  }
+}
+
+function buildRiskHtml(risk) {
+  const threshold = currentThreshold;
+  const shouldEscalate = risk.score >= threshold;
+  const riskLabels = { low: 'Low risk', medium: 'Medium risk', high: 'High risk' };
+  let html = `<div class="risk-bar ${risk.level}"><div class="risk-dot ${risk.level}"></div><div><div class="risk-label ${risk.level}">${riskLabels[risk.level]} (${risk.score}/10)</div><div class="risk-detail">${risk.reason}</div></div>${shouldEscalate ? '<button class="risk-escalate-btn" onclick="openEscalate()">Escalate to HR →</button>' : ''}</div>`;
+  if (shouldEscalate) html += `<div style="margin-top:10px;padding:10px 14px;background:var(--coral-tint);border-radius:8px;font-size:13px;color:var(--coral);font-weight:600;">⚠ This query meets the escalation threshold (score ${risk.score} ≥ threshold ${threshold}). HR involvement is recommended before proceeding.</div>`;
+  return html;
+}
+
+// Reset triage if user clears the view
+const _origClearView = clearCopilotView;
+function clearCopilotView() {
+  TRIAGE_STATE = null;
+  _origClearView();
 }
 
 /* ================================================================
