@@ -695,79 +695,6 @@ const MSAL_CONFIG = {
 const SCOPES = ['User.Read','Files.ReadWrite','Mail.Send'];
 let msalInstance, graphToken, SESSION = null;
 
-// Self-initialising MSAL — runs immediately, handles redirect + silent + Teams SSO
-// This fires before the startup IIFE so tokens are ready as early as possible
-(function tryInitMSAL(){
-  if(typeof msal === 'undefined' || !msal.PublicClientApplication){
-    setTimeout(tryInitMSAL, 100);
-    return;
-  }
-  try {
-    if(!msalInstance){
-      msalInstance = new msal.PublicClientApplication(MSAL_CONFIG);
-    }
-    msalInstance.initialize().then(async function(){
-      // Step 1: Handle post-redirect token
-      try {
-        const redir = await msalInstance.handleRedirectPromise();
-        if(redir && redir.account){
-          graphToken = redir.accessToken;
-          const user = resolveUserByUPN(redir.account.username);
-          SESSION = user || {name: redir.account.name, nursery:'Complete Childcare Group', title:'', isHR:false, email: redir.account.username};
-          localStorage.setItem('hrSession', JSON.stringify(SESSION));
-          document.getElementById('authModal').classList.remove('active');
-          applySession();
-          Promise.all([loadThreshold(), loadCopilotArchive(), loadCaseLog()]).catch(()=>{});
-          return;
-        }
-      } catch(e){ console.warn('[MSAL-IIFE] Redirect handle:', e.message); }
-
-      // Step 2: Silent token from cached localStorage account
-      const accounts = msalInstance.getAllAccounts();
-      if(accounts.length > 0 && !graphToken){
-        try {
-          const silent = await msalInstance.acquireTokenSilent({ scopes: SCOPES, account: accounts[0] });
-          graphToken = silent.accessToken;
-          if(!SESSION || !SESSION.email){
-            const user = resolveUserByUPN(accounts[0].username);
-            SESSION = user || {name: accounts[0].name, nursery:'Complete Childcare Group', title:'', isHR:false, email: accounts[0].username};
-            localStorage.setItem('hrSession', JSON.stringify(SESSION));
-            document.getElementById('authModal').classList.remove('active');
-            applySession();
-          }
-          Promise.all([loadThreshold(), loadCopilotArchive(), loadCaseLog()]).catch(()=>{});
-          return;
-        } catch(e){ console.warn('[MSAL-IIFE] Silent failed:', e.message); }
-      }
-
-      // Step 3: Teams SSO
-      if(typeof microsoftTeams !== 'undefined'){
-        try {
-          await microsoftTeams.app.initialize();
-          const ctx = await microsoftTeams.app.getContext();
-          const hint = ctx.user && (ctx.user.loginHint || ctx.user.userPrincipalName);
-          if(hint){
-            // Try ssoSilent first
-            try {
-              const sso = await msalInstance.ssoSilent({ scopes: SCOPES, loginHint: hint });
-              graphToken = sso.accessToken;
-              const user = resolveUserByUPN(hint);
-              SESSION = user || {name: hint, nursery:'Complete Childcare Group', title:'', isHR:false, email: hint};
-              localStorage.setItem('hrSession', JSON.stringify(SESSION));
-              document.getElementById('authModal').classList.remove('active');
-              applySession();
-              Promise.all([loadThreshold(), loadCopilotArchive(), loadCaseLog()]).catch(()=>{});
-              return;
-            } catch(e){ console.warn('[MSAL-IIFE] Teams ssoSilent failed:', e.message); }
-            // ssoSilent failed — redirect (prompt:none first, then with interaction)
-            try { await msalInstance.loginRedirect({ scopes: SCOPES, loginHint: hint, prompt: 'none' }); return; } catch(e){}
-            try { await msalInstance.loginRedirect({ scopes: SCOPES, loginHint: hint }); return; } catch(e){ console.warn('[MSAL-IIFE] Teams redirect failed:', e.message); }
-          }
-        } catch(e){ console.warn('[MSAL-IIFE] Teams init failed:', e.message); }
-      }
-    }).catch(function(e){ console.error('[MSAL-IIFE] Init error:', e); });
-  } catch(e){ console.error('[MSAL-IIFE] Outer error:', e); }
-})();
 
 
 /* ================================================================
@@ -815,69 +742,144 @@ function resolveUserByUPN(upn) {
    MSAL + TEAMS AUTH
    ================================================================ */
 
-
 async function initAuth() {
-  // If the self-initialising MSAL block already got a token, nothing to do
-  if(graphToken) return;
-
-  // Ensure MSAL is ready
-  if(!msalInstance){
-    if(typeof msal === 'undefined'){ console.warn('[AUTH] MSAL not loaded'); return; }
+  // Initialise MSAL if not already done
+  if (!msalInstance) {
+    if (typeof msal === 'undefined') { console.warn('[AUTH] MSAL not loaded'); return; }
     msalInstance = new msal.PublicClientApplication(MSAL_CONFIG);
     await msalInstance.initialize();
   }
 
-  // One more silent attempt in case IIFE hadn't finished yet
-  const accounts = msalInstance.getAllAccounts();
-  if(accounts.length > 0){
-    try {
-      const silentResp = await msalInstance.acquireTokenSilent({ scopes: SCOPES, account: accounts[0] });
-      graphToken = silentResp.accessToken;
-      const user = resolveUserByUPN(accounts[0].username);
-      SESSION = user || {name: accounts[0].name, nursery:'Complete Childcare Group', title:'', isHR:false, email: accounts[0].username};
-      localStorage.setItem('hrSession', JSON.stringify(SESSION));
-      document.getElementById('authModal').classList.remove('active');
-      applySession();
-      return;
-    } catch(e){ console.warn('[AUTH] Silent failed:', e.message); }
-  }
-
-  // Nothing worked — show sign-in modal
-  populateManualSelect();
-  if(!SESSION || !SESSION.name){
-    document.getElementById('authModal').classList.add('active');
-  }
-}
-
-
-// Detect Teams and use appropriate sign-in method
-async function msalLoginWithTeamsFallback(scopes, loginHint) {
-  const inTeams = typeof microsoftTeams !== 'undefined' && window.parent !== window;
-  if (inTeams) {
-    // Teams blocks popups — use redirect instead
-    await msalInstance.loginRedirect({ scopes, loginHint, prompt: 'select_account' });
-    return null; // page will redirect, no return value
-  } else {
-    return await msalInstance.loginPopup({ scopes, loginHint });
-  }
-}
-
-async function doSignIn() {
-  document.getElementById('authStatus').textContent = 'Signing in...';
+  // ── 1. Handle post-redirect token ─────────────────────────────────────────
+  // This fires when Microsoft redirects back after loginRedirect
   try {
-    const resp = await msalLoginWithTeamsFallback(SCOPES, SESSION && SESSION.email ? SESSION.email : undefined);
-    if(!resp) return; // redirect flow — page is navigating
-    graphToken = resp.accessToken;
-    const user = resolveUserByUPN(resp.account.username);
-    SESSION = user || {name: resp.account.name, nursery:'Complete Childcare Group', title:'', isHR:false, email: resp.account.username};
-    try { localStorage.setItem('hrSession', JSON.stringify(SESSION)); } catch(e){}
-    document.getElementById('authModal').classList.remove('active');
-    applySession();
-    loadCopilotArchive();
-    loadCaseLog();
+    const resp = await msalInstance.handleRedirectPromise();
+    if (resp && resp.account) {
+      await _applyToken(resp.accessToken, resp.account.username, resp.account.name);
+      return;
+    }
+  } catch(e) { console.warn('[AUTH] handleRedirectPromise error:', e.message); }
+
+  // ── 2. Silent token from cached account in localStorage ───────────────────
+  const accounts = msalInstance.getAllAccounts();
+  if (accounts.length > 0) {
+    try {
+      const r = await msalInstance.acquireTokenSilent({ scopes: SCOPES, account: accounts[0] });
+      await _applyToken(r.accessToken, accounts[0].username, accounts[0].name);
+      return;
+    } catch(e) { console.warn('[AUTH] acquireTokenSilent failed:', e.message); }
+  }
+
+  // ── 3. Teams SSO — ssoSilent with loginHint from Teams context ────────────
+  const inTeams = _inTeams();
+  if (inTeams) {
+    try {
+      await microsoftTeams.app.initialize();
+      const ctx = await microsoftTeams.app.getContext();
+      const hint = ctx.user && (ctx.user.loginHint || ctx.user.userPrincipalName);
+      if (hint) {
+        try {
+          const r = await msalInstance.ssoSilent({ scopes: SCOPES, loginHint: hint });
+          await _applyToken(r.accessToken, hint, hint);
+          return;
+        } catch(e) { console.warn('[AUTH] Teams ssoSilent failed:', e.message); }
+      }
+    } catch(e) { console.warn('[AUTH] Teams context failed:', e.message); }
+  }
+
+  // ── 4. Browser ssoSilent with stored hint ────────────────────────────────
+  if (!inTeams) {
+    try {
+      const stored = JSON.parse(localStorage.getItem('hrSession') || 'null');
+      const hint = stored && stored.email ? stored.email : null;
+      if (hint) {
+        const r = await msalInstance.ssoSilent({ scopes: SCOPES, loginHint: hint });
+        await _applyToken(r.accessToken, hint, hint);
+        return;
+      }
+    } catch(e) { console.warn('[AUTH] Browser ssoSilent failed:', e.message); }
+  }
+
+  // ── 5. Nothing worked silently — show sign-in modal ───────────────────────
+  populateManualSelect();
+  document.getElementById('authModal').classList.add('active');
+}
+
+// Helper: detect Teams webview
+function _inTeams() {
+  try {
+    return typeof microsoftTeams !== 'undefined' &&
+           (window.parent !== window || window.self !== window.top ||
+            navigator.userAgent.indexOf('Teams') !== -1);
+  } catch(e) { return false; }
+}
+
+// Helper: store token + session and update UI
+async function _applyToken(token, upn, displayName) {
+  graphToken = token;
+  const user = resolveUserByUPN(upn);
+  SESSION = user || { name: displayName || upn, nursery: 'Complete Childcare Group', title: '', isHR: false, email: upn };
+  try { localStorage.setItem('hrSession', JSON.stringify(SESSION)); } catch(e) {}
+  document.getElementById('authModal').classList.remove('active');
+  applySession();
+  try { await Promise.all([loadThreshold(), loadCopilotArchive(), loadCaseLog()]); } catch(e) {}
+}
+
+// Sign-in button handler
+// Teams: use microsoftTeams.authentication.authenticate() — opens a proper Teams auth popup
+// Browser: use MSAL loginPopup
+async function doSignIn() {
+  const statusEl = document.getElementById('authStatus');
+  const btnEl = document.getElementById('signInBtn');
+  if (statusEl) statusEl.textContent = 'Signing in...';
+  if (btnEl) btnEl.disabled = true;
+
+  try {
+    if (!msalInstance) throw new Error('Auth not ready — please wait a moment.');
+
+    if (_inTeams()) {
+      // Teams auth: open a popup that Teams controls
+      // The popup loads our redirect URI which completes the MSAL flow
+      await new Promise((resolve, reject) => {
+        microsoftTeams.authentication.authenticate({
+          url: `https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/authorize` +
+               `?client_id=${CLIENT_ID}` +
+               `&response_type=code` +
+               `&redirect_uri=${encodeURIComponent('https://alechodson.github.io/hr-companion/')}` +
+               `&scope=${encodeURIComponent(SCOPES.join(' '))}` +
+               `&response_mode=fragment` +
+               `&prompt=select_account`,
+          width: 600,
+          height: 535,
+          successCallback: async function(result) {
+            // After Teams popup, do a silent token acquisition
+            try {
+              const accs = msalInstance.getAllAccounts();
+              if (accs.length > 0) {
+                const r = await msalInstance.acquireTokenSilent({ scopes: SCOPES, account: accs[0] });
+                await _applyToken(r.accessToken, accs[0].username, accs[0].name);
+              } else {
+                // Fall back to ssoSilent
+                const r2 = await msalInstance.ssoSilent({ scopes: SCOPES });
+                const accs2 = msalInstance.getAllAccounts();
+                if (accs2.length > 0) await _applyToken(r2.accessToken, accs2[0].username, accs2[0].name);
+              }
+              resolve();
+            } catch(e) { reject(e); }
+          },
+          failureCallback: function(reason) { reject(new Error(reason || 'Teams auth failed')); }
+        });
+      });
+    } else {
+      // Browser: standard MSAL popup
+      const hint = SESSION && SESSION.email ? SESSION.email : undefined;
+      const resp = await msalInstance.loginPopup({ scopes: SCOPES, loginHint: hint });
+      await _applyToken(resp.accessToken, resp.account.username, resp.account.name);
+    }
   } catch(e) {
-    document.getElementById('authStatus').textContent = 'Sign-in failed. Please try the manual option below.';
-    console.warn('Login popup failed:', e);
+    console.warn('[AUTH] doSignIn error:', e.message);
+    if (statusEl) statusEl.textContent = 'Sign-in failed. Please use the manual option below.';
+    if (btnEl) btnEl.disabled = false;
   }
 }
 
@@ -902,6 +904,7 @@ function confirmManualId() {
   if (!val) { alert('Please select to continue.'); return; }
   if (val.startsWith('n:')) SESSION = JSON.parse(JSON.stringify(NURSERY_LIST[parseInt(val.slice(2))]));
   else SESSION = JSON.parse(JSON.stringify(HR_LIST[parseInt(val.slice(2))]));
+  try { localStorage.setItem('hrSession', JSON.stringify(SESSION)); } catch(e) {}
   document.getElementById('authModal').classList.remove('active');
   applySession();
   loadCopilotArchive();
