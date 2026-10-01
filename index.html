@@ -242,7 +242,7 @@ hr.divider{border:none;border-top:1px solid var(--line);margin:20px 0;}
 <div class="modal-overlay" id="panicModal">
   <div class="modal-box">
     <h2 style="color:#a80000;">⚠ Flag as Urgent to HR</h2>
-    <p>Sends an immediate high-priority alert to HR, Alec Hodson and Louise Medley.</p>
+    <p>Sends an immediate email and Teams message to Alec Hodson, Louise Medley and Ellie Richards.</p>
     <label>Brief description of the issue</label>
     <textarea id="panicText" placeholder="e.g. Disciplinary case has escalated — I'm not sure how to proceed..."></textarea>
     <div class="btn-row" style="margin-top:14px;">
@@ -256,7 +256,7 @@ hr.divider{border:none;border-top:1px solid var(--line);margin:20px 0;}
 <div class="modal-overlay" id="escalateModal">
   <div class="modal-box">
     <h2>Escalate to HR</h2>
-    <p>The HR team will be notified. They will respond within one working day.</p>
+    <p>Sends an email to the HR team, copying Louise Medley. They will respond within one working day.</p>
     <label>Category</label>
     <select id="escCategory">
       <option>Sickness &amp; Absence</option><option>Conduct &amp; Lateness</option>
@@ -692,7 +692,7 @@ const MSAL_CONFIG = {
   },
   cache: { cacheLocation: 'localStorage', storeAuthStateInCookie: true }
 };
-const SCOPES = ['User.Read','Files.ReadWrite','Mail.Send'];
+const SCOPES = ['User.Read','Files.ReadWrite','Mail.Send','Chat.ReadWrite'];
 let msalInstance, graphToken, SESSION = null;
 
 
@@ -1666,19 +1666,19 @@ async function sendEscalationEmail(type, category, message) {
   if (!graphToken) { alert('Please sign in to send escalation emails.'); return false; }
   const nursery = SESSION ? (SESSION.nursery||SESSION.name||'Unknown') : 'Unknown';
   const managerName = SESSION ? (SESSION.name||SESSION.nursery||'Unknown') : 'Unknown';
-  const areaManager = getAreaManager(nursery);
   const isUrgent = type === 'urgent';
+  // Escalate to HR → notifies the HR mailbox, copying Louise Medley.
+  // Flag Urgent to HR → notifies Alec Hodson, Louise Medley and Ellie Richards directly.
   const toAddresses = isUrgent
     ? [
-        {emailAddress:{address:'HR@completechildcare.co.uk',name:'HR Team'}},
         {emailAddress:{address:'alec.hodson@completechildcare.co.uk',name:'Alec Hodson'}},
-        {emailAddress:{address:'louise.medley@completechildcare.co.uk',name:'Louise Medley'}}
+        {emailAddress:{address:'louise.medley@completechildcare.co.uk',name:'Louise Medley'}},
+        {emailAddress:{address:'Ellie.Richards@completechildcare.co.uk',name:'Ellie Richards'}}
       ]
-    : [{emailAddress:{address:'Ellie.Richards@completechildcare.co.uk',name:'Ellie Richards'}}];
-  const ccAddresses = [];
-  if (!isUrgent && areaManager) {
-    ccAddresses.push({emailAddress:{address:areaManager}});
-  }
+    : [{emailAddress:{address:'hr@completechildcare.co.uk',name:'HR Team'}}];
+  const ccAddresses = isUrgent
+    ? []
+    : [{emailAddress:{address:'louise.medley@completechildcare.co.uk',name:'Louise Medley'}}];
   const subject = isUrgent
     ? `[URGENT — HR Companion] ${nursery} — immediate attention required`
     : `[HR Companion] Escalation — ${nursery} — ${category}`;
@@ -1689,6 +1689,7 @@ async function sendEscalationEmail(type, category, message) {
 <p>${message.replace(/\n/g,'<br>')}</p>
 <hr>
 <p style="font-size:12px;color:#888;">Sent via HR Companion — Complete Childcare Group</p>`;
+  let emailOk = false;
   try {
     await graphCall('POST', '/me/sendMail', {
       message: {
@@ -1699,11 +1700,49 @@ async function sendEscalationEmail(type, category, message) {
       },
       saveToSentItems: true
     });
+    emailOk = true;
     // Save escalation record to SharePoint
     const record = {id:Date.now().toString(),type,from:SESSION?SESSION.email:'',nursery,manager:managerName,category,message,createdAt:new Date().toISOString(),status:'open'};
     try { await spPut(`/drives/${DRIVE_ID}/items/01WEN3AC4K752M62SMBVGKKAMFZUPRKSR3:/${record.id}.json:/content`, record); } catch(e){}
+  } catch(e) { console.error('Email send failed:', e); }
+
+  let teamsOk = false;
+  if (isUrgent) {
+    const teamsMessage = `<strong>⚠ HR Companion — Urgent Alert</strong><br>` +
+      `<strong>From:</strong> ${managerName} — ${nursery}<br><br>` +
+      `${message.replace(/\n/g,'<br>')}`;
+    teamsOk = await sendTeamsChatMessage(
+      ['alec.hodson@completechildcare.co.uk','louise.medley@completechildcare.co.uk','Ellie.Richards@completechildcare.co.uk'],
+      teamsMessage
+    );
+  }
+  return { emailOk, teamsOk: isUrgent ? teamsOk : null };
+}
+
+// Creates (or reuses) a group chat with the given recipients and posts a message to it.
+// Requires the Chat.ReadWrite scope — the first time a user triggers this, Microsoft may need
+// to prompt for that extra permission, or a tenant admin may need to pre-consent it.
+async function sendTeamsChatMessage(recipientUPNs, messageHtml) {
+  if (!graphToken) return false;
+  try {
+    const selfUPN = SESSION && SESSION.email;
+    if (!selfUPN) return false;
+    const allUPNs = [selfUPN, ...recipientUPNs.filter(u => u && u.toLowerCase() !== selfUPN.toLowerCase())];
+    const members = allUPNs.map(upn => ({
+      '@odata.type': '#microsoft.graph.aadUserConversationMember',
+      roles: ['owner'],
+      'user@odata.bind': `https://graph.microsoft.com/v1.0/users('${encodeURIComponent(upn)}')`
+    }));
+    const chatType = members.length > 2 ? 'group' : 'oneOnOne';
+    const chatBody = { chatType, members };
+    if (chatType === 'group') chatBody.topic = 'HR Companion — Urgent Alert';
+    const chat = await graphCall('POST', '/chats', chatBody);
+    await graphCall('POST', `/chats/${chat.id}/messages`, { body: { contentType: 'html', content: messageHtml } });
     return true;
-  } catch(e) { console.error('Email send failed:', e); return false; }
+  } catch(e) {
+    console.warn('[TEAMS] Could not send Teams chat message:', e.message);
+    return false;
+  }
 }
 
 function openPanic(){document.getElementById('panicModal').classList.add('active');}
@@ -1713,9 +1752,14 @@ async function submitPanic(){
   if(!t){alert('Please describe the issue before sending.');return;}
   const btn=document.querySelector('#panicModal .btn-danger');
   btn.textContent='Sending...'; btn.disabled=true;
-  const ok=await sendEscalationEmail('urgent','Urgent Alert',t);
-  if(ok){alert('Urgent alert sent to HR, Alec Hodson and Louise Medley.');}
-  else{alert('Could not send automatically. Please call HR directly.');}
+  const result=await sendEscalationEmail('urgent','Urgent Alert',t);
+  if(result.emailOk && result.teamsOk){
+    alert('Urgent alert emailed and sent via Teams to Alec Hodson, Louise Medley and Ellie Richards.');
+  } else if(result.emailOk){
+    alert('Urgent alert emailed to Alec Hodson, Louise Medley and Ellie Richards. The Teams message could not be sent — please follow up with them directly.');
+  } else {
+    alert('Could not send automatically. Please contact Alec Hodson, Louise Medley or Ellie Richards directly.');
+  }
   closePanic(); document.getElementById('panicText').value='';
   btn.textContent='Send Urgent Alert'; btn.disabled=false;
 }
@@ -1728,9 +1772,9 @@ async function submitEscalate(){
   const cat=document.getElementById('escCategory').value;
   const btn=document.querySelector('#escalateModal .btn-primary');
   btn.textContent='Sending...'; btn.disabled=true;
-  const ok=await sendEscalationEmail('standard',cat,t);
-  if(ok){alert('Escalation submitted. HR will respond within one working day.');}
-  else{alert('Could not send automatically. Please email Ellie Richards directly.');}
+  const result=await sendEscalationEmail('standard',cat,t);
+  if(result.emailOk){alert('Escalation submitted to HR (copied to Louise Medley). They will respond within one working day.');}
+  else{alert('Could not send automatically. Please email hr@completechildcare.co.uk directly.');}
   closeEscalate(); document.getElementById('escText').value='';
   btn.textContent='Submit to HR'; btn.disabled=false;
 }
