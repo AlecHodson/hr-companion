@@ -1301,7 +1301,8 @@ sourcesPanel([{label:'CCG Employee Handbook',url:'https://completechildcare.shar
 <li><strong>Contact the LADO</strong> within one working day of any allegation that a person who works with children may have harmed or could harm a child.</li>
 <li><strong>Preserve evidence.</strong> Do not contact the subject of the allegation before speaking to the LADO.</li>
 <li><strong>Notify HR and Ofsted</strong> — Ofsted must be informed within 14 days.</li>
-</ul>`+sourcesPanel([{label:'CCG H&S Handbook 2026',url:'https://completechildcare.sharepoint.com/sites/TheKnowledgeBase/Shared%20Documents/Handbook%20H%26S%202026.pdf',type:'ccg'},{label:'Gov.uk: DBS checks',url:'https://www.gov.uk/dbs-check-applicant-criminal-record',type:'gov'},{label:'Gov.uk: EYFS Statutory Framework',url:'https://www.gov.uk/government/publications/early-years-foundation-stage-framework--2',type:'gov'}]);}}
+</ul>
+<div style="margin:10px 0;padding:10px 14px;background:var(--coral-tint);border-radius:8px;font-size:13px;color:var(--coral);font-weight:600;">⚠ Head Office only: any contact with the LADO or Ofsted must always be made by a member of the Head Office team, following consultation with Emma McIntyre or Alec Hodson. Nursery-level staff must never contact the LADO or Ofsted directly — escalate to HR and Head Office first.</div>`+sourcesPanel([{label:'CCG H&S Handbook 2026',url:'https://completechildcare.sharepoint.com/sites/TheKnowledgeBase/Shared%20Documents/Handbook%20H%26S%202026.pdf',type:'ccg'},{label:'Gov.uk: DBS checks',url:'https://www.gov.uk/dbs-check-applicant-criminal-record',type:'gov'},{label:'Gov.uk: EYFS Statutory Framework',url:'https://www.gov.uk/government/publications/early-years-foundation-stage-framework--2',type:'gov'}]);}}
 };
 
 function matchKnowledge(query) {
@@ -1459,6 +1460,7 @@ function buildTailoredResponse(topic, originalQuery, answers) {
     const stillWorking = /yes|still|working|contact/.test(immediate);
     if (notReported) preamble = '<div style="margin-bottom:12px;padding:10px 14px;background:var(--coral-tint);border-radius:8px;font-size:13px;color:var(--coral);font-weight:600;">⚠ This must be reported to your DSL immediately — do not delay. If your DSL is unavailable, contact Ellie Richards at Head Office.</div>';
     if (stillWorking) preamble += '<div style="margin-bottom:12px;padding:10px 14px;background:var(--coral-tint);border-radius:8px;font-size:13px;color:var(--coral);font-weight:600;">⚠ The staff member must be stood down from working with children right now, pending investigation. This is not a disciplinary sanction — explain this to them.</div>';
+    preamble += '<div style="margin-bottom:12px;padding:10px 14px;background:var(--coral-tint);border-radius:8px;font-size:13px;color:var(--coral);font-weight:600;">⚠ Head Office only: any contact with the LADO or Ofsted must always be made by a member of the Head Office team, following consultation with Emma McIntyre or Alec Hodson. Do not contact the LADO or Ofsted yourself.</div>';
   }
 
   const baseResponse = kb ? kb.response(allContext) : generateLocalResponse(allContext);
@@ -1896,7 +1898,7 @@ const CATEGORIES = [
     links:[{label:'ACAS — Discipline & grievance',url:'https://www.acas.org.uk/discipline-and-grievance'},{label:'ACAS Code of Practice',url:'https://www.acas.org.uk/acas-code-of-practice-on-disciplinary-and-grievance-procedures'},{label:'ACAS — Mediation',url:'https://www.acas.org.uk/mediation'}]},
 
   {id:'safeguarding',label:'Safeguarding-Related HR',icon:'🛡️',desc:'Allegations, LADO, DBS referrals, staff disclosures',escLevel:'must',escLabel:'Must escalate immediately',
-    guide:'Any allegation that a person who works with children may have harmed or could harm a child must be referred to the LADO within one working day. Do not investigate yourself. Stand the staff member down from working with children pending investigation. This is a safeguarding matter, not a disciplinary one — the processes are different.',
+    guide:'Any allegation that a person who works with children may have harmed or could harm a child must be referred to the LADO within one working day. Do not investigate yourself. Stand the staff member down from working with children pending investigation. This is a safeguarding matter, not a disciplinary one — the processes are different. Any contact with the LADO or Ofsted must always be made by a member of the Head Office team, following consultation with Emma McIntyre or Alec Hodson — never by nursery-level staff directly.',
     policyQuote:'All employees have a duty to report concerns about the conduct of colleagues towards children or young people. Any such concern must be reported to the DSL immediately. The LADO must be contacted within one working day of any allegation.',
     policySource:'CCG Safeguarding Policy / EYFS Statutory Framework',
     letterSubject:'Confidential Safeguarding Concern',
@@ -1904,9 +1906,9 @@ const CATEGORIES = [
     steps:[
       {title:'Report to your DSL immediately',detail:'Do not investigate yourself. Report to your Designated Safeguarding Lead (DSL) as soon as the concern arises.'},
       {title:'Stand the staff member down',detail:'Remove the staff member from contact with children pending investigation. This is not a disciplinary sanction — explain this to the individual.'},
-      {title:'Contact the LADO',detail:'The Local Authority Designated Officer (LADO) must be contacted within one working day of any allegation.'},
+      {title:'Contact the LADO — Head Office only',detail:'The Local Authority Designated Officer (LADO) must be contacted within one working day of any allegation. This contact must always be made by a member of the Head Office team, after consultation with Emma McIntyre or Alec Hodson — never by nursery-level staff directly.'},
       {title:'Preserve evidence',detail:'Do not contact the subject of the allegation before speaking to the LADO. Preserve any evidence.'},
-      {title:'Notify HR and Ofsted',detail:'Notify HR immediately. Ofsted must be informed within 14 days of any allegation involving a member of staff.'},
+      {title:'Notify HR and Ofsted — Head Office only',detail:'Notify HR immediately. Ofsted must be informed within 14 days of any allegation involving a member of staff, and any such notification to Ofsted must always be made by Head Office, after consultation with Emma McIntyre or Alec Hodson.'},
     ],
     docs:[{name:'Contractor Code of Conduct — Sexual Harassment',url:'https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7B2DEEDB30-3A03-4146-A273-52144A97F5E4%7D&file=Contractor%20Code%20of%20Conduct%20-%20Sexual%20Harrassment%20Feb26.docx&action=default&mobileredirect=true',tag:'Policy'},{name:'Parent Code of Conduct — Sexual Harassment',url:'https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BE5FC66B6-02CF-43EE-96D7-9816BFAA7757%7D&file=Parent%20Code%20of%20Conduct%20-%20Sexual%20Harrassment%20Feb26.docx&action=default&mobileredirect=true',tag:'Policy'},{name:'Sexual Harassment Risk Assessment',url:'https://completechildcare.sharepoint.com/sites/HRFiling/_layouts/15/Doc.aspx?sourcedoc=%7BE5F1C971-8F0E-4F73-B5BA-821F49E8675C%7D&file=Sexual%20Harrassment%20Risk%20Assessment%20Feb26.docx&action=default&mobileredirect=true',tag:'Risk Assessment'}],
     links:[{label:'Gov.uk — DBS checks',url:'https://www.gov.uk/dbs-check-applicant-criminal-record'},{label:'Gov.uk — EYFS Statutory Framework',url:'https://www.gov.uk/government/publications/early-years-foundation-stage-framework--2'}]},
