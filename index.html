@@ -608,7 +608,7 @@ hr.divider{border:none;border-top:1px solid var(--line);margin:20px 0;}
     <!-- CASE LOG -->
     <div class="page" id="page-caselog">
       <h2 style="margin-bottom:6px;">My Case Log</h2>
-      <p style="font-size:13.5px;color:#666;margin-bottom:20px;">A private record of HR cases you are managing. Stored securely in your account — accessible from any device.</p>
+      <p style="font-size:13.5px;color:#666;margin-bottom:20px;">A private record of HR cases you are managing. Stored securely in your account — accessible from any device. Reopen any case below to add an update — every update is timestamped automatically when saved.</p>
       <div class="content-panel">
         <h3 style="font-size:16px;margin-bottom:16px;">Log a new case</h3>
         <div class="case-form">
@@ -1052,7 +1052,8 @@ async function saveCase() {
     manager: SESSION ? (SESSION.name || SESSION.nursery) : 'Unknown',
     userId: SESSION ? SESSION.email : 'guest',
     date: new Date().toLocaleDateString('en-GB'),
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
+    updates: []
   };
   localCases.unshift(entry);
   document.getElementById('caseEmployee').value='';
@@ -1072,12 +1073,60 @@ async function saveCase() {
 function renderCaseLog(cases) {
   const el = document.getElementById('caseList');
   if (!cases || cases.length===0) { el.innerHTML='<p style="color:#888;font-size:13.5px;">No cases logged yet.</p>'; return; }
-  el.innerHTML = cases.map(c=>`
+  el.innerHTML = cases.map(c=>{
+    const updates = Array.isArray(c.updates) ? c.updates : [];
+    const updatesHtml = updates.length
+      ? updates.map(u=>`<div style="padding:8px 10px;background:var(--paper-2);border-radius:6px;margin-bottom:6px;"><div style="font-size:11px;color:#999;font-weight:600;margin-bottom:2px;">${escHtml(u.displayDate)}</div><div style="font-size:13px;">${escHtml(u.text)}</div></div>`).join('')
+      : '<p style="color:#999;font-size:12.5px;margin:4px 0 8px;">No updates yet.</p>';
+    return `
     <div class="case-entry ${c.level==='formal'?'entry-formal':c.level==='urgent'?'entry-urgent':''}">
       <h4>${escHtml(c.employee)} — ${escHtml(c.category)}</h4>
-      <div class="meta">${c.date} · ${escHtml(c.nursery)} · <span class="badge badge-${c.level==='informal'?'informal':c.level==='formal'?'formal':'urgent'}">${c.level}</span></div>
+      <div class="meta">${c.date} · ${escHtml(c.nursery)} · <span class="badge badge-${c.level==='informal'?'informal':c.level==='formal'?'formal':'urgent'}">${c.level}</span>${updates.length?` · <span style="color:#999;">${updates.length} update${updates.length>1?'s':''}</span>`:''}</div>
       <div class="notes">${escHtml(c.notes)}</div>
-    </div>`).join('');
+      <button style="all:unset;cursor:pointer;color:var(--teal-deep);font-size:12.5px;font-weight:700;margin-top:10px;display:inline-block;" onclick="toggleCaseDetail('${c.id}')" id="caseToggle-${c.id}">Reopen case to add an update ▾</button>
+      <div id="caseDetail-${c.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid #eee;">
+        <div class="section-label" style="margin-bottom:8px;">Updates</div>
+        ${updatesHtml}
+        <label style="margin-top:4px;">Add an update</label>
+        <textarea id="caseUpdateText-${c.id}" placeholder="What's changed? Add the latest update to this case..."></textarea>
+        <div style="margin-top:8px;">
+          <button class="btn btn-primary" onclick="addCaseUpdate('${c.id}')">Save update</button>
+          <span id="caseUpdateStatus-${c.id}" style="font-size:12px;color:var(--sage);margin-left:10px;"></span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCaseDetail(caseId) {
+  const detail = document.getElementById('caseDetail-'+caseId);
+  const btn = document.getElementById('caseToggle-'+caseId);
+  if (!detail) return;
+  const isOpen = detail.style.display !== 'none';
+  detail.style.display = isOpen ? 'none' : 'block';
+  if (btn) btn.textContent = isOpen ? 'Reopen case to add an update ▾' : 'Hide case ▴';
+}
+
+async function addCaseUpdate(caseId) {
+  const ta = document.getElementById('caseUpdateText-'+caseId);
+  const text = ta ? ta.value.trim() : '';
+  if (!text) { alert('Please write an update before saving.'); return; }
+  const c = localCases.find(x=>x.id===caseId);
+  if (!c) { alert('Could not find this case.'); return; }
+  if (!Array.isArray(c.updates)) c.updates = [];
+  // Updates are always timestamped automatically at the moment they're saved — never editable afterwards.
+  const now = new Date();
+  c.updates.push({ text, timestamp: now.toISOString(), displayDate: now.toLocaleString('en-GB') });
+  const statusEl = document.getElementById('caseUpdateStatus-'+caseId);
+  if (statusEl) statusEl.textContent = 'Saving...';
+  if (graphToken) {
+    try {
+      await spPut(caseIndexPath(), localCases);
+      if (statusEl) statusEl.textContent = '✓ Saved';
+    } catch(e) { if (statusEl) statusEl.textContent = 'Saved locally (sync failed)'; console.warn(e); }
+  } else if (statusEl) { statusEl.textContent = 'Saved (sign in to sync)'; }
+  renderCaseLog(localCases);
+  toggleCaseDetail(caseId);
 }
 
 function exportCases() {
