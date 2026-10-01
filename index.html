@@ -741,6 +741,15 @@ function resolveUserByUPN(upn) {
 /* ================================================================
    MSAL + TEAMS AUTH
    ================================================================ */
+// Teams SDK's app.initialize() can hang indefinitely if there is no real Teams host to answer
+// the handshake. Always race it against a timeout so sign-in can never stall waiting on it.
+function teamsInitializeWithTimeout(ms){
+  ms = ms || 3000;
+  return Promise.race([
+    microsoftTeams.app.initialize(),
+    new Promise(function(_, reject){ setTimeout(function(){ reject(new Error('Teams initialize timed out')); }, ms); })
+  ]);
+}
 
 async function initAuth() {
   // Initialise MSAL if not already done
@@ -774,7 +783,7 @@ async function initAuth() {
   const inTeams = _inTeams();
   if (inTeams) {
     try {
-      await microsoftTeams.app.initialize();
+      await teamsInitializeWithTimeout();
       const ctx = await microsoftTeams.app.getContext();
       const hint = ctx.user && (ctx.user.loginHint || ctx.user.userPrincipalName);
       if (hint) {
@@ -782,22 +791,34 @@ async function initAuth() {
           const r = await msalInstance.ssoSilent({ scopes: SCOPES, loginHint: hint });
           await _applyToken(r.accessToken, hint, hint);
           return;
-        } catch(e) { console.warn('[AUTH] Teams ssoSilent failed:', e.message); }
+        } catch(e) {
+          console.warn('[AUTH] Teams ssoSilent failed — using identity-only sign-in:', e.message);
+          const user = resolveUserByUPN(hint);
+          if (user) {
+            SESSION = user;
+            try { localStorage.setItem('hrSession', JSON.stringify(SESSION)); } catch(e2) {}
+            document.getElementById('authModal').classList.remove('active');
+            applySession();
+            try { await Promise.all([loadThreshold(), loadCopilotArchive(), loadCaseLog()]); } catch(e3) {}
+            return;
+          }
+        }
       }
     } catch(e) { console.warn('[AUTH] Teams context failed:', e.message); }
   }
 
-  // ── 4. Browser ssoSilent with stored hint ────────────────────────────────
+  // ── 4. Browser ssoSilent — works even with no stored hint, as long as the user is already
+  // signed in to Microsoft 365 somewhere in this browser (Outlook on the web, Office.com, etc.)
   if (!inTeams) {
     try {
       const stored = JSON.parse(localStorage.getItem('hrSession') || 'null');
-      const hint = stored && stored.email ? stored.email : null;
-      if (hint) {
-        const r = await msalInstance.ssoSilent({ scopes: SCOPES, loginHint: hint });
-        await _applyToken(r.accessToken, hint, hint);
-        return;
-      }
-    } catch(e) { console.warn('[AUTH] Browser ssoSilent failed:', e.message); }
+      const hint = stored && stored.email ? stored.email : undefined;
+      const r = await msalInstance.ssoSilent({ scopes: SCOPES, loginHint: hint });
+      const upn = (r.account && r.account.username) || hint;
+      const name = (r.account && r.account.name) || upn;
+      await _applyToken(r.accessToken, upn, name);
+      return;
+    } catch(e) { console.warn('[AUTH] Browser ssoSilent failed — no existing M365 session detected:', e.message); }
   }
 
   // ── 5. Nothing worked silently — show sign-in modal ───────────────────────
@@ -826,8 +847,11 @@ async function _applyToken(token, upn, displayName) {
 }
 
 // Sign-in button handler
-// Teams: use microsoftTeams.authentication.authenticate() — opens a proper Teams auth popup
-// Browser: use MSAL loginPopup
+// Teams: never open a popup/redirect inside the Teams frame. Azure AD blocks being framed, and a
+// popup landing back on this same app has no way to signal completion to the caller — that is
+// why sign-in used to fail here. Instead, read the signed-in identity straight from Teams
+// context, try a silent Graph token, and fall back to identity-only sign-in.
+// Browser: use MSAL loginPopup.
 async function doSignIn() {
   const statusEl = document.getElementById('authStatus');
   const btnEl = document.getElementById('signInBtn');
@@ -838,38 +862,31 @@ async function doSignIn() {
     if (!msalInstance) throw new Error('Auth not ready — please wait a moment.');
 
     if (_inTeams()) {
-      // Teams auth: open a popup that Teams controls
-      // The popup loads our redirect URI which completes the MSAL flow
-      await new Promise((resolve, reject) => {
-        microsoftTeams.authentication.authenticate({
-          url: `https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/authorize` +
-               `?client_id=${CLIENT_ID}` +
-               `&response_type=code` +
-               `&redirect_uri=${encodeURIComponent('https://alechodson.github.io/hr-companion/')}` +
-               `&scope=${encodeURIComponent(SCOPES.join(' '))}` +
-               `&response_mode=fragment` +
-               `&prompt=select_account`,
-          width: 600,
-          height: 535,
-          successCallback: async function(result) {
-            // After Teams popup, do a silent token acquisition
-            try {
-              const accs = msalInstance.getAllAccounts();
-              if (accs.length > 0) {
-                const r = await msalInstance.acquireTokenSilent({ scopes: SCOPES, account: accs[0] });
-                await _applyToken(r.accessToken, accs[0].username, accs[0].name);
-              } else {
-                // Fall back to ssoSilent
-                const r2 = await msalInstance.ssoSilent({ scopes: SCOPES });
-                const accs2 = msalInstance.getAllAccounts();
-                if (accs2.length > 0) await _applyToken(r2.accessToken, accs2[0].username, accs2[0].name);
-              }
-              resolve();
-            } catch(e) { reject(e); }
-          },
-          failureCallback: function(reason) { reject(new Error(reason || 'Teams auth failed')); }
-        });
-      });
+      if (statusEl) statusEl.textContent = 'Signing in with your Teams identity...';
+      await teamsInitializeWithTimeout();
+      const ctx = await microsoftTeams.app.getContext();
+      const hint = ctx.user && (ctx.user.userPrincipalName || ctx.user.loginHint);
+      if (!hint) throw new Error('Teams did not provide a sign-in hint.');
+
+      let token = null;
+      try {
+        const r = await msalInstance.ssoSilent({ scopes: SCOPES, loginHint: hint });
+        token = r.accessToken;
+      } catch(e) {
+        console.warn('[AUTH] Teams ssoSilent failed — continuing with identity-only sign-in:', e.message);
+      }
+
+      if (token) {
+        await _applyToken(token, hint, hint);
+      } else {
+        const user = resolveUserByUPN(hint);
+        if (!user) throw new Error('Could not match your Teams account to a known user.');
+        SESSION = user;
+        try { localStorage.setItem('hrSession', JSON.stringify(SESSION)); } catch(e) {}
+        document.getElementById('authModal').classList.remove('active');
+        applySession();
+        try { await Promise.all([loadThreshold(), loadCopilotArchive(), loadCaseLog()]); } catch(e) {}
+      }
     } else {
       // Browser: standard MSAL popup
       const hint = SESSION && SESSION.email ? SESSION.email : undefined;
